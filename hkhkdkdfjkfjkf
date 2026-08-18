@@ -1,0 +1,2927 @@
+with every other codes and functionalities intact and my app.js file like this
+
+const express = require('express');
+const mongoose = require('mongoose');
+require('dotenv').config();
+const cookieParser = require('cookie-parser');
+const methodOverride = require('method-override');
+const session = require('express-session');
+const flash = require('connect-flash');
+const cors = require('cors');
+const path = require('path');
+const { requireAuth, checkUser } = require('./server/authMiddleware/authMiddleware');
+const connectDB = require("./server/config/db")
+
+const app = express();
+const PORT = process.env.PORT || 7000;
+
+// ====================== DATABASE ======================
+connectDB();
+// mongoose.connect(process.env.MONGODB_URI)
+//   .then(() => console.log('MongoDB Connected'))
+//   .catch(err => {
+//     console.error('MongoDB Error:', err.message);
+//     console.error(err);
+//   });
+
+// mongoose.connection.on('connected', () => console.log('Mongoose connected event'));
+// mongoose.connection.on('error', (err) => console.error('Mongoose connection error:', err.message));
+// mongoose.connection.on('disconnected', () => console.log('Mongoose disconnected'));
+
+
+// ====================== MIDDLEWARES ======================
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(methodOverride('_method'));
+
+// ========== CORS (production-ready) ==========
+function normalizeOrigin(url) {
+  if (!url) return null;
+  return String(url).trim().replace(/\/$/, '');
+}
+const allowedOrigins = [
+  normalizeOrigin(process.env.FRONTEND_URL),
+].filter(Boolean);
+
+console.log('CORS allowed origins:', allowedOrigins);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // No Origin = Postman / server requests
+    if (!origin) return callback(null, true);
+
+    const normalized = normalizeOrigin(origin);
+
+    if (allowedOrigins.includes(normalized)) {
+      return callback(null, true);
+    }
+
+    console.warn('CORS blocked origin:', origin);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+}));
+
+// Session (important for transfer OTP / pending deposit)
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'change-this-to-a-long-random-string',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // true on Render (HTTPS)
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+  }
+}));
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.messages = req.flash();
+  next();
+});
+
+// ====================== ROUTES ======================
+app.use(checkUser);
+
+app.use('/', require('./server/Route/indexRoute'));
+app.use('/', requireAuth, require('./server/Route/userRoute'));
+// app.use('/', requireAuth, require('./server/Route/adminRoute'));
+
+// ====================== ERROR HANDLER ======================
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  console.error(err.stack);
+
+  const statusCode = err.status || err.statusCode || 500;
+
+  const wantsJson =
+    req.xhr ||
+    req.headers.accept?.includes('application/json') ||
+    req.headers['content-type']?.includes('application/json');
+
+  if (wantsJson || err.message === 'Not allowed by CORS') {
+    return res.status(statusCode).json({
+      success: false,
+      message: err.message || 'Something went wrong!'
+    });
+  }
+
+  if (typeof req.flash === 'function') {
+    req.flash('error', err.message || 'Something went wrong!');
+  }
+  return res.redirect(req.get('Referrer') || '/');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+and my user schema like this
+
+const mongoose = require('mongoose');
+const validator = require('validator');
+
+const userSchema = new mongoose.Schema({
+  fullname: {
+    type: String,
+    required: [true, 'Full name is required'],
+  },
+  tel: {
+    type: String,
+    required: [true, 'Phone number is required'],
+  },
+  email: {
+    type: String,
+    unique: true,
+    lowercase: true,
+    required: [true, 'Email is required'],
+    validate: [validator.isEmail, 'Please enter a valid email'],
+  },
+  country: {
+    type: String,
+    required: [true, 'Country is required'],
+  },
+  gender: {
+    type: String,
+    required: [true, 'Gender is required'],
+  },
+  postal: {
+    type: String,
+    default: 'postal code',
+  },
+  address: {
+    type: String,
+    default: 'your address',
+  },
+  city: {
+    type: String,
+    default: 'your city',
+  },
+  account: {
+    type: String,
+    default: 'Basic',
+  },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+  },
+  image: {
+    type: String,
+  },
+  balance: {
+    type: String, // Changed from String to Number
+    default: 0,
+  },
+  bonus: {
+    type: String,
+    default: '$0.00',
+  },
+  profit: {
+    type: String,
+    default: '$0.00',
+  },
+  totalDeposit: {
+    type: String,
+    default: '0',
+  },
+  kycVerified: {
+    type: String,
+    enum: ['noverify', 'pending', 'approve'],
+    default: 'noverify',
+  },
+  isSuspended: {
+    type: Boolean,
+    default: false,
+  },
+  totalWidthdraw: {
+    type: String,
+    default: '0',
+  },
+  verifiedStatus: {
+    type: String,
+    default: 'Account not yet Verified!',
+  },
+  upgrades: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'upgrade',
+  },
+  verified: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'verify',
+  },
+  deposits: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'deposit',
+  },
+  widthdraws: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Withdraw', // Fixed typo: 'widthdraw' to 'Withdraw'
+  },
+  role: {
+    type: Number,
+    default: 0,
+  },
+}, { timestamps: true });
+
+// Static method to login user
+userSchema.statics.login = async function (email, password) {
+  const user = await this.findOne({ email });
+  if (!user) {
+    throw Error('Incorrect email');
+  }
+  if (user.isSuspended) {
+    throw Error('Your account is suspended. Please contact support at support@legend-capital-markets.com');
+  }
+  if (password !== user.password) {
+    throw Error('Incorrect password');
+  }
+  return user;
+};
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
+
+and my depositSchema.js like this
+
+const mongoose = require('mongoose');
+
+const depositSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        required: true
+    },
+    amount: {
+        type: String // Note: Consider changing to Number for consistency, but kept as String per your schema
+    },
+    status: {
+        type: String,
+        default: 'pending'
+    },
+    image: {
+        type: String
+    },
+    narration: {
+        type: String,
+        default: "Payment"
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Changed from 'user' to 'User' to match the registered model
+        // required: true // Uncomment if you want to enforce this
+    }
+}, { timestamps: true });
+
+const Deposit = mongoose.model('deposit', depositSchema);
+
+module.exports = Deposit;
+
+And my livetradingSchema.js like this
+
+const mongoose = require('mongoose');
+
+const livetradeSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    required: true,
+  },
+  currencypair: {
+    type: String,
+    required: true,
+  },
+  lotsize: {
+    type: String,
+    required: true,
+  },
+  entryPrice: {
+    type: String,
+    required: true,
+  },
+  stopLoss: {
+    type: String,
+    required: true,
+  },
+  takeProfit: {
+    type: String,
+    required: true,
+  },
+  action: {
+    type: String,
+    required: true,
+  },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ['Open', 'Closed'],
+    default: 'Open',
+  },
+}, { timestamps: true });
+
+const Livetrading = mongoose.model('livetrade', livetradeSchema);
+module.exports = Livetrading;
+
+Verification.js file like this
+
+const mongoose = require('mongoose');
+
+const verificationSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    required: true,
+    index: true
+  },
+
+  // Documents
+  document_type:   { type: String, required: true, enum: ["Int'l Passport", "National ID", "Drivers License"] },
+  frontimg:        { type: String, required: [true, 'Front side image is required'] },
+  backimg:         { type: String, required: [true, 'Back side image is required'] },
+  photo:           { type: String, required: [true, 'Passport photograph is required'] },
+
+  // Status tracking
+  status: {
+    type: String,
+    enum: ['pending', 'under review', 'approved', 'rejected', 'declined'],
+    default: 'pending'
+  },
+  reviewedBy:      { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+  reviewedAt:      { type: Date },
+  rejectionReason: { type: String, trim: true },
+
+}, { timestamps: true });
+
+verificationSchema.index({ user: 1, status: 1 });
+
+module.exports = mongoose.model('Verification', verificationSchema);
+
+Wallet.js file like this
+
+const mongoose = require('mongoose');
+
+const walletSchema = new mongoose.Schema({
+  // Bank details (used for Bank Transfer method)
+  bank_name: {
+    type: String,
+    default: "Mining Bank"
+  },
+  account_name: {
+    type: String,
+    default: "Miller lauren"
+  },
+  account_no: {
+    type: String,
+    default: "99388383"
+  },
+  sortcode: {
+    type: String,
+    default: "388130"
+  },
+  swift_code: {
+    type: String,
+    default: "3222ASD"
+  },
+
+  // Bitcoin / Crypto wallet
+  btc_wallet_address: {
+    type: String,
+    default: "bc1qkspwvk9ge7rfl7374t96s95es64vc4fysk2nu5"
+  },
+  btc_qr_image: {
+    type: String, // Cloudinary URL of QR code image
+    default: null
+  },
+
+  // PayPal (email or business ID)
+  paypal_email: {
+    type: String,
+    default: "yourbusiness@paypal.com"
+  },
+
+  // Last updated by admin (optional audit)
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
+  },
+
+}, { timestamps: true });
+
+const Wallet = mongoose.model('Wallet', walletSchema);
+
+module.exports = Wallet;
+
+widthdrawSchema.js file like this
+
+const mongoose = require('mongoose');
+
+const withdrawSchema = new mongoose.Schema({
+    amount: {
+        type: Number,
+        required: true,
+    },
+    type: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        default: 'pending',
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    wallet_address: {
+        type: String,
+    },
+    paypal_email: {
+        type: String,
+    },
+    bank_details: {
+        bank_name: String,
+        acct_name: String,
+        acct_no: String,
+        acct_swift: String,
+    },
+}, { timestamps: true });
+
+const Withdraw = mongoose.model('Withdraw', withdrawSchema);
+
+module.exports = Withdraw;
+
+and here is the indexRoutes.js file
+const express = require("express");
+
+const router = express.Router();
+
+const { homePage, registerPage, loginPage, register_post, login_post,  logout_get, termsPage, aboutPage,faqPage, privacyPage, contactPage , partnersPage, InvestorPage } = require("../controllers/userController");
+
+router.get("/", homePage);
+router.get("/about", aboutPage);
+router.get("/investors", InvestorPage);
+router.get("/partners", partnersPage);
+router.get("/contact", contactPage);
+router.get("/terms", termsPage);
+router.get("/faq", faqPage);
+
+router.get("/register", registerPage);
+router.post('/register',register_post);
+
+
+router.get("/login", loginPage);
+router.post('/login',login_post)
+
+
+router.get('/logout', logout_get)
+
+
+
+module.exports = router;
+
+here is the  userRoutes.js file like this
+
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/userController');
+const multer = require('multer');
+const path = require('path');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'swiftcapital/profiles',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    public_id: (req, file) => `user_${req.params.id}_${Date.now()}`
+  }
+});
+
+const upload = multer({ storage });
+
+router.get('/dashboard',userController.dashboardPage);
+
+router.get('/accounthistory/:id',userController.historyPage);
+router.get('/trade-history/:id',userController.tradeHistoryPage);
+
+router.get('/account-settings',userController.accountSettingsPage);
+router.post('/account-settings/:id', upload.single('image'), userController.updateProfilePicture);
+router.get('/editpass/:id',userController.editPasswordPage);
+router.post('/editpass/:id',userController.editPassword);
+router.post('/changepin/:id', userController.changePin);
+
+// kyc route
+router.get('/kyc-form',userController.kycPage);
+router.get('/verify-account',userController.verifyPage);
+router.post(
+  '/verify-account/:id',
+  upload.fields([
+    { name: 'frontimg', maxCount: 1 },
+    { name: 'backimg',  maxCount: 1 },
+    { name: 'photo',    maxCount: 1 }
+  ]),
+  userController.verifyPage_post
+);
+
+
+// ====================== DEPOSIT FLOW ======================
+router.get('/deposits', userController.depositsPage);
+router.post('/deposit/:id', upload.none(), userController.deposit_post);
+
+// THIS IS THE MISSING ROUTE ↓↓↓
+router.get('/payment', userController.paymentPage);
+router.get('/payment/:id', userController.paymentPage);
+
+// Confirm proof upload
+router.post('/deposit/confirm/:id', upload.single('image'), userController.depositConfirm);
+
+
+module.exports = router;
+
+here is the userController.js file like this
+const mongoose = require('mongoose');
+const User = require('../Model/User');
+const Deposit = require('../Model/depositSchema');
+// const Ticket = require("../Model/support");
+// const Wallet = require("../Model/Wallet");
+const Verification = require('../Model/Verification');
+const crypto = require("crypto")
+const jwt = require('jsonwebtoken');
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
+const fsPromises = require('fs').promises;
+const cloudinary = require('cloudinary').v2;
+const { validationResult } = require('express-validator');
+const moment = require('moment');
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Generate verification URL dynamically
+const generateVerificationUrl = (verificationToken) => {
+  const apiBase = ( process.env.BACKEND_URL || 'https://swiftscapitals-backend.onrender.com').replace(/\/$/, '');
+  return `${apiBase}/verify-email?user=${verificationToken}&ver_code=${verificationToken}`;
+};
+
+// Send welcome email using Resend
+const sendWelcomeEmail = async (email, firstname,lastname, username, password, createdAt) => {
+  const signInUrl = process.env.BASE_URL;
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Support <support@swiftscapitals.com>',
+      to: [email],
+      subject: 'Welcome to  Swift Capital',
+      html: `
+        <div style="background-color: #1C2526; padding: 20px; font-family: Arial, sans-serif; color: #F5F6F5; text-align: center; max-width: 600px; margin: 0 auto;">
+          <!-- Header -->
+          <div style="background-color: #2E3A3B; padding: 15px; border-bottom: 2px solid #F5F6F5;">
+            <img src="https://swiftcaptial.com/assets/img/gkgr73S0C0AVl3XX0UUQh8Ffr0fmzCSK4EhmlcPQ.jpg" alt=" Swift Capital Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
+            <h2 style="color: #F5F6F5; margin: 10px 0 0; font-size: 24px;">Welcome, ${firstname}${lastname}</h2>
+          </div>
+          <!-- Body -->
+          <div style="padding: 20px; font-size: 16px; line-height: 1.5;">
+            <h3 style="color: #F5F6F5; font-size: 18px;">We are happy to have you join us</h3>
+            <p style="color: #F5F6F5;">Your account registration and email verification was successful. Welcome to Capital Swift.</p>
+            <p style="color: #F5F6F5; font-weight: bold;">Below is your personal details. Do not disclose to anyone.</p>
+            <hr style="border: 1px solid #4A4A4A; margin: 20px 0;">
+            <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Acc No:</strong> ${username}</p>
+            <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Email:</strong> ${email}</p>
+            <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Password:</strong> ${password}</p>
+            <hr style="border: 1px solid #4A4A4A; margin: 20px 0;">
+            <a href="${signInUrl}" style="display: inline-block; padding: 12px 24px; background-color: #3F3EED; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">Sign In</a>
+            <p style="color: #F5F6F5; font-size: 14px;">Account created on: ${new Date(createdAt).toLocaleDateString()}</p>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #2E3A3B; padding: 15px; border-top: 2px solid #F5F6F5; font-size: 14px;">
+            <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Capital Swift. All rights reserved.</p>
+            <div style="display: flex; justify-content: center; gap: 20px;">
+              <a href="mailto:support@swiftscapitals.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
+                <span>Contact Support</span>
+              </a>
+              <a href="#" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
+                <span>Visit Website</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `,
+    });
+
+    if (error) throw error;
+    console.log('Welcome email sent successfully:', data.id);
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+    // Don't throw — verification already succeeded
+  }
+};
+
+
+// Unified handleErrors function
+const handleErrors = (err) => {
+  let errors = {
+    fullname: '',
+    username: '',
+    email: '',
+    tel: '',
+    country: '',
+    zip_code: '',
+    city: '',
+    currency: '',
+    password: '',
+    address: ''
+  };
+
+  // Handle duplicate key errors (MongoDB error code 11000)
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue)[0];
+    if (field === 'email') {
+      errors.email = 'That email is already registered';
+    } else if (field === 'username') {
+      errors.username = 'That username is already taken';
+    } else if (field === 'fullname') {
+      errors.fullname = 'That full name is already registered';
+    }
+    return errors;
+  }
+
+  // Handle Mongoose validation errors
+  if (err.message.includes('user validation failed')) {
+    Object.values(err.errors).forEach(({ properties }) => {
+      errors[properties.path] = properties.message;
+    });
+    return errors;
+  }
+
+  // Handle login-specific errors
+  if (err.message === 'incorrect email') {
+    errors.email = 'Incorrect email';
+  } else if (err.message === 'incorrect password') {
+    errors.password = 'Incorrect password';
+  } else if (err.message === 'Your account is not verified. Please verify it or create another account.') {
+    errors.email = err.message;
+  } else if (err.message === 'Your account is suspended. If you believe this is a mistake, please contact support at  support@247Expertstrade.com') {
+    errors.email = err.message;
+  }
+
+  // Handle custom errors
+  if (err.message === 'All fields are required') {
+    errors.fullname = 'All fields are required';
+  } else if (err.message === 'Passwords do not match') {
+    errors.password = 'Passwords do not match';
+  } else if (err.message === 'Invalid email format') {
+    errors.email = 'Invalid email format';
+  }
+
+  // Handle Nodemailer errors
+  if (err.message.includes('nodemailer') || err.message.includes('SMTP')) {
+    errors.email = 'Failed to send email. Please try again later or contact support.';
+  }
+
+  // Handle generic errors
+  if (Object.values(errors).every(val => val === '')) {
+    errors.email = 'An unexpected error occurred. Please try again or contact support.';
+  }
+
+  return errors;
+};
+
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+  return jwt.sign({ id }, 'piuscandothis', { expiresIn: maxAge });
+};
+
+// ────────────────────────────────────────────────
+// PUBLIC / MARKETING PAGES (no auth) – JSON only
+// Frontend lives on Netlify; backend is API only
+// ────────────────────────────────────────────────
+
+const frontendUrl = () =>
+  (process.env.FRONTEND_URL).replace(/\/$/, '');
+
+module.exports.homePage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: '247Expertstrade API is running',
+    frontend: frontendUrl(),
+    time: new Date().toISOString()
+  });
+};
+
+module.exports.aboutPage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Use the frontend about page',
+    redirect: `${frontendUrl()}/about.html`
+  });
+};
+
+module.exports.InvestorPage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Use the frontend business page',
+    redirect: `${frontendUrl()}/investors.html`
+  });
+};
+
+
+module.exports.partnersPage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Use the frontend cards page',
+    redirect: `${frontendUrl()}/partners.html`
+  });
+};
+
+
+module.exports.contactPage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Use the frontend contact page',
+    redirect: `${frontendUrl()}/contact.html`
+  });
+};
+
+
+module.exports.faqPage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Use the frontend FAQ page',
+    redirect: `${frontendUrl()}/faq.html`
+  });
+};
+
+
+module.exports.termsPage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Use the frontend term page',
+    redirect: `${frontendUrl()}/term.html`
+  });
+};
+
+module.exports.registerPage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Use the frontend register page',
+    redirect: `${frontendUrl()}/register.html`
+  });
+};
+
+// GET /login – API only (browser UI is login.html on Netlify)
+module.exports.loginPage = (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Use the frontend login page',
+    redirect: `${frontendUrl()}/login.html`
+  });
+};
+
+
+// ────────────────────────────────────────────────
+// REGISTER – POST /register
+// ────────────────────────────────────────────────
+module.exports.register_post = async (req, res) => {
+  console.log('========== REGISTER_POST START ==========');
+  console.log('[REGISTER] Raw body keys:', Object.keys(req.body || {}));
+  console.log('[REGISTER] Body (password hidden):', {
+    ...req.body,
+    password: req.body?.password ? '***' : undefined,
+    password_confirmation: req.body?.password_confirmation ? '***' : undefined,
+    pin: req.body?.pin ? '****' : undefined
+  });
+
+  const {
+    firstname,
+    midname = '',
+    lastname,
+    username,
+    email,
+    phone,
+    country,
+    accounttype,
+    pin,
+    password,
+    password_confirmation,
+    postal = 'postal code',
+    address = 'your address',
+    state = 'your state',
+    Dob = '',
+    city = 'your city',
+    gender = '',
+    currency = '$'
+  } = req.body;
+
+  console.log('[REGISTER] Destructured fields:', {
+    firstname: !!firstname,
+    midname: !!midname,
+    lastname: !!lastname,
+    username: !!username,
+    email: email || null,
+    phone: !!phone,
+    country: country || null,
+    accounttype: accounttype || null,
+    pinLength: pin ? String(pin).length : 0,
+    hasPassword: !!password,
+    hasPasswordConfirmation: !!password_confirmation
+  });
+
+  try {
+    // Basic upfront validation
+    console.log('[REGISTER] Step 1: Required fields validation');
+    if (!firstname || !lastname || !username || !email || !phone || !country || !accounttype || !pin || !password) {
+      console.log('[REGISTER] FAIL – missing required field(s):', {
+        firstname: !firstname,
+        lastname: !lastname,
+        username: !username,
+        email: !email,
+        phone: !phone,
+        country: !country,
+        accounttype: !accounttype,
+        pin: !pin,
+        password: !password
+      });
+      throw new Error('Please fill all required fields');
+    }
+    console.log('[REGISTER] Step 1 OK');
+
+    console.log('[REGISTER] Step 2: Password match check');
+    if (password !== password_confirmation) {
+      console.log('[REGISTER] FAIL – passwords do not match');
+      throw new Error('Passwords do not match');
+    }
+    console.log('[REGISTER] Step 2 OK');
+
+    console.log('[REGISTER] Step 3: PIN validation');
+    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+      console.log('[REGISTER] FAIL – invalid PIN:', { length: pin.length, value: '****' });
+      throw new Error('PIN must be exactly 4 digits');
+    }
+    console.log('[REGISTER] Step 3 OK');
+
+    // Generate account number
+    console.log('[REGISTER] Step 4: Generate account_no');
+    const account_no = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    console.log('[REGISTER] account_no generated:', account_no);
+
+    console.log('[REGISTER] Step 5: User.create() starting...');
+    const user = await User.create({
+      firstname,
+      midname,
+      lastname,
+      username,
+      email: email.toLowerCase(),
+      phone,
+      country,
+      accounttype,
+      pin,
+      password,
+      account_no,
+      postal,
+      address,
+      state,
+      Dob,
+      city,
+      gender,
+      currency
+    });
+    console.log('[REGISTER] Step 5 OK – user created:', {
+      _id: user._id,
+      email: user.email,
+      username: user.username,
+      account_no: user.account_no
+    });
+
+    console.log('[REGISTER] Step 6: Create JWT');
+    const token = createToken(user._id);
+    console.log('[REGISTER] JWT created (length):', token ? token.length : 0);
+
+    console.log('[REGISTER] Step 7: Set cookie');
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      maxAge: maxAge * 1000,
+      secure: true,
+      sameSite: 'none'
+    });
+    console.log('[REGISTER] Cookie set');
+
+    // Verification email still commented out
+    // console.log('[REGISTER] Step 8: Send verification email (skipped)');
+
+    console.log('[REGISTER] SUCCESS – sending 201 JSON');
+    console.log('========== REGISTER_POST END (success) ==========');
+
+    return res.status(201).json({
+      success: true,
+      message: 'Registration successful',
+      token,
+      user: {
+        _id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email
+      },
+      redirect: 'dashboard.html'
+    });
+
+  } catch (err) {
+    console.error('========== REGISTER_POST ERROR ==========');
+    console.error('[REGISTER] err.name:', err.name);
+    console.error('[REGISTER] err.message:', err.message);
+    console.error('[REGISTER] err.code:', err.code);
+    console.error('[REGISTER] err.keyValue:', err.keyValue);
+    if (err.errors) {
+      console.error('[REGISTER] mongoose validation errors:', Object.keys(err.errors));
+      Object.keys(err.errors).forEach((key) => {
+        console.error(`  - ${key}:`, err.errors[key].message);
+      });
+    }
+    console.error('[REGISTER] stack:', err.stack);
+
+    let errors = {};
+
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyValue || {})[0] || 'field';
+      errors[field] = `This ${field} is already taken. Please choose another.`;
+      console.log('[REGISTER] Handled as duplicate key on:', field);
+    } else if (err.name === 'ValidationError') {
+      Object.keys(err.errors || {}).forEach((key) => {
+        errors[key] = err.errors[key].message;
+      });
+      console.log('[REGISTER] Handled as ValidationError');
+    } else {
+      const message = err.message || 'Registration failed. Please try again.';
+      errors.general = message;
+      console.log('[REGISTER] Handled as generic/custom error:', message);
+    }
+
+    let errorMsg =
+      errors.general ||
+      Object.values(errors).filter(Boolean).join(' • ') ||
+      'Registration failed. Please check your details.';
+
+    console.log('[REGISTER] Response 400:', { message: errorMsg, errors });
+    console.log('========== REGISTER_POST END (error) ==========');
+
+    return res.status(400).json({
+      success: false,
+      errors,
+      message: errorMsg
+    });
+  }
+};
+
+
+
+// ────────────────────────────────────────────────
+// LOGIN – POST /login
+// ────────────────────────────────────────────────
+module.exports.login_post = async (req, res) => {
+  console.log('========== LOGIN_POST START ==========');
+  console.log('[LOGIN] Body:', {
+    email: req.body?.email || null,
+    hasPassword: !!req.body?.password
+  });
+
+  const { email, password } = req.body;
+
+  try {
+    if (!email || !password) {
+      console.log('[LOGIN] FAIL – missing email or password');
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required'
+      });
+    }
+
+    console.log('[LOGIN] Step 1: User.login() for:', email.toLowerCase());
+    const user = await User.login(email.toLowerCase(), password);
+    console.log('[LOGIN] Step 1 OK – user found:', {
+      _id: user._id,
+      email: user.email,
+      firstname: user.firstname,
+      isVerified: user.isVerified,
+      suspended: user.suspended
+    });
+
+    console.log('[LOGIN] Step 2: Create JWT');
+    const token = createToken(user._id);
+    console.log('[LOGIN] JWT created (length):', token ? token.length : 0);
+
+    console.log('[LOGIN] Step 3: Set cookie');
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      maxAge: maxAge * 1000,
+      secure: true,
+      sameSite: 'none'
+    });
+    console.log('[LOGIN] Cookie set');
+
+    let redirectUrl = 'dashboard.html';
+    if (email.toLowerCase() === 'support@247expertstrade.com') {
+      redirectUrl = 'adminDashboard.html';
+      console.log('[LOGIN] Admin email detected → redirect:', redirectUrl);
+    } else {
+      console.log('[LOGIN] Normal user → redirect:', redirectUrl);
+    }
+
+    console.log('[LOGIN] SUCCESS – sending 200 JSON');
+    console.log('========== LOGIN_POST END (success) ==========');
+
+    return res.status(200).json({
+      success: true,
+      message: `Welcome back, ${user.firstname || 'User'}!`,
+      token,
+      user: {
+        _id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        account_no: user.account_no
+      },
+      redirectUrl
+    });
+
+  } catch (err) {
+    console.error('========== LOGIN_POST ERROR ==========');
+    console.error('[LOGIN] err.message:', err.message);
+    console.error('[LOGIN] err.stack:', err.stack);
+
+    const errors = handleErrors(err);
+    let errorMessage = err.message || 'Login failed. Please try again.';
+
+    if (err.message === 'incorrect email') {
+      errorMessage = 'Invalid email address.';
+    } else if (err.message === 'incorrect password') {
+      errorMessage = 'Invalid password.';
+    } else if (err.message.includes('not verified')) {
+      errorMessage = 'Your account is not verified. Please check your email.';
+    } else if (err.message.includes('suspended')) {
+      errorMessage = 'Your account is suspended. Contact support.';
+    }
+
+    console.log('[LOGIN] Response 400:', { message: errorMessage, errors });
+    console.log('========== LOGIN_POST END (error) ==========');
+
+    return res.status(400).json({
+      success: false,
+      message: errorMessage,
+      errors
+    });
+  }
+};
+
+
+// OTP CODES
+
+// OTP generation function
+const generateOTP = () => {
+    return crypto.randomInt(100000, 999999).toString();
+};
+
+// OTP sending function using Resend
+const sendOTP = async (user) => {
+    const otp = generateOTP(); // assuming you have this function defined
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    user.otp = otp;
+    user.otpExpires = expires;
+    await user.save();
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'Capital Swift Bank < support@swiftscapitals.com>', // Use your verified sender
+            to: [user.email],
+            subject: 'Transfer Verification OTP',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
+                    <div style="text-align: center; padding: 10px 0;">
+                        <h2 style="color: #1a1a1a;">Capital Swift Bank</h2>
+                    </div>
+                    <div style="padding: 20px; background-color: #ffffff; border-radius: 8px; text-align: center;">
+                        <h3 style="color: #333;">Transfer Verification Required</h3>
+                        <p style="font-size: 16px; color: #555;">
+                            Your One-Time Password (OTP) for the transfer is:
+                        </p>
+                        <div style="font-size: 32px; font-weight: bold; color: #0d6efd; letter-spacing: 8px; margin: 20px 0;">
+                            ${otp}
+                        </div>
+                        <p style="font-size: 14px; color: #888;">
+                            This OTP is valid for <strong>10 minutes</strong>. Do not share it with anyone.
+                        </p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+                        <p style="font-size: 12px; color: #aaa;">
+                            If you didn't initiate this transfer, please contact support immediately.
+                        </p>
+                    </div>
+                    <div style="text-align: center; padding: 15px; font-size: 12px; color: #999;">
+                        © ${new Date().getFullYear()} Capital Swift Bank. All rights reserved.<br>
+                        <a href="mailto: support@swifts-capitals.com" style="color: #0d6efd; text-decoration: none;"> support@swifts-capitals.com</a>
+                    </div>
+                </div>
+            `,
+        });
+
+        if (error) {
+            console.error('Resend OTP email error:', error);
+            return false;
+        }
+
+        console.log('OTP email sent successfully via Resend:', data.id);
+        return true;
+
+    } catch (error) {
+        console.error('Error sending OTP via Resend:', error);
+        return false;
+    }
+};
+
+
+module.exports.dashboardPage = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId)
+      .populate('deposits')
+      .populate('transfers');
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found. Please login again.'
+      });
+    }
+
+    // Global wallet
+    const wallet = await Wallet.findOne().sort({ createdAt: -1 }) || {
+      bank_name: "No bank details configured",
+      account_name: "—",
+      account_no: "—",
+      sortcode: "—",
+      swift_code: "—",
+      btc_wallet_address: "—",
+      btc_qr_image: null,
+      paypal_email: "—"
+    };
+
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const monthlyIncome = user.deposits
+      .filter(d => d.status === 'approved' && new Date(d.createdAt) >= startOfMonth)
+      .reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+    const monthlyOutgoing = user.transfers
+      .filter(t => t.status === 'approved' && new Date(t.createdAt) >= startOfMonth)
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+    const pendingDeposits = user.deposits
+      .filter(d => d.status === 'pending')
+      .reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+    const pendingTransfers = user.transfers
+      .filter(t => t.status === 'pending')
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+    const pendingTransactions = pendingDeposits + pendingTransfers;
+
+    const transactionVolume = user.deposits
+      .filter(d => d.status === 'approved')
+      .reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+    // Account age
+    const created = moment(user.createdAt);
+    const age = moment.duration(moment().diff(created));
+    let accountAgeStr;
+
+    if (age.asMinutes() < 60) {
+      accountAgeStr = `${Math.floor(age.asMinutes())} minutes`;
+    } else if (age.asHours() < 24) {
+      accountAgeStr = `${Math.floor(age.asHours())} hours`;
+    } else if (age.asDays() < 30) {
+      accountAgeStr = `${Math.floor(age.asDays())} days`;
+    } else if (age.asMonths() < 12) {
+      accountAgeStr = `${Math.floor(age.asMonths())} months`;
+    } else {
+      accountAgeStr = `${Math.floor(age.asYears())} years`;
+    }
+
+    // Recent transactions (combine deposits + transfers)
+    const recentTransactions = [
+      ...user.deposits.map(d => ({
+        type: 'deposit',
+        icon: 'plus',
+        color: 'green',
+        amount: Number(d.amount),
+        displayType: 'Credit',
+        status: d.status.charAt(0).toUpperCase() + d.status.slice(1),
+        reference: d._id.toString(),
+        createdAt: d.createdAt,
+        createdAtFormatted: moment(d.createdAt).fromNow(),
+        narration: d.narration || 'Deposit'
+      })),
+      ...user.transfers.map(t => ({
+        type: t.isIncoming ? 'deposit' : 'transfer',
+        icon: t.isIncoming ? 'plus' : 'minus',
+        color: t.isIncoming ? 'green' : 'red',
+        amount: Number(t.amount),
+        displayType: t.isIncoming ? 'Credit' : 'Debit',
+        status: t.status.charAt(0).toUpperCase() + t.status.slice(1),
+        reference: t._id.toString(),
+        createdAt: t.createdAt,
+        createdAtFormatted: moment(t.createdAt).fromNow(),
+        note: t.isIncoming
+          ? `From ${t.counterpartName || 'Unknown'}`
+          : (t.note || t.type + (t.accountname ? ` to ${t.accountname}` : ''))
+      }))
+    ]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5);
+
+    // ========== RETURN JSON (important!) ==========
+    return res.status(200).json({
+      success: true,
+      user,
+      wallet,
+      monthlyIncome: monthlyIncome.toFixed(2),
+      monthlyOutgoing: monthlyOutgoing.toFixed(2),
+      pendingTransactions: pendingTransactions.toFixed(2),
+      transactionVolume: transactionVolume.toFixed(2),
+      accountAge: accountAgeStr,
+      recentTransactions
+    });
+
+  } catch (err) {
+    console.error('Dashboard error:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to load dashboard data'
+    });
+  }
+};
+
+module.exports.historyPage = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    // Security: only allow the logged-in user to see their own history
+    if (req.user._id.toString() !== id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized access'
+      });
+    }
+
+    const user = await User.findById(id)
+      .populate({
+        path: 'deposits',
+        model: 'deposit'
+      })
+      .populate({
+        path: 'transfers',
+        model: 'transferMoney'
+      });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Return pure JSON
+    return res.status(200).json({
+      success: true,
+      user,
+      deposits: user.deposits || [],
+      transfers: user.transfers || []
+    });
+
+  } catch (error) {
+    console.error('Account history error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while loading transactions'
+    });
+  }
+};
+
+module.exports.tradeHistoryPage = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    // Security: only allow the logged-in user to see their own history
+    if (req.user._id.toString() !== id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized access'
+      });
+    }
+
+    const user = await User.findById(id)
+      .populate({
+        path: 'deposits',
+        model: 'deposit'
+      })
+      .populate({
+        path: 'transfers',
+        model: 'transferMoney'
+      });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Return pure JSON
+    return res.status(200).json({
+      success: true,
+      user,
+      deposits: user.deposits || [],
+      transfers: user.transfers || []
+    });
+
+  } catch (error) {
+    console.error('trade history error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while loading transactions'
+    });
+  }
+};
+
+
+
+// ====================== DEPOSIT CONTROLLERS ======================
+
+// ────────────────────────────────────────────────
+// GET /deposits
+// ────────────────────────────────────────────────
+module.exports.depositsPage = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select(
+      'firstname lastname midname email account_no currency balance btcBalance image'
+    );
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        _id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        midname: user.midname || '',
+        email: user.email,
+        account_no: user.account_no,
+        currency: user.currency || '$',
+        balance: Number(user.balance || 0),
+        btcBalance: Number(user.btcBalance || 0),
+        image: user.image
+      }
+    });
+  } catch (err) {
+    console.error('depositsPage error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to load deposits page' });
+  }
+};
+
+
+// ────────────────────────────────────────────────
+// POST /deposit/:id  → save pending deposit
+// ────────────────────────────────────────────────
+module.exports.deposit_post = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const { amount, payment_method } = req.body;
+
+    if (!amount || Number(amount) <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid amount' });
+    }
+    if (!payment_method) {
+      return res.status(400).json({ success: false, message: 'Please select a payment method' });
+    }
+
+    const pending = {
+      amount: Number(amount),
+      payment_method,
+      createdAt: new Date()
+    };
+
+    // Save on both session + user (important for cross-origin)
+    if (req.session) {
+      req.session.pendingDeposit = pending;
+    }
+    user.pendingDeposit = pending;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Proceed to payment',
+      redirect: `payment.html?id=${user._id}`
+    });
+  } catch (err) {
+    console.error('deposit_post error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to process deposit request' });
+  }
+};
+
+
+// ────────────────────────────────────────────────
+// GET /payment  or  GET /payment/:id   ← THIS WAS MISSING
+// ────────────────────────────────────────────────
+module.exports.paymentPage = async (req, res) => {
+  try {
+    const userId = req.user?._id || req.params.id;
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const user = await User.findById(userId).select(
+      'firstname lastname midname email account_no currency balance btcBalance image pendingDeposit'
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Get pending deposit (session first, then DB fallback)
+    const pending = (req.session && req.session.pendingDeposit) || user.pendingDeposit;
+
+    if (!pending || !pending.amount || !pending.payment_method) {
+      return res.status(400).json({
+        success: false,
+        message: 'No pending deposit found. Please start a new deposit.',
+        redirect: 'deposits.html'
+      });
+    }
+
+    // Load wallet details (adjust model name if different)
+    let wallet = {};
+    try {
+      // Try common model names
+      let WalletModel;
+      try { WalletModel = require('../models/Wallet'); } catch (e) {}
+      if (!WalletModel) {
+        try { WalletModel = require('../models/wallet'); } catch (e) {}
+      }
+      if (!WalletModel) {
+        try { WalletModel = require('../models/Setting'); } catch (e) {}
+      }
+
+      if (WalletModel) {
+        const walletDoc = await WalletModel.findOne().lean();
+        if (walletDoc) wallet = walletDoc;
+      }
+    } catch (e) {
+      console.warn('Could not load wallet settings:', e.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        _id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        midname: user.midname || '',
+        email: user.email,
+        account_no: user.account_no,
+        currency: user.currency || '$',
+        balance: Number(user.balance || 0),
+        btcBalance: Number(user.btcBalance || 0),
+        image: user.image
+      },
+      amount: pending.amount,
+      payment_method: pending.payment_method,
+      wallet: {
+        bank_name: wallet.bank_name || wallet.bankName || '',
+        account_name: wallet.account_name || wallet.accountName || '',
+        account_no: wallet.account_no || wallet.account_number || wallet.accountNumber || '',
+        swift_code: wallet.swift_code || wallet.swiftCode || '',
+        btc_wallet_address: wallet.btc_wallet_address || wallet.btcAddress || wallet.btc_address || '',
+        btc_qr_image: wallet.btc_qr_image || wallet.btcQr || wallet.btc_qr || '',
+        paypal_email: wallet.paypal_email || wallet.paypal || wallet.paypalEmail || ''
+      }
+    });
+  } catch (err) {
+    console.error('paymentPage error:', err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Failed to load payment page'
+    });
+  }
+};
+
+// ────────────────────────────────────────────────
+// Deposit Confirm - Upload proof of payment
+// POST /deposit/confirm/:id
+// ────────────────────────────────────────────────
+module.exports.depositConfirm = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Get data from body (FormData)
+    const amount = Number(req.body.amount);
+    const payment_method = req.body.payment_method;
+
+    // Basic validation
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid deposit amount'
+      });
+    }
+
+    if (!payment_method) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment method is required'
+      });
+    }
+
+    // Check that a proof file was uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please upload proof of payment (image or PDF)'
+      });
+    }
+
+    // Optional: verify that the pending deposit still exists and matches
+    const pending = req.session?.pendingDeposit || user.pendingDeposit;
+    if (pending) {
+      // Soft check – you can make it stricter if you want
+      if (Number(pending.amount) !== amount || pending.payment_method !== payment_method) {
+        console.warn('Pending deposit mismatch – still allowing submission');
+      }
+    }
+
+    // Create the deposit record
+    // (Adjust the model name if yours is different – e.g. Deposit, depositMoney, etc.)
+    const newDeposit = new Deposit({
+      owner: user._id,
+      amount: amount,
+      payment_method: payment_method,
+      proofImage: req.file.path || req.file.filename,   // depending on how multer is configured
+      status: 'pending',                                // waiting for admin approval
+      type: 'Deposit',
+      currency: user.currency || 'USD',
+      createdAt: new Date()
+    });
+
+    await newDeposit.save();
+
+    // Add reference to user (if you store deposits array on user)
+    if (!user.deposits) user.deposits = [];
+    user.deposits.push(newDeposit._id);
+
+    // Clear the pending deposit
+    user.pendingDeposit = undefined;
+    if (req.session) {
+      delete req.session.pendingDeposit;
+    }
+
+    await user.save();
+
+    // Success response
+    return res.status(200).json({
+      success: true,
+      message: 'Payment proof submitted successfully. Your deposit is now pending approval.',
+      redirect: 'deposits.html'
+    });
+
+  } catch (err) {
+    console.error('Deposit confirm error:', err);
+
+    // Clean up uploaded file if something failed after upload
+    if (req.file && req.file.path) {
+      const fs = require('fs');
+      fs.unlink(req.file.path, () => {});
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Failed to submit payment proof. Please try again.'
+    });
+  }
+};
+
+
+
+module.exports.kycPage = async (req, res) => {
+  try {
+    const userId = req.user?.id || req.user?._id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const user = await User.findById(userId)
+      .select('-password -otp -resetPasswordToken -resetPasswordExpires')
+      .populate('kyc');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Block form if already pending / under review
+    if (user.kyc && ['pending', 'under review'].includes(String(user.kyc.status || '').toLowerCase())) {
+      return res.status(200).json({
+        success: true,
+        user,
+        hasPendingKyc: true,
+        message: 'You already have a KYC application under review.',
+        redirect: 'verify-account.html'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+      hasPendingKyc: false
+    });
+  } catch (err) {
+    console.error('kycPage error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports.verifyPage = async (req, res) => {
+  try {
+    const userId = req.user?.id || req.user?._id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const user = await User.findById(userId)
+      .select('-password -otp -resetPasswordToken -resetPasswordExpires')
+      .populate('kyc');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (err) {
+    console.error('verifyPage error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+module.exports.verifyPage_post = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Check if there's already a pending / under review KYC
+    if (user.kyc) {
+      const existing = await Verification.findById(user.kyc);
+      if (existing && ['pending', 'under review'].includes(existing.status)) {
+        return res.status(400).json({
+          success: false,
+          message: 'You already have a KYC application under review. Please wait for the outcome.'
+        });
+      }
+    }
+
+    // ────────────────────────────────────────────────
+    // Debug: log what multer actually received
+    // You can remove this after testing
+    console.log('Received files:', req.files);
+    console.log('Received body:', req.body);
+    // ────────────────────────────────────────────────
+
+    const files = req.files || {};
+
+    // Correct check when using upload.fields()
+    if (!files.frontimg?.length || !files.backimg?.length || !files.photo?.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'All three images are required: frontimg, backimg, and photo'
+      });
+    }
+
+    // Safe access — multer.fields() gives arrays
+    const frontFile  = files.frontimg[0];
+    const backFile   = files.backimg[0];
+    const photoFile  = files.photo[0];
+
+    // Upload images to Cloudinary
+    const uploadOpts = { folder: 'swiftcapital/kyc', resource_type: 'image' };
+
+    const [frontRes, backRes, photoRes] = await Promise.all([
+      cloudinary.uploader.upload(frontFile.path, {
+        ...uploadOpts,
+        public_id: `kyc_front_${userId}_${Date.now()}`
+      }),
+      cloudinary.uploader.upload(backFile.path, {
+        ...uploadOpts,
+        public_id: `kyc_back_${userId}_${Date.now()}`
+      }),
+      cloudinary.uploader.upload(photoFile.path, {
+        ...uploadOpts,
+        public_id: `kyc_photo_${userId}_${Date.now()}`
+      })
+    ]);
+
+    const verificationData = {
+      user: userId,
+      fullname:     req.body.name?.trim(),
+      email:        req.body.email?.toLowerCase().trim(),
+      tel:          req.body.phone?.trim(),
+      title:        req.body.title,
+      gender:       req.body.gender,
+      zipcode:      req.body.zipcode?.trim(),
+      dateofBirth:  req.body.dob ? new Date(req.body.dob) : null,
+
+      statenumber:  req.body.statenumber?.trim(),
+      accounttype:  req.body.accounttype,
+      employer:     req.body.employer,
+      income:       req.body.income,
+
+      address:      req.body.address?.trim(),
+      city:         req.body.city?.trim(),
+      state:        req.body.state?.trim(),
+      country:      req.body.country?.trim(),
+
+      kinname:      req.body.kinname?.trim(),
+      kinaddress:   req.body.kinaddress?.trim(),
+      relationship: req.body.relationship?.trim(),
+      age:          Number(req.body.age),
+
+      document_type: req.body.document_type,
+      frontimg:      frontRes.secure_url,
+      backimg:       backRes.secure_url,
+      photo:         photoRes.secure_url,
+
+      status: 'pending'
+    };
+
+    const newVerification = new Verification(verificationData);
+    await newVerification.save();
+
+    // Link to user
+    user.kyc = newVerification._id;
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: 'KYC application submitted successfully. Awaiting review.'
+    });
+
+  } catch (err) {
+    console.error('KYC submission error:', err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Failed to submit KYC application. Please try again later.'
+    });
+  }
+};
+
+
+// GET /account-settings  → JSON
+module.exports.accountSettingsPage = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).select(
+      'firstname lastname midname email phone address Dob account_no currency balance image createdAt'
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (err) {
+    console.error('Account settings error:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to load account settings'
+    });
+  }
+};
+
+
+
+// POST /account-settings/:id  → Profile picture upload (already mostly JSON, make sure it returns JSON)
+// module.exports.updateProfilePicture = async (req, res) => {
+//   try {
+//     const userId = req.params.id || req.user._id;
+
+//     if (!req.file) {
+//       return res.status(400).json({ success: false, message: 'No image uploaded' });
+//     }
+
+//     // Adjust this path according to your multer / cloud storage setup
+//     const imageUrl = `/uploads/${req.file.filename}`; // or Cloudinary URL if you use it
+
+//     const user = await User.findByIdAndUpdate(
+//       userId,
+//       { image: imageUrl },
+//       { new: true }
+//     );
+
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: 'User not found' });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Profile picture updated successfully',
+//       image: user.image
+//     });
+//   } catch (err) {
+//     console.error('Profile picture upload error:', err);
+//     return res.status(500).json({
+//       success: false,
+//       message: err.message || 'Failed to upload profile picture'
+//     });
+//   }
+// };
+
+module.exports.updateProfilePicture = async (req, res) => {
+  try {
+    const userId = req.params.id || req.user._id;
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No image uploaded' });
+    }
+
+    // Upload to Cloudinary and store full secure URL
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'swiftcapital/profiles',
+      public_id: `user_${userId}_${Date.now()}`,
+      resource_type: 'image'
+    });
+
+    const imageUrl = result.secure_url; // e.g. https://res.cloudinary.com/...
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { image: imageUrl },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Optional: remove local temp file after Cloudinary upload
+    try {
+      if (req.file.path) {
+        await fsPromises.unlink(req.file.path);
+      }
+    } catch (unlinkErr) {
+      console.warn('Could not delete temp upload file:', unlinkErr.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile picture updated successfully',
+      image: user.image
+    });
+  } catch (err) {
+    console.error('Profile picture upload error:', err);
+
+    // Clean up temp file on failure
+    if (req.file?.path) {
+      try {
+        await fsPromises.unlink(req.file.path);
+      } catch (_) {}
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Failed to upload profile picture'
+    });
+  }
+};
+
+// new code starts here
+// GET /editpass/:id  (or /editpass) → return user info as JSON
+module.exports.editPasswordPage = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).select(
+      'firstname lastname email account_no currency balance image'
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (err) {
+    console.error('Edit password page error:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to load security settings'
+    });
+  }
+};
+
+// POST /editpass/:id → Change password
+module.exports.editPassword = async (req, res) => {
+  try {
+    const userId = req.params.id || req.user._id;
+    const { current_password, password, password_confirmation } = req.body;
+
+    if (!current_password || !password || !password_confirmation) {
+      return res.status(400).json({
+        success: false,
+        message: 'All password fields are required'
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 8 characters long'
+      });
+    }
+
+    if (password !== password_confirmation) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password and confirmation do not match'
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Verify current password
+    const bcrypt = require('bcryptjs');
+    const isMatch = await bcrypt.compare(current_password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Hash and save new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password changed successfully. Please login again with your new password.'
+    });
+  } catch (err) {
+    console.error('Change password error:', err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Failed to change password'
+    });
+  }
+};
+
+// POST /changepin/:id  → Change Transaction PIN
+module.exports.changePin = async (req, res) => {
+  try {
+    const userId = req.params.id || req.user._id;
+    const { pin, current_password } = req.body;
+
+    if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+      return res.status(400).json({ success: false, message: 'PIN must be exactly 4 digits' });
+    }
+
+    if (!current_password) {
+      return res.status(400).json({ success: false, message: 'Current password is required' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Verify current password (adjust if you use bcrypt)
+    const bcrypt = require('bcryptjs');
+    const isMatch = await bcrypt.compare(current_password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+    }
+
+    user.pin = pin; // or hash the pin if you store it hashed
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Transaction PIN updated successfully'
+    });
+  } catch (err) {
+    console.error('Change PIN error:', err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Failed to update PIN'
+    });
+  }
+};
+
+
+module.exports.logout_get = (req, res) => {
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    maxAge: 1,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: 'Logged out',
+    redirect: `${frontendUrl()}/login.html`
+  });
+};
+
+with my authMiddleware.js file like this
+
+const jwt = require('jsonwebtoken');
+const User = require('../Model/User');
+
+const requireAuth = (req, res, next) => {
+  // Support both cookie and Authorization header (for frontend on Netlify)
+  let token = req.cookies.jwt;
+  
+  if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    // API request → return JSON, browser request → redirect
+    if (req.xhr || req.headers.accept?.includes('application/json') || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return res.status(401).json({ success: false, message: 'Unauthorized. Please login.' });
+    }
+    return res.redirect('/login');
+  }
+
+  jwt.verify(token, 'piuscandothis', async (err, decodedToken) => {
+    if (err) {
+      if (req.xhr || req.headers.accept?.includes('application/json') || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+        return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
+      }
+      return res.redirect('/login');
+    }
+
+    try {
+      const user = await User.findById(decodedToken.id).select('-password');
+      if (!user) {
+        if (req.xhr || req.headers.accept?.includes('application/json') || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+          return res.status(401).json({ success: false, message: 'User not found.' });
+        }
+        return res.redirect('/login');
+      }
+
+      req.user = user;
+      res.locals.user = user;
+      next();
+    } catch (dbErr) {
+      console.error('Database error in requireAuth:', dbErr);
+      if (req.xhr || req.headers.accept?.includes('application/json') || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+        return res.status(500).json({ success: false, message: 'Server error' });
+      }
+      return res.redirect('/login');
+    }
+  });
+};
+
+const checkUser = (req, res, next) => {
+  let token = req.cookies.jwt;
+  if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (token) {
+    jwt.verify(token, 'piuscandothis', async (err, decodedToken) => {
+      if (err) {
+        res.locals.user = null;
+        next();
+      } else {
+        const user = await User.findById(decodedToken.id).select('-password');
+        res.locals.user = user || null;
+        next();
+      }
+    });
+  } else {
+    res.locals.user = null;
+    next();
+  }
+};
+
+module.exports = { requireAuth, checkUser };
+
+
+And my register page(applicationform.html) like this
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<link rel="shortcut icon" href="static/users/assets/images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="static/users/assets/assets/images/favicon.html" type="image/x-icon">
+
+<title>247sterlingtrade - crypto Online Worldwide </title>
+
+<!-- Bootstrap -->
+<link href="static/users/assets/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="static/users/assets/css/font-awesome.min.css" rel="stylesheet">
+<link href="static/users/assets/css/magnific-popup.css" rel="stylesheet">
+<link href="static/users/assets/css/jquery-ui.css" rel="stylesheet">
+
+
+<link href="static/users/assets/css/animate.css" rel="stylesheet">
+<link href="static/users/assets/css/owl.carousel.min.css" rel="stylesheet">
+<link href="static/users/assets/css/themify-icons.css" rel="stylesheet">
+
+
+<!-- Main css -->
+<link href="static/users/assets/css/main.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<center>
+        <select class="custom-select" style="width:100px;height:30px; margin-left: 30px; font-size: 12px;" id="language" onchange="changeLanguageByButtonClick()">
+					  <option value="af">Afrikanns</option>
+					  <option value="sq">Albanian</option>
+					  <option value="ar">Arabic</option>
+					  <option value="hy">Armenian</option>
+					  <option value="eu">Basque</option>
+					  <option value="bn">Bengali</option>
+					  <option value="bg">Bulgarian</option>
+					  <option value="ca">Catalan</option>
+					  <option value="km">Cambodian</option>
+					  <option value="zh-CN">Chinese (Mandarin)</option>
+					  <option value="hr">Croation</option>
+					  <option value="cs">Czech</option>
+					  <option value="da">Danish</option>
+					  <option value="nl">Dutch</option>
+					  <option value="en" selected="">English</option>
+					  <option value="et">Estonian</option>
+					  <option value="fj">Fiji</option>
+					  <option value="fi">Finnish</option>
+					  <option value="fr">French</option>
+					  <option value="ka">Georgian</option>
+					  <option value="de">German</option>
+					  <option value="el">Greek</option>
+					  <option value="gu">Gujarati</option>
+					  <option value="he">Hebrew</option>
+					  <option value="hi">Hindi</option>
+					  <option value="hu">Hungarian</option>
+					  <option value="is">Icelandic</option>
+					  <option value="id">Indonesian</option>
+					  <option value="ga">Irish</option>
+					  <option value="it">Italian</option>
+					  <option value="ja">Japanese</option>
+					  <option value="jw">Javanese</option>
+					  <option value="ko">Korean</option>
+					  <option value="la">Latin</option>
+					  <option value="lv">Latvian</option>
+					  <option value="lt">Lithuanian</option>
+					  <option value="mk">Macedonian</option>
+					  <option value="ms">Malay</option>
+					  <option value="ml">Malayalam</option>
+					  <option value="mt">Maltese</option>
+					  <option value="mi">Maori</option>
+					  <option value="mr">Marathi</option>
+					  <option value="mn">Mongolian</option>
+					  <option value="ne">Nepali</option>
+					  <option value="no">Norwegian</option>
+					  <option value="fa">Persian</option>
+					  <option value="pl">Polish</option>
+					  <option value="pt">Portuguese</option>
+					  <option value="pa">Punjabi</option>
+					  <option value="qu">Quechua</option>
+					  <option value="ro">Romanian</option>
+					  <option value="ru">Russian</option>
+					  <option value="sm">Samoan</option>
+					  <option value="sr">Serbian</option>
+					  <option value="sk">Slovak</option>
+					  <option value="sl">Slovenian</option>
+					  <option value="es">Spanish</option>
+					  <option value="sw">Swahili</option>
+					  <option value="sv">Swedish </option>
+					  <option value="ta">Tamil</option>
+					  <option value="tt">Tatar</option>
+					  <option value="te">Telugu</option>
+					  <option value="th">Thai</option>
+					  <option value="bo">Tibetan</option>
+					  <option value="to">Tonga</option>
+					  <option value="tr">Turkish</option>
+					  <option value="uk">Ukranian</option>
+					  <option value="ur">Urdu</option>
+					  <option value="uz">Uzbek</option>
+					  <option value="vi">Vietnamese</option>
+					  <option value="cy">Welsh</option>
+					  <option value="xh">Xhosa</option>
+					      </select>
+
+					<div id="google_translate_element" style="display:none"></div>
+					<script type="text/javascript">
+
+					function googleTranslateElementInit() {
+					  new google.translate.TranslateElement({pageLanguage: "en"}, 'google_translate_element');
+					}
+
+					function changeLanguageByButtonClick() {
+					  var language = document.getElementById("language").value;
+					  var selectField = document.querySelector("#google_translate_element select");
+					  for(var i=0; i < selectField.children.length; i++){
+					    var option = selectField.children[i];
+					    // find desired langauge and change the former language of the hidden selection-field 
+					    if(option.value==language){
+					       selectField.selectedIndex = i;
+					       // trigger change event afterwards to make google-lib translate this side
+					       selectField.dispatchEvent(new Event('change'));
+					       break;
+					    }
+					  }
+					}
+					</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<div id="google_translate_element"></div>
+
+ </center>
+<body>
+
+
+<!-- Preloader -->
+<div class="preloader">
+<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div><!--/Preloader -->
+
+<!--Header Area-->
+<header class="header-area blue-bg-2 sticky-top">
+<nav class="navbar navbar-expand-lg main-menu">
+<div class="container-fluid">
+
+<a class="navbar-brand" href="../login/index.html"><img src="../logo.png" class="d-inline-block align-top" alt=""></a>
+
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="menu-toggle"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav m-auto">
+<li class="nav-item dropdown">
+<!-- <a class="nav-link dropdown-toggle" href="blog" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Home</a> -->
+<ul class="dropdown-menu">
+<!-- <li><a class="dropdown-item" href="#">Home</a></li> -->
+<!-- <li><a class="dropdown-item" href="index-2">Landing page 2</a></li> -->
+</ul>
+</li>
+
+<li><a class="dropdown-item" href="../index.html">home</a></li>
+
+
+
+
+</ul>
+<div class="header-btn justify-content-end">
+
+<a href="../login/index.html" class="bttn-small btn-fill">Accountlogin</a>
+
+
+</div>
+</div>
+</div>
+</nav>
+</header><!--/Header Area-->
+
+<!--breadcrumb area-->
+<section class="breadcrumb-area gradient-overlay" style="background: url('static/users/assets/images/banner/3.jpg');">
+<div class="container">
+<div class="row">
+<div class="col-xl-12">
+<div class="site-breadcrumb">
+<h2>Create Account</h2>
+</div>
+</div>
+</div>
+</div>
+</section><!--/breadcrumb area-->
+
+<!--Login Section -->
+<section class="section-padding blue-bg shaded-bg">
+<div class="container">
+<div class="row justify-content-center">
+<div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 centered">
+<div class="section-title cl-white">
+<h4><span>New</span>Register Now</h4>
+</div>
+</div>
+</div>
+<div class="row justify-content-center">
+<div class="col-xl-5 col-lg-5 col-md-6 col-sm-12">
+<div class="site-form mb-30">
+<form class="login100-form validate-form" method="POST">
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<div class="row">
+
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">First Name</label>
+<input type="text" name="fname" maxlength="150" id="fname">
+</div>
+<!-- <div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Middle Name</label>
+<input type="text" name="mname" maxlength="150" id="mname">
+</div> -->
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Last Name</label>
+<input type="text" name="lname" maxlength="150" id="lname">
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Username</label>
+<input type="text" name="uname" maxlength="150" id="uname">
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Password</label>
+<input type="password" name="pass" maxlength="150" id="pass">
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Re-type Password</label>
+<input type="password" name="cpass" maxlength="150" id="cpass">
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Occupation</label>
+<input type="text" name="title" maxlength="150" id="title">
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Phone</label>
+<input type="text" name="phone" required="" id="phone" placeholder="Eg +62 123 456 789">
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Email</label>
+<input type="email" name="email" required="" id="email">
+</div>
+
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label for="" class="text-info ">Country</label>
+<input type="text" name="country" required="" id="country" placeholder="Enter the country you are from">
+</div>
+
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label class="text-info" for="">Gender</label>
+<select name="lev" required="" class="textinput textInput form-control" style="margin-left: %;">
+<option>Select Gender</option>
+<option value="Male">Male</option>
+
+<option value="Female">Female</option>
+
+<option value="Other">Other</option>
+
+</select>
+</div>
+<input type="hidden" name="zip">
+<input type="hidden" name="type" value="STATER">		
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label class="text-info" for="">Account Currency</label>
+<select name="currency" required="" class="textinput textInput form-control" style="margin-left: %;">
+<option>Select Currency</option>
+<option value="USD $">Dollar</option>
+
+<option value="GBP £">Pound</option>
+
+<option value="EUR €">Euro</option>
+<option value="ZAR R">Zar</option>
+</select>
+</div>
+</div>
+
+</div>							  
+<div class="col-xl-12 col-lg-12 col-sm-12"> <br>
+<button type="submit" name="submit" class="bttn-mid btn-fill w-100">Submit Application/Registration</button>
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<div class="extra-links">
+<a href="../login/index.htm" class="cl-white">Already Have An Account</a>
+</div>
+</div>
+</form></div>
+</form>
+</div>
+</div>
+</div>
+
+</section><!--/Login Section-->
+
+
+
+<center> </center>
+
+<!--Footer Area-->
+<footer class="footer-area section-padding-2 blue-bg-2">
+<div class="container-fluid">
+<div class="row">
+<div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-12">
+<div class="footer-logo">
+<a href="#"><img src="../logo.png" alt=""></a>
+</div>
+</div>
+<div class="col-xl-10 col-lg-10 col-md-9 col-sm-9 col-12">
+<div class="footer-nav">
+<ul>
+<li><a href="#">About</a></li>
+<li><a href="#">Contact</a></li>
+<li><a href="#">Privacy Policy</a></li>
+<li><a href="#">Trams and Service</a></li>
+<li><a href="#">Return Policy</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row copyright">
+<div class="col-xl-6 col-sm-6">
+<div class="copyright-text">
+<p>Copyright &copy; 2024 All Rights Reserved.</p>
+</div>
+</div>
+</div>
+</div>
+
+</footer><!--/Footer Area-->
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="static/users/assets/js/jquery-3.2.1.min.js"></script>
+<script src="static/users/assets/js/jquery-migrate.js"></script>
+<script src="static/users/assets/js/jquery-ui.js"></script>
+
+<script src="static/users/assets/js/popper.js"></script>
+<script src="static/users/assets/js/bootstrap.min.js"></script>
+<script src="static/users/assets/js/owl.carousel.min.js"></script>
+
+<script src="static/users/assets/js/magnific-popup.min.js"></script>
+<script src="static/users/assets/js/imagesloaded.pkgd.min.js"></script>
+<script src="static/users/assets/js/isotope.pkgd.min.js"></script>
+
+<script src="static/users/assets/js/waypoints.min.js"></script>
+<script src="static/users/assets/js/jquery.counterup.min.js"></script>
+<script src="static/users/assets/js/wow.min.js"></script>
+<script src="static/users/assets/js/scrollUp.min.js"></script>
+
+<script src="static/users/assets/js/script.js"></script>
+<!--Start of Tawk.to Script-->
+<script src="../widget/sET0SQD8fb" async=""></script>
+
+</body>
+
+
+</html>
+
+and the login like this
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- <script>window.location ="../dashboard/index";</script> -->
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<link rel="shortcut icon" href="../static/users/assets/images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="../static/users/assets/assets/images/favicon.html" type="image/x-icon">
+
+<title>247sterlingtrade - Login Page </title>
+
+<!-- Bootstrap -->
+<link href="../static/users/assets/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="../static/users/assets/css/font-awesome.min.css" rel="stylesheet">
+<link href="../static/users/assets/css/magnific-popup.css" rel="stylesheet">
+<link href="../static/users/assets/css/jquery-ui.css" rel="stylesheet">
+
+
+<link href="../static/users/assets/css/animate.css" rel="stylesheet">
+<link href="../static/users/assets/css/owl.carousel.min.css" rel="stylesheet">
+<link href="../static/users/assets/css/themify-icons.css" rel="stylesheet">
+
+
+<!-- Main css -->
+<link href="../static/users/assets/css/main.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<center>
+        <select class="custom-select" style="width:100px;height:30px; margin-left: 30px; font-size: 12px;" id="language" onchange="changeLanguageByButtonClick()">
+					  <option value="af">Afrikanns</option>
+					  <option value="sq">Albanian</option>
+					  <option value="ar">Arabic</option>
+					  <option value="hy">Armenian</option>
+					  <option value="eu">Basque</option>
+					  <option value="bn">Bengali</option>
+					  <option value="bg">Bulgarian</option>
+					  <option value="ca">Catalan</option>
+					  <option value="km">Cambodian</option>
+					  <option value="zh-CN">Chinese (Mandarin)</option>
+					  <option value="hr">Croation</option>
+					  <option value="cs">Czech</option>
+					  <option value="da">Danish</option>
+					  <option value="nl">Dutch</option>
+					  <option value="en" selected="">English</option>
+					  <option value="et">Estonian</option>
+					  <option value="fj">Fiji</option>
+					  <option value="fi">Finnish</option>
+					  <option value="fr">French</option>
+					  <option value="ka">Georgian</option>
+					  <option value="de">German</option>
+					  <option value="el">Greek</option>
+					  <option value="gu">Gujarati</option>
+					  <option value="he">Hebrew</option>
+					  <option value="hi">Hindi</option>
+					  <option value="hu">Hungarian</option>
+					  <option value="is">Icelandic</option>
+					  <option value="id">Indonesian</option>
+					  <option value="ga">Irish</option>
+					  <option value="it">Italian</option>
+					  <option value="ja">Japanese</option>
+					  <option value="jw">Javanese</option>
+					  <option value="ko">Korean</option>
+					  <option value="la">Latin</option>
+					  <option value="lv">Latvian</option>
+					  <option value="lt">Lithuanian</option>
+					  <option value="mk">Macedonian</option>
+					  <option value="ms">Malay</option>
+					  <option value="ml">Malayalam</option>
+					  <option value="mt">Maltese</option>
+					  <option value="mi">Maori</option>
+					  <option value="mr">Marathi</option>
+					  <option value="mn">Mongolian</option>
+					  <option value="ne">Nepali</option>
+					  <option value="no">Norwegian</option>
+					  <option value="fa">Persian</option>
+					  <option value="pl">Polish</option>
+					  <option value="pt">Portuguese</option>
+					  <option value="pa">Punjabi</option>
+					  <option value="qu">Quechua</option>
+					  <option value="ro">Romanian</option>
+					  <option value="ru">Russian</option>
+					  <option value="sm">Samoan</option>
+					  <option value="sr">Serbian</option>
+					  <option value="sk">Slovak</option>
+					  <option value="sl">Slovenian</option>
+					  <option value="es">Spanish</option>
+					  <option value="sw">Swahili</option>
+					  <option value="sv">Swedish </option>
+					  <option value="ta">Tamil</option>
+					  <option value="tt">Tatar</option>
+					  <option value="te">Telugu</option>
+					  <option value="th">Thai</option>
+					  <option value="bo">Tibetan</option>
+					  <option value="to">Tonga</option>
+					  <option value="tr">Turkish</option>
+					  <option value="uk">Ukranian</option>
+					  <option value="ur">Urdu</option>
+					  <option value="uz">Uzbek</option>
+					  <option value="vi">Vietnamese</option>
+					  <option value="cy">Welsh</option>
+					  <option value="xh">Xhosa</option>
+					      </select>
+
+					<div id="google_translate_element" style="display:none"></div>
+					<script type="text/javascript">
+
+					function googleTranslateElementInit() {
+					  new google.translate.TranslateElement({pageLanguage: "en"}, 'google_translate_element');
+					}
+
+					function changeLanguageByButtonClick() {
+					  var language = document.getElementById("language").value;
+					  var selectField = document.querySelector("#google_translate_element select");
+					  for(var i=0; i < selectField.children.length; i++){
+					    var option = selectField.children[i];
+					    // find desired langauge and change the former language of the hidden selection-field 
+					    if(option.value==language){
+					       selectField.selectedIndex = i;
+					       // trigger change event afterwards to make google-lib translate this side
+					       selectField.dispatchEvent(new Event('change'));
+					       break;
+					    }
+					  }
+					}
+					</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<div id="google_translate_element"></div>
+
+ </center>
+<body>
+
+
+<!-- Preloader -->
+<div class="preloader">
+<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div><!--/Preloader -->
+
+<!--Header Area-->
+<header class="header-area blue-bg-2 sticky-top">
+<nav class="navbar navbar-expand-lg main-menu">
+<div class="container-fluid">
+
+<a class="navbar-brand" href="index.html"><img src="../logo.png" class="d-inline-block align-top" alt=""></a>
+
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="menu-toggle"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav m-auto">
+<li class="nav-item dropdown">
+<!-- <a class="nav-link dropdown-toggle" href="blog.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Home</a> -->
+<ul class="dropdown-menu">
+<!-- <li><a class="dropdown-item" href="#">Home</a></li> -->
+<!-- <li><a class="dropdown-item" href="index-2.html">Landing page 2</a></li> -->
+</ul>
+</li>
+
+<li><a class="dropdown-item" href="../index.html">Home</a></li>
+<!-- <li><a class="dropdown-item" href="../dashboard/index">Dashboard</a></li> -->
+
+
+
+</ul>
+
+</div>
+</div>
+</nav>
+</header><!--/Header Area-->
+
+
+
+
+
+
+<!--Hero Area-->
+<section class="hero-area gradient-overlay" style="background: url('../static/users/assets/images/banner/3.jpg') no-repeat center center;">
+<div class="container">
+<div class="row">
+<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+<div class="hero-content">
+<hr>
+<h1>Welcome to 247sterlingtrade</h1>
+<hr>
+<h4><span>new</span> Get investment and earn a lot</h4>
+<div class="hero-btn">
+<a href="../dashboard/applicationform.html" class="bttn-mid btn-fill"><i class="ti-crown"></i> Get An account</a>
+</div>
+</div>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-12 col-sm-12" id="login">
+<div class="site-form mb-30">
+
+<form action="" method="POST" class="hero-form">
+
+<div class="section-title cl-white">
+<h4><span>Ready</span>Login Now</h4>
+</div>
+<div class="row">
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label class="text-light" for="">Email</label>
+<input type="text" name="email" autofocus="" autocapitalize="none" autocomplete="Enter Your Email" maxlength="50" required="" id="email">
+<!-- <input type="hidden" name="code" value="" -->
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<label class="text-light" for="">Password</label>
+<input type="password" name="pass" autocomplete="current-password" required="" id="pass">
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12 mt-4">
+<button type="submit" name="login" class="bttn-mid btn-fill w-100">Login Now</button>
+</div>
+<div class="col-xl-12 col-lg-12 col-sm-12">
+<div class="extra-links">
+<a href="../dashboard/applicationform.html" class="cl-white">Create new account</a>
+<!-- <a href="#" class="cl-white">Forget Password?</a> -->
+</div>
+</div>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<div class="hero-bg-alimation">
+<ul class="box">
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+</div>
+</section><!--/Hero Area-->
+
+
+
+
+
+<!--Footer Area-->
+<footer class="footer-area section-padding-2 blue-bg-2">
+<div class="container-fluid">
+<div class="row">
+<div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-12">
+<div class="footer-logo">
+<a href="#"><img src="../logo.png" alt=""></a>
+</div>
+</div>
+<div class="col-xl-10 col-lg-10 col-md-9 col-sm-9 col-12">
+<div class="footer-nav">
+<ul>
+<li><a href="#">About</a></li>
+<li><a href="#">Contact</a></li>
+<li><a href="#">Privacy Policy</a></li>
+<li><a href="#">Trams and Service</a></li>
+<li><a href="#">Return Policy</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row copyright">
+<div class="col-xl-6 col-sm-6">
+<div class="copyright-text">
+<p>Copyright &copy; 2024 All Rights Reserved.</p>
+</div>
+</div>
+</div>
+</div>
+
+</footer><!--/Footer Area-->
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="../static/users/assets/js/jquery-3.2.1.min.js"></script>
+<script src="../static/users/assets/js/jquery-migrate.js"></script>
+<script src="../static/users/assets/js/jquery-ui.js"></script>
+
+<script src="../static/users/assets/js/popper.js"></script>
+<script src="../static/users/assets/js/bootstrap.min.js"></script>
+<script src="../static/users/assets/js/owl.carousel.min.js"></script>
+
+<script src="../static/users/assets/js/magnific-popup.min.js"></script>
+<script src="../static/users/assets/js/imagesloaded.pkgd.min.js"></script>
+<script src="../static/users/assets/js/isotope.pkgd.min.js"></script>
+
+<script src="../static/users/assets/js/waypoints.min.js"></script>
+<script src="../static/users/assets/js/jquery.counterup.min.js"></script>
+<script src="../static/users/assets/js/wow.min.js"></script>
+<script src="../static/users/assets/js/scrollUp.min.js"></script>
+
+<script src="../static/users/assets/js/script.js"></script>
+
+<script src="../widget/sET0SQD8fb" async=""></script>
+
+<!--End of Tawk.to Script-->
+</body>
+
+
+</html>
+
+my frontend code that help enforce auth and axios fetch api like this
+
+config.js file like this
+const API_BASE_URL = 'http://localhost:7000';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,   // ← add this
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+});
+
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+    return Promise.reject(error);
+  }
+);
+
+auth.js file like this
+function isLoggedIn() {
+  return !!localStorage.getItem('token');
+}
+
+function getCurrentUser() {
+  try {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function logout() {
+  // 1. Clear local storage first
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+
+  // 2. Optional: try to clear backend cookie (don't wait for it)
+  if (typeof api !== 'undefined') {
+    api.get('/logout').catch(() => {}); // ignore any error
+  } else if (typeof axios !== 'undefined' && typeof API_BASE_URL !== 'undefined') {
+    axios.get(`${API_BASE_URL}/logout`, { withCredentials: true }).catch(() => {});
+  }
+
+  // 3. Redirect to homepage
+  window.location.href = 'index.html';
+}
+
+function requireAuthPage() {
+  if (!isLoggedIn()) {
+    window.location.href = 'login.html';
+  }
+}

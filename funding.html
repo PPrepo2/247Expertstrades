@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Account Funding | 247sterlingtrade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+<link rel="icon" type="image/png" href="assets/img/favicons/favicon-32x32.png" sizes="32x32">
+<link href="assets/css/css.css" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/inner.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/cs.css">
+<script src="https://use.fontawesome.com/4b789087e7.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<style>
+.divider{border-bottom:1px dotted}
+.blinkred{animation:blinkingText 2s infinite}
+.blinkgreen{animation:blinkgreenText 2s infinite}
+@keyframes blinkingText{0%{color:#f00}49%{color:#600}50%{color:#c00}99%{color:#e00}100%{color:#f00}}
+@keyframes blinkgreenText{0%{color:#0f0}49%{color:#060}50%{color:#0c0}99%{color:#0e0}100%{color:#0f0}}
+.ui.sidebar.right{position:fixed!important;top:0;right:-280px;width:260px;height:100%;z-index:10000;transition:right .3s ease;overflow-y:auto;padding-top:90px!important}
+.ui.sidebar.right.visible{right:0!important}
+.sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9999}
+.sidebar-overlay.active{display:block}
+.menu-toggle{cursor:pointer!important;display:block!important}
+</style>
+</head>
+<body class="pushable dimmable scrolling">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="ui sidebar right inverted vertical menu" id="mainSidebar">
+  <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%">
+    <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
+    <span id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> <b>USD $</b></span><br>
+    <span id="sidebar-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></span>
+  </div>
+  <span class="divider"></span>
+  <div class="item"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+  <div class="item"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="history.html"><i class="fa fa-history"></i> Transactions history</a></div>
+  <div class="item"><a href="trade-history.html"><i class="fa fa-area-chart"></i> Trading history</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+  <div class="item"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+</div>
+
+<div class="pusher">
+<nav class="top-nav inner inner-new">
+  <div class="top-bar">
+    <div class="head-row clearfix">
+      <div class="float-left">
+        <div class="logosm"><a href="dashboard.html"><img src="assets/img/logo.png" alt="247sterlingtrade"></a></div>
+      </div>
+      <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
+      <div class="float-right nav smcapy-nav">
+        <div class="item" id="top-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></div>
+        <div class="item"><a class="ui button op link a-green-hover" href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+        <div class="item"><a class="ui button op round green-bm nobold" href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="top-line clearfix">
+    <div class="row-30">
+      <div class="navsm text-xs-right">
+        <div class="ui item top-drop-in-css"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+        <div class="ui item top-drop-in-css"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+        <div class="ui item top-drop-in-css"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+        <div class="ui item top-drop-in-css"><a href="history.html"><i class="fa fa-history"></i> History</a></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="root-content">
+  <div class="pusher push-trading">
+    <div class="pusher pusher-min-400">
+      <section class="img-bg-section">
+        <div class="row">
+          <ul class="tabs">
+            <li><a href="funding.html" class="active">Account Funding</a></li>
+            <li><a href="withdrawal.html">Withdrawals</a></li>
+          </ul>
+          <div class="top-info"><h2 class="title">Account Funding</h2></div>
+        </div>
+        <span class="blue-arrow"></span>
+      </section>
+
+      <section class="content-box">
+        <div class="row">
+          <div class="account-funding">
+            <div class="wallet-drop-func">
+              <div class="ui dropdown amount-dropdown">
+                <div class="text">
+                  <div class="amount-item">
+                    <div class="amount-val"><b id="display-balance">0.00</b> <b id="display-currency">USD $</b></div>
+                    <span class="amount-net">Net Balance: <b id="display-balance-2">0.00</b> <b id="display-currency-2">USD $</b></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="funding-method-wrap">
+              <div class="ui bottom attached tab segment active">
+                <h2 class="title">FUND YOUR ACCOUNT</h2>
+                <div class="withdraw-form clearfix">
+                  <form id="fundingForm">
+                    <span>Amount in base currency:</span>
+                    <b class="ui green inverted header">
+                      <input type="text" class="form-control" id="amount" name="amount"
+                        onkeypress="return isNumber(event)"
+                        style="width:200px;color:#00FF00;font-weight:bold" required>
+                      <span id="form-currency">USD $</span>
+                    </b>
+                    <br><br>
+                    <div class="form-control">
+                      <label><b>Select Deposit Type:</b></label><br><br>
+                      <select name="method" class="form-control" id="payment_method" required>
+                        <option value="">Select Deposit Type *</option>
+                        <option value="BITCOIN">BITCOIN</option>
+                        <option value="ETHEREUM">ETHEREUM</option>
+                        <option value="USDT">USDT</option>
+                        <option value="LUNO">LUNO</option>
+                        <option value="BANK DEPOSIT">BANK DEPOSIT</option>
+                      </select>
+                    </div>
+                    <br>
+                    <div class="center-button">
+                      <button type="submit" class="ui button primal" id="fundBtn">Fund account</button>
+                    </div>
+                  </form>
+                  <div class="btc-info-bottom">
+                    <div class="bit-hd">How to buy Bitcoin using bitcoin.com</div>
+                    <div class="pf"><a href="https://bitcoin.com/" target="_blank">Text tutorial</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="row clearfix">
+    <div class="float-left"><span class="copy">&copy; 2022 <span>247sterlingtrade Ltd .</span></span></div>
+  </div>
+</footer>
+</div>
+
+<script src="assets/js/inner.js"></script>
+<script src="assets/js/vendor.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/frontend/public/js/config.js"></script>
+<script src="/frontend/public/js/auth.js"></script>
+<script>
+function isNumber(evt) {
+  var c = evt.which ? evt.which : evt.keyCode;
+  if (c !== 46 && c > 31 && (c < 48 || c > 57)) return false;
+  return true;
+}
+
+(function () {
+  var sidebar = document.getElementById('mainSidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var toggleBtn = document.getElementById('menuToggleBtn');
+  function openSidebar() { if (sidebar) sidebar.classList.add('visible'); if (overlay) overlay.classList.add('active'); }
+  function closeSidebar() { if (sidebar) sidebar.classList.remove('visible'); if (overlay) overlay.classList.remove('active'); }
+  if (toggleBtn) toggleBtn.addEventListener('click', function (e) { e.preventDefault(); sidebar && sidebar.classList.contains('visible') ? closeSidebar() : openSidebar(); });
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+  if (sidebar) sidebar.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeSidebar); });
+})();
+
+document.addEventListener('DOMContentLoaded', async function () {
+  if (typeof requireAuthPage === 'function') requireAuthPage();
+
+  var currentUser = null;
+  try {
+    var res = await api.get('/deposits');
+    if (res.data && res.data.success) {
+      currentUser = res.data.user;
+      var bal = Number(currentUser.balance || 0).toFixed(2);
+      var cur = currentUser.currency || 'USD $';
+      var email = currentUser.email || '';
+
+      var se = document.getElementById('sidebar-email');
+      if (se) se.innerHTML = '<i class="fa fa-envelope-o"></i> ' + email;
+      var sb = document.getElementById('sidebar-balance');
+      if (sb) sb.innerHTML = '<b><i class="fa fa-money"></i> ' + bal + '</b> <b>' + cur + '</b>';
+
+      document.getElementById('display-balance').textContent = bal;
+      document.getElementById('display-balance-2').textContent = bal;
+      document.getElementById('display-currency').textContent = cur;
+      document.getElementById('display-currency-2').textContent = cur;
+      document.getElementById('form-currency').textContent = cur;
+
+      var kycOk = currentUser.kycVerified;
+      var kycHtml = kycOk
+        ? 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>'
+        : 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
+      var sk = document.getElementById('sidebar-kyc'); if (sk) sk.innerHTML = kycHtml;
+      var tk = document.getElementById('top-kyc'); if (tk) tk.innerHTML = kycHtml;
+    }
+  } catch (err) {
+    console.error(err);
+    if (err.response && err.response.status === 401) window.location.href = 'login.html';
+  }
+
+  document.getElementById('fundingForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!currentUser || !currentUser._id) {
+      Swal.fire('Error', 'Please login again', 'error');
+      return;
+    }
+    var amount = document.getElementById('amount').value.trim();
+    var method = document.getElementById('payment_method').value;
+    if (!amount || Number(amount) <= 0) {
+      Swal.fire('Error', 'Enter a valid amount', 'error');
+      return;
+    }
+    if (!method) {
+      Swal.fire('Error', 'Select a deposit type', 'error');
+      return;
+    }
+
+    var btn = document.getElementById('fundBtn');
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+
+    try {
+      var r = await api.post('/deposit/' + currentUser._id, {
+        amount: amount,
+        payment_method: method,
+        method: method
+      });
+      if (r.data && r.data.success) {
+        window.location.href = r.data.redirect || ('payment.html?id=' + currentUser._id);
+      } else {
+        Swal.fire('Error', (r.data && r.data.message) || 'Failed', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Fund account';
+      }
+    } catch (err) {
+      Swal.fire('Error', (err.response && err.response.data && err.response.data.message) || err.message || 'Failed', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Fund account';
+    }
+  });
+});
+</script>
+</body>
+</html>
