@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://two47expertstrades.onrender.com';
+const API_BASE_URL = 'https://two47expertstrade-backend.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
