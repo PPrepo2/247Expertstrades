@@ -5,7 +5,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Trading Main | 247sterlingtrade </title>
+    <title>Trading Main | 247Expertstrade.com </title>
     <meta name="description" content="">
 
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="./assets/img/favicons/apple-touch-icon-57x57.png">
@@ -115,6 +115,55 @@
     .wallet-drop-func .amount-net {
         color: #fff !important;
     }
+
+    /* ===== TRADE FORM DROPDOWNS (Option type + Expiration) ===== */
+    .righttab .ui.selection.dropdown {
+        position: relative !important;
+        cursor: pointer !important;
+        width: 100% !important;
+        max-width: 200px !important;
+        background: #1a1a2e !important;
+        border: 1px solid #444 !important;
+        border-radius: 4px !important;
+        padding: 8px 10px !important;
+        color: #fff !important;
+        z-index: 50;
+    }
+    .righttab .ui.selection.dropdown .default.text,
+    .righttab .ui.selection.dropdown .text {
+        color: #fff !important;
+    }
+    .righttab .ui.selection.dropdown > .menu {
+        display: none !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-height: 220px !important;
+        overflow-y: auto !important;
+        background: #1a1a2e !important;
+        border: 1px solid #444 !important;
+        z-index: 10050 !important;
+        margin-top: 2px !important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.45) !important;
+    }
+    .righttab .ui.selection.dropdown.active > .menu,
+    .righttab .ui.selection.dropdown > .menu.visible {
+        display: block !important;
+    }
+    .righttab .ui.selection.dropdown > .menu .item {
+        display: block !important;
+        padding: 10px 12px !important;
+        color: #fff !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        border-bottom: 1px solid #333 !important;
+    }
+    .righttab .ui.selection.dropdown > .menu .item:hover {
+        background: #2597c7 !important;
+        color: #fff !important;
+    }
     </style>
     <SCRIPT type="text/javascript">
     var tday = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
@@ -158,10 +207,8 @@
 </head>
 
 <body class="pushable dimmable scrolling" style="">
-    <!-- Overlay for sidebar -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- RIGHT SIDEBAR -->
     <div class="ui sidebar right inverted vertical menu" id="mainSidebar" aria-hidden="false">
         <div class="item" style="font-size:small; color:#FFFFFF; position:absolute; top:15px; text-transform:capitalize; width:90%;">
             <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading... </span><br>
@@ -194,7 +241,7 @@
                     <div class="float-left ">
 
                         <div class="logosm">
-                            <a href="dashboard.html"><img src="./assets/img/logo.png" alt="247sterlingtrade"></a>
+                            <a href="dashboard.html"><img src="./assets/img/logo.png" alt="247Expertstrade"></a>
                         </div>
 
                         <div class="ui item dropdown dropdown-call dinb" tabindex="0">
@@ -234,7 +281,7 @@
                         }
                         </script>
                         <a href="tel:+" class="top-phone dinb" aria-hidden="false"><i class="fa fa-phone"></i></a>
-                        <a target="blank" href="https://api.whatsapp.com/send?phone=&text=247sterlingtrade"
+                        <a target="blank" href="https://api.whatsapp.com/send?phone=&text=247Expertstrade"
                             style="color:#fff" class="top-phone dinb"><i class="fa fa-whatsapp"></i></a>
                     </div>
 
@@ -435,7 +482,6 @@
             .walletdrop { display: block !important; }
             .trading-iframe { margin-right: 235px !important; }
         }
-        /* Always show menu-toggle on smaller screens and allow click on desktop too */
         @media (max-width: 1200px) {
             .menu-toggle { display: block !important; }
         }
@@ -537,7 +583,6 @@
                         </div>
                     </div>
 
-                    <!-- WALLET DROPDOWN -->
                     <div class="wallet-drop-func" data-ng-func="" style="position:absolute; top: 40px; right: 0px; width:250px;">
                         <div class="ui dropdown amount-dropdown walletdrop" id="walletDropdown" tabindex="0" style="width:250px; z-index:99;">
                             <div class="text" id="walletDropdownTrigger">
@@ -662,20 +707,19 @@
                         </div>
                         <div class="clearfix" style="display: none;"></div>
 
-                        <!-- RIGHT TRADE PANEL -->
                         <div style="width:250px; position:absolute; top:0; right:0px;" class="righttab">
                             <div style="width:200px; margin:0 auto; color:#FFFFFF">
                                 <div class="line"></div>
                                 <div class="rightcontent left">
                                     <label>Option type: <span title="Select option type" class="ask">?</span></label>
-                                    <div class="category ui option-select selection dropdown" tabindex="0">
-                                        <input type="hidden" value="" id="option-type">
-                                        <i class="dropdown icon" tabindex="0"><div class="menu" tabindex="-1"></div></i>
-                                        <div class="default text">Turbo</div>
-                                        <div class="menu" tabindex="-1">
-                                            <a href="#" class="item" onclick="selectedType='Turbo'">Turbo</a>
-                                            <a href="#" class="item" onclick="selectedType='Intraday'">Intraday</a>
-                                            <a href="#" class="item" onclick="selectedType='Long term'">Long term</a>
+                                    <div class="category ui option-select selection dropdown" id="optionTypeDropdown" tabindex="0">
+                                        <input type="hidden" value="Turbo" id="option-type">
+                                        <i class="dropdown icon" tabindex="0"></i>
+                                        <div class="default text" id="optionTypeText">Turbo</div>
+                                        <div class="menu" id="optionTypeMenu" tabindex="-1">
+                                            <div class="item" data-value="Turbo">Turbo</div>
+                                            <div class="item" data-value="Intraday">Intraday</div>
+                                            <div class="item" data-value="Long term">Long term</div>
                                         </div>
                                     </div>
 
@@ -685,23 +729,23 @@
                                     <label>Expiration Time: <span class="ask">?</span>
                                         <time style="float: right; color:#FF0000" id="time"></time>
                                     </label>
-                                    <div class="category ui time-select selection dropdown" tabindex="0">
-                                        <input type="hidden" value="">
-                                        <i class="dropdown icon" tabindex="0"><div class="menu" tabindex="-1"></div></i>
-                                        <div class="default text">1min</div>
-                                        <div class="menu" tabindex="-1">
-                                            <div class="item" onclick="expTime('01')">1min</div>
-                                            <div class="item" onclick="expTime('02')">2min</div>
-                                            <div class="item" onclick="expTime('03')">3min</div>
-                                            <div class="item" onclick="expTime('04')">4min</div>
-                                            <div class="item" onclick="expTime('05')">5min</div>
-                                            <div class="item" onclick="expTime('06')">6min</div>
-                                            <div class="item" onclick="expTime('07')">7min</div>
-                                            <div class="item" onclick="expTime('08')">8min</div>
-                                            <div class="item" onclick="expTime('09')">9min</div>
-                                            <div class="item" onclick="expTime('10')">10min</div>
-                                            <div class="item" onclick="expTime('15')">15min</div>
-                                            <div class="item" onclick="expTime('30')">30min</div>
+                                    <div class="category ui time-select selection dropdown" id="expirationDropdown" tabindex="0">
+                                        <input type="hidden" value="1min" id="expiration-value">
+                                        <i class="dropdown icon" tabindex="0"></i>
+                                        <div class="default text" id="expirationText">1min</div>
+                                        <div class="menu" id="expirationMenu" tabindex="-1">
+                                            <div class="item" data-value="01" data-label="1min">1min</div>
+                                            <div class="item" data-value="02" data-label="2min">2min</div>
+                                            <div class="item" data-value="03" data-label="3min">3min</div>
+                                            <div class="item" data-value="04" data-label="4min">4min</div>
+                                            <div class="item" data-value="05" data-label="5min">5min</div>
+                                            <div class="item" data-value="06" data-label="6min">6min</div>
+                                            <div class="item" data-value="07" data-label="7min">7min</div>
+                                            <div class="item" data-value="08" data-label="8min">8min</div>
+                                            <div class="item" data-value="09" data-label="9min">9min</div>
+                                            <div class="item" data-value="10" data-label="10min">10min</div>
+                                            <div class="item" data-value="15" data-label="15min">15min</div>
+                                            <div class="item" data-value="30" data-label="30min">30min</div>
                                         </div>
                                     </div>
 
@@ -809,11 +853,11 @@
         </script>
 
         <script>
-        var selectedExpiration = '1min';
-        var selectedType = 'Turbo';
+        window.selectedExpiration = '1min';
+        window.selectedType = 'Turbo';
 
         function expTime(iddd) {
-            selectedExpiration = iddd + 'min';
+            window.selectedExpiration = iddd + 'min';
             var nhour = d.getHours(),
                 nmin = d.getMinutes();
             if (nhour <= 9) nhour = "0" + nhour;
@@ -830,6 +874,69 @@
                 document.getElementById('time').innerHTML = "<i class='fa fa-clock-o'></i>&nbsp;" + nhour + ":" + nminutes;
             }
         }
+
+        /* Option type + Expiration dropdown open/select */
+        (function () {
+            function setupDropdown(dropId, menuId, textId, onSelect) {
+                var drop = document.getElementById(dropId);
+                var menu = document.getElementById(menuId);
+                var text = document.getElementById(textId);
+                if (!drop || !menu) return;
+
+                function open() {
+                    drop.classList.add('active');
+                    menu.classList.add('visible');
+                    menu.style.display = 'block';
+                }
+                function close() {
+                    drop.classList.remove('active');
+                    menu.classList.remove('visible');
+                    menu.style.display = 'none';
+                }
+                function toggle(e) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    if (drop.classList.contains('active')) close();
+                    else open();
+                }
+
+                drop.addEventListener('click', function (e) {
+                    if (e.target.closest('.menu')) return;
+                    toggle(e);
+                });
+
+                menu.querySelectorAll('.item').forEach(function (item) {
+                    item.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var value = item.getAttribute('data-value');
+                        var label = item.getAttribute('data-label') || item.textContent.trim();
+                        if (text) text.textContent = label;
+                        if (typeof onSelect === 'function') onSelect(value, label, item);
+                        close();
+                    });
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!drop.contains(e.target)) close();
+                });
+            }
+
+            setupDropdown('optionTypeDropdown', 'optionTypeMenu', 'optionTypeText', function (value, label) {
+                window.selectedType = value || label;
+                var hidden = document.getElementById('option-type');
+                if (hidden) hidden.value = window.selectedType;
+            });
+
+            setupDropdown('expirationDropdown', 'expirationMenu', 'expirationText', function (value, label) {
+                window.selectedExpiration = label || (value + 'min');
+                var hidden = document.getElementById('expiration-value');
+                if (hidden) hidden.value = window.selectedExpiration;
+                if (value) expTime(value);
+            });
+        })();
         </script>
 
         <script>
@@ -842,10 +949,8 @@
         }
         </script>
 
-        <!-- ===== SIDEBAR + WALLET DROPDOWN JS ===== -->
         <script>
         (function () {
-            // ----- RIGHT SIDEBAR (nav links) -----
             var sidebar = document.getElementById('mainSidebar');
             var overlay = document.getElementById('sidebarOverlay');
             var toggleBtn = document.getElementById('menuToggleBtn') || document.querySelector('.menu-toggle');
@@ -882,7 +987,6 @@
                 overlay.addEventListener('click', closeSidebar);
             }
 
-            // Close sidebar when a nav link is clicked
             if (sidebar) {
                 sidebar.querySelectorAll('a').forEach(function (link) {
                     link.addEventListener('click', function () {
@@ -891,7 +995,6 @@
                 });
             }
 
-            // ----- WALLET / BALANCE DROPDOWN -----
             var walletDrop = document.getElementById('walletDropdown') || document.querySelector('.walletdrop');
             var walletTrigger = document.getElementById('walletDropdownTrigger');
             var walletIcon = document.getElementById('walletDropdownIcon');
@@ -933,21 +1036,18 @@
             }
             if (walletDrop) {
                 walletDrop.addEventListener('click', function (e) {
-                    // only toggle when clicking the header area, not inside menu links
                     if (!e.target.closest('.menu')) {
                         toggleWalletMenu(e);
                     }
                 });
             }
 
-            // Close wallet menu when clicking outside
             document.addEventListener('click', function (e) {
                 if (walletDrop && !walletDrop.contains(e.target)) {
                     closeWalletMenu();
                 }
             });
 
-            // Escape key closes both
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
                     closeSidebar();
@@ -961,7 +1061,7 @@
             <div class="row clearfix">
                 <div class="float-left">
                     <noindex>
-                        <span class="copy">&copy; 2022 <span>247sterlingtrade Ltd .</span></span>
+                        <span class="copy">&copy; 2022 <span>247Expertstrade Ltd .</span></span>
                         <a href="#" target="_blank">Terms</a> | <a href="#" target="_blank">Privacy policy</a>
                     </noindex>
                 </div>
@@ -1019,7 +1119,6 @@
     ga('send', 'pageview');
     </script>
 
-    <!-- REQUIRED FOR API -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/frontend/public/js/config.js"></script>
     <script src="/frontend/public/js/auth.js"></script>

@@ -1,13 +1,11 @@
-
 <!DOCTYPE html>
-<html style=""><head>
+<html>
+<head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>           Trading Main    </title>
-<meta name="description" content="            
-    ">
-
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Transactions History | 247sterlingtrade</title>
+<meta name="description" content="">
 <link rel="apple-touch-icon-precomposed" sizes="57x57" href="assets/img/favicons/apple-touch-icon-57x57.png">
 <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/img/favicons/apple-touch-icon-114x114.png">
 <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/img/favicons/apple-touch-icon-72x72.png">
@@ -16,474 +14,589 @@
 <link rel="apple-touch-icon-precomposed" sizes="152x152" href="assets/img/favicons/apple-touch-icon-152x152.png">
 <link rel="icon" type="image/png" href="assets/img/favicons/favicon-32x32.png" sizes="32x32">
 <link rel="icon" type="image/png" href="assets/img/favicons/favicon-16x16.png" sizes="16x16">
-
-            <link rel="canonical" href="dashboard.php">
-        <meta name="viewport" content="widtd=device-widtd, initial-scale=1, maximum-scale=1, minimum-scale=1">
-
-        <link href="assets/css/css.css" rel="stylesheet" type="text/css">
+<link rel="canonical" href="history.html">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+<link href="assets/css/css.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="assets/css/inner.css">
 <link rel="stylesheet" type="text/css" href="assets/css/app.css">
 <link rel="stylesheet" type="text/css" href="assets/css/cs.css">
-    <script src="https://use.fontawesome.com/4b789087e7.js"></script> 
+<script src="https://use.fontawesome.com/4b789087e7.js"></script>
 <style>
-.divider{
-border-bottom: 1px dotted;
+.divider { border-bottom: 1px dotted; }
+.blinkred { animation: blinkingText 2s infinite; }
+.blinkgreen { animation: blinkgreenText 2s infinite; }
+@keyframes blinkingText {
+  0% { color: #f00; } 49% { color: #600; } 50% { color: #c00; } 99% { color: #e00; } 100% { color: #f00; }
 }
-.blinking{
-	animation:blinkingText 2s infinite;
+@keyframes blinkgreenText {
+  0% { color: #0f0; } 49% { color: #060; } 50% { color: #0c0; } 99% { color: #0e0; } 100% { color: #0f0; }
 }
-@keyframes blinkingText{
-	0%{		color: #f00;	}
-	49%{	color: #600;	}
-	50%{	color: #c00;	}
-	99%{	color:#e00;	}
-	100%{	color: #f00;	}
+.ui.sidebar.right {
+  position: fixed !important;
+  top: 0;
+  right: -280px;
+  width: 260px;
+  height: 100%;
+  z-index: 10000;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  padding-top: 90px !important;
 }
-.blinkgreen{
-	animation:blinkgreenText 2s infinite;
+.ui.sidebar.right.visible { right: 0 !important; }
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
 }
-@keyframes blinkgreenText{
-	0%{		color: #0f0;	}
-	49%{	color: #060;	}
-	50%{	color: #0c0;	}
-	99%{	color:#0e0;	}
-	100%{	color: #0f0;	}
+.sidebar-overlay.active { display: block; }
+.menu-toggle { cursor: pointer !important; display: block !important; }
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 16px 0;
+  padding: 12px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 6px;
+  color: #fff;
 }
+.filter-bar label { font-weight: bold; margin-right: 6px; }
+.filter-bar select {
+  padding: 8px 12px;
+  min-width: 140px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #1a1a2e;
+  color: #fff;
+}
+.history-table-wrap {
+  overflow-x: auto;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+.history-table-wrap table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  color: #fff;
+}
+.history-table-wrap th,
+.history-table-wrap td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+.history-table-wrap th {
+  background: rgba(0,0,0,0.35);
+}
+.section-title-h {
+  color: #fff;
+  margin: 20px 0 10px;
+  font-size: 18px;
+}
+.status-pending { color: #ff0; font-weight: bold; }
+.status-approved { color: #0f0; font-weight: bold; }
+.status-rejected { color: #f00; font-weight: bold; }
 </style>
-<SCRIPT type="text/javascript">
-				var tday=new Array("Sunday","Monday","Tuesday","Wednesday","tdursday","Friday","Saturday");
-				var tmontd=new Array("January","February","March","April","May","June","July","August","September","October","November","December");
-
-				function GetClock(){
-				 tzOffset = 0;//set tdis to tde number of hours offset from UTC
-
-				 d=new Date();
-				 dx=d.toGMTString();
-				dx=dx.substr(0,dx.lengtd -3);
-				d.setTime(Date.parse(dx))
-				d.setdours(d.getdours()+tzOffset);
-				var nday=d.getDay(),nmontd=d.getMontd(),ndate=d.getDate();
-				var nhour=d.getdours(),nmin=d.getMinutes(),ap,nsec=d.getSeconds();
-				
-				if(nhour<=9) nhour="0"+nhour;
-				if(nmin<=9) nmin="0"+nmin;
-				if(nsec<=9) nsec="0"+nsec;
-
-				document.getElementById('clockbox').innerHTML="<i class='fa fa-clock-o'></i>&nbsp;"+nhour+":"+nmin+":"+nsec;
-				var nminutes = Number(nmin) + 01;
-				if(nminutes<=9) nminutes="0"+nminutes;
-				time = "<i class='fa fa-clock-o'></i>&nbsp;"+nhour+":"+nminutes;
-				
-				}
-
-				window.onload=function(){
-				GetClock();
-				setInterval(GetClock,1000);
-				document.getElementById('time').innerHTML=time;
-				}
-				</SCRIPT>
 </head>
-<body class="pushable  dimmable scrolling" style=""><div class="ui sidebar right inverted vertical menu" aria-hidden="false">
-<div class="item" style="font-size:small; color:#FFFFFF; position:absolute; top:15px; text-transform:capitalize">
- <span><i class="fa fa-envelope-o"></i> piuspolocha1231@gmail.com </span><br>
-								<span style="margin-top:10px;"><b><i class="fa fa-money"></i> 0.00</b> <b> </b></span>
-								<br>
-								
-                                <span>Kyc Verification:                            <span style="color:#FF0000" class="blinkred"><i class="fa fa-check-circle"></i> Required</span>
-                                                    </span>
-                            </div>
-                                
-								<span class="divider"></span>
-    <div class="item"><a href="dashboard.php"><i class="fa fa-dashboard"></i> Trading</a></div>
-	<span class="divider"></span>
-	<div class="item"><a href="funding.php"><i class="fa fa-money"></i> Account funding</a></div>
-	<div class="item"><a href="witddrawal.php"><i class="fa fa-money"></i> Witddrawals</a></div>
-    <span class="divider"></span>
-    <div class="item"><a href="history.php"><i class="fa fa-history"></i> Transactions history</a></div>
-	<div class="item"><a href="trade-history.php"><i class="fa fa-area-chart"></i> Trading history</a></div>	
-    <span class="divider"></span>
-    <div class="item"><a href="personal.php"><i class="fa fa-user"></i> Personal Data</a></div>
-	<div class="item"><a href="security.php"><i class="fa fa-lock"></i> Security settings</a></div>
-    <span class="divider"></span>
-    <span class="divider"></span>
-    <div class="item"><a href="logout.php"><i class="fa fa-power-off"></i> Exit</a></div>
+<body class="pushable dimmable scrolling">
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="ui sidebar right inverted vertical menu" id="mainSidebar" aria-hidden="false">
+  <div class="item" style="font-size:small; color:#FFFFFF; position:absolute; top:15px; text-transform:capitalize; width:90%;">
+    <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
+    <span style="margin-top:10px;" id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> <b>USD $</b></span><br>
+    <span id="sidebar-kyc">Kyc Verification: <span style="color:#FF0000" class="blinkred"><i class="fa fa-check-circle"></i> Required</span></span>
+  </div>
+  <span class="divider"></span>
+  <div class="item"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+  <div class="item"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="history.html"><i class="fa fa-history"></i> Transactions history</a></div>
+  <div class="item"><a href="trade-history.html"><i class="fa fa-area-chart"></i> Trading history</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+  <div class="item"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="#" onclick="logout(); return false;"><i class="fa fa-power-off"></i> Exit</a></div>
 </div>
 
-    <div class="pusher" aria-hidden="false">
+<div class="pusher" aria-hidden="false">
 <nav class="top-nav inner inner-new">
-	
-	<div class="top-bar">
-            <div class="head-row clearfix">
-                <div class="float-left ">
-                    
-                    <div class="logosm">
-            			<a href="dashboard.php"><img src="assets/img/logo.png" alt="247sterlingtrade"></a>
-        			</div>
-                    <!--<a href="" class="top-bar-nav dinb"><i class="help-open"></i> <span>Support</span></a>-->
-                 
-                    <div class="ui item dropdown dropdown-call dinb" tabindex="0">
-                    	<div class="top-bar-nav">
-                        	<div class="phone-open"></div>
-                        	<span>Call back</span>
-                        </div>
-                        <div class="menu transition hidden" tabindex="-1">
-                          <div class="item">
-                              <div class="phone-notice">Please input your phone number witd<br>country code and we will immediately contact you.</div>
-                              <div>+<input class="call-input" placeholder="phone" type="text" maxlengtd="20" force-integer="" id="callback" style="widtd:200px"><button class="button ui green-bm" id="call_btn" onClick="callBack()">Call back</button></div>
-                          </div>
-                        </div>
-                    </div>
-					 <script>
-   function callBack(){
-   	var callback = document.getElementById("callback").value;
-	document.getElementById("call_btn").innerHTML="<img src='247sterlingtrade/assets/img/ajax-load.gif' height='16' widtd='16' />";
-	if(callback == ""){
-			alert("No phone number entered !");
-			document.getElementById("call_btn").innerHTML="Call Back";
-		} 
-		else if(callback.lengtd < 10){
-			alert("Invalid phone number!");
-			document.getElementById("call_btn").innerHTML="Call Back";
-		} 
-		else if(!/^[0-9]+[-\s]?[0-9]+[-\s]?[0-9]+$/.test(callback)){
-			alert("Inavlid phone number!");
-			
-			document.getElementById("call_btn").innerHTML="Call Back";
-		} 
-		else{
-			{
-			alert("tdank You, we will get in touch witd you shortly");
-			document.getElementById("call_btn").innerHTML="Call Back";
-		} 
-		}
-   }
-   </script> 
-                   <a href="tel:+" ng-show="geo != 'US'" class="top-phone dinb" aria-hidden="false"><i class="fa fa-phone"></i></a>
-                    <a href="tel:+" ng-show="geo == 'US'" class="top-phone dinb ng-hide" aria-hidden="true"><i class="fa fa-phone"></i></a>
-					<a target='blank' href='https://api.whatsapp.com/send?phone=+&text=247sterlingtrade' style="color:#fff" class="top-phone dinb"><i class="fa fa-whatsapp"></i></a>
-                </div>
-                
-                <span class="menu-toggle float-right"><i></i></span>
-                
-                <div class="float-right nav smcapy-nav">
-		        	
-                <div class="ui item lang pointing dropdown" tabindex="0">
-                            <input type="hidden" name="lang">
-                            <div class="default text">
-                                <div id="google_translate_element" class="google-trans"></div>
-                                <script type="text/javascript">
-                                function googleTranslateElementInit() {
-                                    new google.translate.TranslateElement({
-                                        pageLanguage: 'en', includedLanguages: 'ar,en,es,jv,ko,pa,pt,ru,zh-CN,fa', 
-                                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                                    }, 'google_translate_element');
-                                }
-                                </script>
-                                <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-                            </div>
-
-                            
-    <i class="dropdown icon"></i>
-    
-</div>
-
-<div class="item">Kyc Verification:                            <span style="color:#FF0000" class="blinkred"><i class="fa fa-check-circle"></i> Required</span>
-                                                    </div>
-		        	
-		            <div class="item"><a class="ui button op link a-green-hover" href="logout.php"><i class="fa fa-power-off"></i> Exit</a></div>
-		            <div class="item"><a class="ui button op round green-bm nobold" href="funding.php"><i class="fa fa-money"></i> Account funding</a></div>
-		        </div>
-		        
+  <div class="top-bar">
+    <div class="head-row clearfix">
+      <div class="float-left">
+        <div class="logosm">
+          <a href="dashboard.html"><img src="assets/img/logo.png" alt="247sterlingtrade"></a>
+        </div>
+        <div class="ui item dropdown dropdown-call dinb" tabindex="0">
+          <div class="top-bar-nav">
+            <div class="phone-open"></div>
+            <span>Call back</span>
+          </div>
+          <div class="menu transition hidden" tabindex="-1">
+            <div class="item">
+              <div class="phone-notice">Please input your phone number with<br>country code and we will immediately contact you.</div>
+              <div>+<input class="call-input" placeholder="phone" type="text" maxlength="20" id="callback" style="width:200px"><button class="button ui green-bm" id="call_btn" onClick="callBack()">Call back</button></div>
             </div>
+          </div>
+        </div>
+        <script>
+        function callBack() {
+          var callback = document.getElementById("callback").value;
+          document.getElementById("call_btn").innerHTML = "<img src='assets/img/ajax-load.gif' height='16' width='16' />";
+          if (callback == "") {
+            alert("No phone number entered !");
+            document.getElementById("call_btn").innerHTML = "Call Back";
+          } else if (callback.length < 10) {
+            alert("Invalid phone number!");
+            document.getElementById("call_btn").innerHTML = "Call Back";
+          } else if (!/^[0-9]+[-\s]?[0-9]+[-\s]?[0-9]+$/.test(callback)) {
+            alert("Invalid phone number!");
+            document.getElementById("call_btn").innerHTML = "Call Back";
+          } else {
+            alert("Thank You, we will get in touch with you shortly");
+            document.getElementById("call_btn").innerHTML = "Call Back";
+          }
+        }
+        </script>
+        <a href="tel:+" class="top-phone dinb"><i class="fa fa-phone"></i></a>
+        <a target="_blank" href="https://api.whatsapp.com/send?phone=&text=247sterlingtrade" style="color:#fff" class="top-phone dinb"><i class="fa fa-whatsapp"></i></a>
+      </div>
+
+      <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
+
+      <div class="float-right nav smcapy-nav">
+        <div class="ui item lang pointing dropdown" tabindex="0">
+          <input type="hidden" name="lang">
+          <div class="default text">
+            <div id="google_translate_element" class="google-trans"></div>
+            <script type="text/javascript">
+            function googleTranslateElementInit() {
+              new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'ar,en,es,jv,ko,pa,pt,ru,zh-CN,fa',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+              }, 'google_translate_element');
+            }
+            </script>
+            <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+          </div>
+          <i class="dropdown icon"></i>
+        </div>
+
+        <div class="item" id="top-kyc">Kyc Verification: <span style="color:#FF0000" class="blinkred"><i class="fa fa-check-circle"></i> Required</span></div>
+        <div class="item"><a class="ui button op link a-green-hover" href="#" onclick="logout(); return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+        <div class="item"><a class="ui button op round green-bm nobold" href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+      </div>
     </div>
-    
-    <div class="top-line clearfix">
-        <div class="row-30">
-            <ul class="icon-nav">
-                <li class="active"><a target="_blank" title="Charting tools" class="technic" href="chart.php" style="color:#FFFFFF"><i class="fa fa-bar-chart"></i></a></li>
-                <li class="active"><a title="Fundamental analysis" class="fundament" href="fundamental-analysis.php" target="_blank" style="color:#FFFFFF"><i class="fa fa-pie-chart"></i></a></li>
-               
-                <li class="active"><a title="News" class="expert" href="news.php" target="_blank"  style="color:#FFFFFF"><i class="fa fa-tv"></i></a></li>
-                <li class="active"><a title="Technical Analysis" class="ideas" href="technical-analysis.php" target="_blank"  style="color:#FFFFFF"><i class="fa fa-signal"></i></a></li>
-                <li class="active"><a title="Economic calendar" class="calendar" href="calendar.php" target="_blank" style="color:#FFFFFF"><i class="fa fa-calendar"></i></a></li>
-              
-                
-            </ul>
-        </div>
-        
-        <div class="row-30 ">
-        	<div class="navsm text-xs-right">
-	        	<div class="ui item top-drop-in-css">
-	            	<a href="dashboard.php"><i class="fa fa-dashboard"></i> Trading</a>
-	            </div>
-	            <div class="ui item top-drop-in-css">
-	            	<a href="javascript:;"><i class="fa fa-money"></i> Account</a>
-	            	<div class="menu">
-				      <div class="item"><a href="funding.php"><i class="fa fa-money"></i> Account funding</a></div>
-				      <div class="item"><a href="withdrawal.php"><i class="fa fa-money"></i> Withdrawals</a></div>
-				      
-				    </div>
-	            </div>
-	            <div class="ui item top-drop-in-css">
-	            	<a href="javascript:;"><i class="fa fa-list"></i> Statements</a>
-	            	<div class="menu">
-				      <div class="item"><a href="history.php"><i class="fa fa-history"></i> Transactions history</a></div>
-				      <div class="item"><a href="trade-history.php"><i class="fa fa-area-chart"></i> Trading history</a></div>
-				    </div>	
-	            </div>
-	            <div class="ui item top-drop-in-css">
-	            	<a href="javascript:;"><i class="fa fa-cogs"></i> Settings</a>
-	            	<div class="menu">
-				      <div class="item"><a href="personal.php"><i class="fa fa-user"></i> Personal Data</a></div>
-				      <div class="item"><a href="security.php"><i class="fa fa-lock"></i> Security settings</a></div>
-				    </div>
-	            </div>
-	            <div class="ui item top-drop-in-css">
-	            </div>
-	        </div>
-        </div>
-       
-        <div class="time row-30 top-line-last-row-max">
-            <div class="right">
-              <a href="javascript:void(Tawk_API.toggle())" style="color:#FFFFFF">
-                <i class="fa fa-comment"></i>
-              </a>
-            </div>
-        </div>
+  </div>
+
+  <div class="top-line clearfix">
+    <div class="row-30">
+      <ul class="icon-nav">
+        <li class="active"><a target="_blank" title="Charting tools" class="technic" href="#" style="color:#FFFFFF"><i class="fa fa-bar-chart"></i></a></li>
+        <li class="active"><a title="Fundamental analysis" class="fundament" href="#" target="_blank" style="color:#FFFFFF"><i class="fa fa-pie-chart"></i></a></li>
+        <li class="active"><a title="News" class="expert" href="#" target="_blank" style="color:#FFFFFF"><i class="fa fa-tv"></i></a></li>
+        <li class="active"><a title="Technical Analysis" class="ideas" href="#" target="_blank" style="color:#FFFFFF"><i class="fa fa-signal"></i></a></li>
+        <li class="active"><a title="Economic calendar" class="calendar" href="#" target="_blank" style="color:#FFFFFF"><i class="fa fa-calendar"></i></a></li>
+      </ul>
     </div>
-       
-        <!-- <div class="time row-30 top-line-last-row-max">
-            <div class="right">
-              <a href="javascript:void(Tawk_API.toggle())" style="color:#FFFFFF">
-                <i class="fa fa-comment"></i>
-              </a>
-            </div>
+    <div class="row-30">
+      <div class="navsm text-xs-right">
+        <div class="ui item top-drop-in-css">
+          <a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a>
         </div>
-    </div> -->
-</nav><div class="root-content">
-<div class="pusher push-trading">
-	<div><div class="pusher">
- <section class="img-bg-section">
-     <div class="row">
-         <ul class="tabs">
-             <li><a href="#" class="active">Transactions History</a></li>
-            <li> <a href="trade-history.php" class="">Trading History</a></li>
-         </ul>
-         <div class="mob-tab-nav mob-main-tabs">
-             <div class="ui not_select dropdown mob-tabular" tabindex="0">
-                 <div class="text default">Transactions History</div>
-                 <i class="dropdown icon"></i>
-                 <div class="menu" tabindex="-1">
-                    
-                     <a href="trade-history.php" class="item">Trading History</a>
-                 </div>
-             </div>
-         </div>
+        <div class="ui item top-drop-in-css">
+          <a href="javascript:;"><i class="fa fa-money"></i> Account</a>
+          <div class="menu">
+            <div class="item"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+            <div class="item"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+          </div>
+        </div>
+        <div class="ui item top-drop-in-css">
+          <a href="javascript:;"><i class="fa fa-list"></i> Statements</a>
+          <div class="menu">
+            <div class="item"><a href="history.html"><i class="fa fa-history"></i> Transactions history</a></div>
+            <div class="item"><a href="trade-history.html"><i class="fa fa-area-chart"></i> Trading history</a></div>
+          </div>
+        </div>
+        <div class="ui item top-drop-in-css">
+          <a href="javascript:;"><i class="fa fa-cogs"></i> Settings</a>
+          <div class="menu">
+            <div class="item"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+            <div class="item"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="time row-30 top-line-last-row-max">
+      <div class="right">
+        <a href="javascript:void(0)" style="color:#FFFFFF"><i class="fa fa-comment"></i></a>
+      </div>
+    </div>
+  </div>
+</nav>
 
-         
-            <div class="content-body">
-        <div class="container">
-            <div class="row">
-                <div class="card">
-                    <div class="card-header border-0">
-                        <!-- <h4 class="card-title">Transaction History</h4> -->
-                    </div>
-                    <div class="card-body pt-0">
-                        <div class="transaction-table">
-                                                </div>
-                    </div>
-
-                    <!-- TRADING HISTORY -->
- 
-                    <div class="top-info">
+<div class="root-content">
+  <div class="pusher push-trading">
+    <div class="pusher">
+      <section class="img-bg-section">
+        <div class="row">
+          <ul class="tabs">
+            <li><a href="history.html" class="active">Transactions History</a></li>
+            <li><a href="trade-history.html">Trading History</a></li>
+          </ul>
+          <div class="mob-tab-nav mob-main-tabs">
+            <div class="ui not_select dropdown mob-tabular" tabindex="0">
+              <div class="text default">Transactions History</div>
+              <i class="dropdown icon"></i>
+              <div class="menu" tabindex="-1">
+                <a href="history.html" class="item">Transactions History</a>
+                <a href="trade-history.html" class="item">Trading History</a>
+              </div>
+            </div>
+          </div>
+          <div class="top-info">
             <h2 class="title">Transactions History</h2>
+          </div>
         </div>
-     </div>
-     <span class="blue-arrow"></span>
- </section>
-<div style="">
-<section class="content-box history-min">
-    <div class="row">
-        <div class="table" style="overflow-y:auto;">
-         
+        <span class="blue-arrow"></span>
+      </section>
 
-            <table class="" style=" min-width:600px;">
-                   <tbody>
-                   <tr>
-                       <td>ID#</td>
-                       <td>Date</td>
-                       <td>Transaction ID</td>
-                       <td>Amount</td>
-                       <td>Transaction Type</td>
-                       <td>Status</td>
-                   </tr>
-                   </tbody>
-                    
-                    
-                    
-                   <tbody>
-                                      <tr>
-                       <td>1</td>
-                       <td>2026-08-15 15:27:33</td>
-                       <td>tq65yWA</td>
-                       <td>2000</td>
-                       <td>Deposit</td>
-                       <td>pending</td>
-                   </tr>
-                                      </tbody>
+      <section class="content-box history-min">
+        <div class="row" style="padding:16px;">
 
+          <div style="color:#fff;margin-bottom:8px;">
+            Balance: <b id="display-balance">0.00</b> <span id="display-currency">USD $</span>
+            &nbsp;|&nbsp; Email: <span id="display-email">Loading...</span>
+          </div>
 
-                   <tbody>
-                                           
-                   </tbody>
-               </table>
-               </div>
-           </div>
-       </div>
-   </div>
-</div>
-</div>  <!--END -->
-
-<script class="ng-scope">
-    $(function(){
-        $('.ui.dropdown').dropdown();
-    });
-</script></div>
-</div>
-                                            </div>
-											
-											<footer class="footer">
-        <div class="row clearfix">
-           
-
-            <div class="float-left">
-            	<noindex>
-            		<!--googleoff: all-->
-                	<span class="copy">&copy; 2022 <span>247sterlingtrade Ltd .</span></span>  
-                	<!--googleon: all-->
-                </noindex>
+          <div class="filter-bar">
+            <div>
+              <label for="typeFilter">Type</label>
+              <select id="typeFilter">
+                <option value="ALL">All</option>
+                <option value="Deposit">Deposits</option>
+                <option value="Withdrawal">Withdrawals</option>
+              </select>
             </div>
-            <div class="float-right">
-                <ul class="soc-list">
-                	<li>
-                		
-                	</li>
-                    <li>Follow us</li>
-                    <li>
-                    	<div class="footer-media">
-		                    <div class="media-icons">
-		                        <a href=""><span class="fa fa-facebook"></span></a>
-		                    </div>
-		                </div>
-                    </li>
-                    <li>
-                    	<div class="footer-media">
-		                    <div class="media-icons">
-		                        <a href=""><span class="round fa fa-instagram"></span></a>
-		                    </div>
-		                </div>
-                    </li>
-                    <li>
-                    	<div class="footer-media">
-		                    <div class="media-icons">
-		                        <a href=""><span class="fa fa-twitter"></span></a>
-		                    </div>
-		                </div>
-                    </li>
-                   
-                </ul>
+            <div>
+              <label for="statusFilter">Status</label>
+              <select id="statusFilter">
+                <option value="ALL">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
             </div>
+          </div>
+
+          <h3 class="section-title-h" id="deposits-heading"><i class="fa fa-plus-circle"></i> Deposits</h3>
+          <div class="history-table-wrap" id="deposits-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Transaction ID</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="deposits-tbody">
+                <tr><td colspan="7">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="section-title-h" id="withdrawals-heading"><i class="fa fa-minus-circle"></i> Withdrawals</h3>
+          <div class="history-table-wrap" id="withdrawals-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Transaction ID</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="withdrawals-tbody">
+                <tr><td colspan="7">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
 
         </div>
-    </footer></div>
-<!--sidebar-->
-
-<!---->
-
-
-
-    
-
-    
-
-    <script type="text/javascript" async="" src="assets/js/conversion_async.js"></script><script type="text/javascript" async="" src="assets/js/watch.js"></script><script async="" src="assets/js/analytics.js"></script><script src="assets/js/inner.js"></script>
-    <script src="assets/js/vendor.js"></script>
-<script src="assets/js/app.js"></script>
-
-
-
-
-<script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-76636433-1', 'auto');
-    ga('send', 'pageview');
-
-</script>
-
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-
-    if(bowser.safari || bowser.mac){
-        // disable for tdis
-    }else{
-        (function (d, w, c) {
-            (w[c] = w[c] || []).push(function() {
-                try {
-                    w.yaCounter38379630 = new Ya.Metrika({
-                        id:38379630,
-                        clickmap:true,
-                        trackLinks:true,
-                        accurateTrackBounce:true,
-                        webvisor:true
-                    });
-                } catch(e) { }
-
-            });
-
-            var n = d.getElementsByTagName("script")[0],
-                s = d.createElement("script"),
-                f = function () { n.parentNode.insertBefore(s, n); };
-            s.type = "text/javascript";
-            s.async = true;
-            s.src = "https://mc.yandex.ru/metrika/watch.js";
-
-            if (w.opera == "[object Opera]") {
-                d.addEventListener("DOMContentLoaded", f, false);
-            } else { f(); }
-        })(document, window, "yandex_metrika_callbacks");
-    }
-</script>
-<noscript aria-hidden="false"><div><img src="https://mc.yandex.ru/watch/38379630" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-
-<script type="text/javascript">
-    /* <![CDATA[ */
-    var google_conversion_id = 1057644682;
-    var google_custom_params = window.google_tag_params;
-    var google_remarketing_only = true;
-    /* ]]> */
-</script>
-<script type="text/javascript" src="assets/js/conversion.js">
-</script>
-<noscript aria-hidden="false">
-    <div style="display:inline;">
-        <img height="1" widtd="1" style="border-style:none;" alt="" src="googleads.g.doubleclick.net/pagead/viewtdroughconversion/1057644682/?guid=ON&amp;script=0"/>
+      </section>
     </div>
-</noscript>
+  </div>
+</div>
 
-<!-- Global site tag (gtag.js) - Google AdWords: 824992907 -->
-<script async="" src="assets/js/js.js"></script>
+<footer class="footer">
+  <div class="row clearfix">
+    <div class="float-left">
+      <noindex>
+        <span class="copy">&copy; 2022 <span>247sterlingtrade Ltd .</span></span>
+      </noindex>
+    </div>
+    <div class="float-right">
+      <ul class="soc-list">
+        <li>Follow us</li>
+        <li>
+          <div class="footer-media">
+            <div class="media-icons"><a href=""><span class="fa fa-facebook"></span></a></div>
+          </div>
+        </li>
+        <li>
+          <div class="footer-media">
+            <div class="media-icons"><a href=""><span class="round fa fa-instagram"></span></a></div>
+          </div>
+        </li>
+        <li>
+          <div class="footer-media">
+            <div class="media-icons"><a href=""><span class="fa fa-twitter"></span></a></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script src="assets/js/inner.js"></script>
+<script src="assets/js/vendor.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/frontend/public/js/config.js"></script>
+<script src="/frontend/public/js/auth.js"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'AW-824992907');
-</script>
+(function () {
+  var sidebar = document.getElementById('mainSidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var toggleBtn = document.getElementById('menuToggleBtn') || document.querySelector('.menu-toggle');
 
-<script src="//code.jivosite.com/widget/sET0SQD8fb" async></script>
-</body></html>
+  function openSidebar() {
+    if (sidebar) sidebar.classList.add('visible');
+    if (overlay) overlay.classList.add('active');
+  }
+  function closeSidebar() {
+    if (sidebar) sidebar.classList.remove('visible');
+    if (overlay) overlay.classList.remove('active');
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (sidebar && sidebar.classList.contains('visible')) closeSidebar();
+      else openSidebar();
+    });
+  }
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+  if (sidebar) {
+    sidebar.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeSidebar);
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeSidebar();
+  });
+})();
+
+document.addEventListener('DOMContentLoaded', async function () {
+  if (typeof requireAuthPage === 'function') requireAuthPage();
+
+  var allDeposits = [];
+  var allWithdrawals = [];
+
+  function formatMoney(v) {
+    var n = Number(v);
+    return isNaN(n) ? '0.00' : n.toFixed(2);
+  }
+
+  function kycHtml(status) {
+    if (status === 'approve') {
+      return 'Kyc Verification: <span style="color:#0f0" class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>';
+    }
+    if (status === 'pending') {
+      return 'Kyc Verification: <span style="color:#ff0"><i class="fa fa-clock-o"></i> Pending</span>';
+    }
+    return 'Kyc Verification: <span style="color:#FF0000" class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
+  }
+
+  function statusClass(s) {
+    s = String(s || '').toLowerCase();
+    if (s === 'approved') return 'status-approved';
+    if (s === 'rejected') return 'status-rejected';
+    return 'status-pending';
+  }
+
+  function renderUser(user) {
+    var bal = formatMoney(user.balance);
+    var cur = user.currency || 'USD $';
+    var email = user.email || '';
+
+    var se = document.getElementById('sidebar-email');
+    if (se) se.innerHTML = '<i class="fa fa-envelope-o"></i> ' + email;
+
+    var sb = document.getElementById('sidebar-balance');
+    if (sb) sb.innerHTML = '<b><i class="fa fa-money"></i> ' + bal + '</b> <b>' + cur + '</b>';
+
+    var sk = document.getElementById('sidebar-kyc');
+    if (sk) sk.innerHTML = kycHtml(user.kycVerified);
+
+    var tk = document.getElementById('top-kyc');
+    if (tk) tk.innerHTML = kycHtml(user.kycVerified);
+
+    var db = document.getElementById('display-balance');
+    if (db) db.textContent = bal;
+    var dc = document.getElementById('display-currency');
+    if (dc) dc.textContent = cur;
+    var de = document.getElementById('display-email');
+    if (de) de.textContent = email;
+  }
+
+  function renderDeposits(list) {
+    var tbody = document.getElementById('deposits-tbody');
+    if (!tbody) return;
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="7">No deposits found for this filter.</td></tr>';
+      return;
+    }
+    var html = '';
+    list.forEach(function (d, i) {
+      var dateStr = d.createdAt ? new Date(d.createdAt).toLocaleString() : '—';
+      var idStr = d._id ? String(d._id).slice(-8) : '—';
+      html += '<tr>' +
+        '<td>' + (i + 1) + '</td>' +
+        '<td>' + dateStr + '</td>' +
+        '<td>' + idStr + '</td>' +
+        '<td>$' + formatMoney(d.amount) + '</td>' +
+        '<td>' + (d.payment_method || '—') + '</td>' +
+        '<td>Deposit</td>' +
+        '<td class="' + statusClass(d.status) + '">' + (d.status || 'pending') + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  function renderWithdrawals(list) {
+    var tbody = document.getElementById('withdrawals-tbody');
+    if (!tbody) return;
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="7">No withdrawals found for this filter.</td></tr>';
+      return;
+    }
+    var html = '';
+    list.forEach(function (w, i) {
+      var dateStr = w.createdAt ? new Date(w.createdAt).toLocaleString() : '—';
+      var idStr = w._id ? String(w._id).slice(-8) : '—';
+      html += '<tr>' +
+        '<td>' + (i + 1) + '</td>' +
+        '<td>' + dateStr + '</td>' +
+        '<td>' + idStr + '</td>' +
+        '<td>$' + formatMoney(w.amount) + '</td>' +
+        '<td>' + (w.type || '—') + '</td>' +
+        '<td>Withdrawal</td>' +
+        '<td class="' + statusClass(w.status) + '">' + (w.status || 'pending') + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  function applyFilters() {
+    var typeVal = document.getElementById('typeFilter').value;
+    var statusVal = document.getElementById('statusFilter').value;
+
+    var dep = allDeposits.slice();
+    var wit = allWithdrawals.slice();
+
+    if (statusVal !== 'ALL') {
+      dep = dep.filter(function (d) {
+        return String(d.status || '').toLowerCase() === statusVal.toLowerCase();
+      });
+      wit = wit.filter(function (w) {
+        return String(w.status || '').toLowerCase() === statusVal.toLowerCase();
+      });
+    }
+
+    var depWrap = document.getElementById('deposits-table-wrap');
+    var witWrap = document.getElementById('withdrawals-table-wrap');
+    var depHead = document.getElementById('deposits-heading');
+    var witHead = document.getElementById('withdrawals-heading');
+
+    if (typeVal === 'Deposit') {
+      depWrap.style.display = 'block';
+      depHead.style.display = 'block';
+      witWrap.style.display = 'none';
+      witHead.style.display = 'none';
+      renderDeposits(dep);
+    } else if (typeVal === 'Withdrawal') {
+      depWrap.style.display = 'none';
+      depHead.style.display = 'none';
+      witWrap.style.display = 'block';
+      witHead.style.display = 'block';
+      renderWithdrawals(wit);
+    } else {
+      depWrap.style.display = 'block';
+      depHead.style.display = 'block';
+      witWrap.style.display = 'block';
+      witHead.style.display = 'block';
+      renderDeposits(dep);
+      renderWithdrawals(wit);
+    }
+  }
+
+  try {
+    var userId = null;
+    try {
+      var stored = localStorage.getItem('user');
+      if (stored) userId = JSON.parse(stored)._id;
+    } catch (e) {}
+
+    if (!userId) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    var res = await api.get('/history/' + userId);
+    if (!res.data || !res.data.success) {
+      throw new Error((res.data && res.data.message) || 'Failed to load history');
+    }
+
+    renderUser(res.data.user);
+    allDeposits = res.data.deposits || [];
+    allWithdrawals = res.data.withdrawals || [];
+    applyFilters();
+
+    document.getElementById('typeFilter').addEventListener('change', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+  } catch (err) {
+    console.error(err);
+    if (err.response && err.response.status === 401) {
+      window.location.href = 'login.html';
+      return;
+    }
+    document.getElementById('deposits-tbody').innerHTML =
+      '<tr><td colspan="7">Failed to load transactions.</td></tr>';
+    document.getElementById('withdrawals-tbody').innerHTML =
+      '<tr><td colspan="7">Failed to load transactions.</td></tr>';
+  }
+});
+</script>
+</body>
+</html>

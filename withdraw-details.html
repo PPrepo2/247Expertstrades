@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Withdraw Details | 247Expertstrade.com</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="./assets/img/favicons/favicon-32x32.png" sizes="32x32">
+<link href="./assets/css/css.css" rel="stylesheet">
+<link rel="stylesheet" href="./assets/css/inner.css">
+<link rel="stylesheet" href="./assets/css/app.css">
+<link rel="stylesheet" href="./assets/css/cs.css">
+<script src="https://use.fontawesome.com/4b789087e7.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<style>
+.divider{border-bottom:1px dotted}
+.blinkred{animation:blinkingText 2s infinite}
+.blinkgreen{animation:blinkgreenText 2s infinite}
+@keyframes blinkingText{0%{color:#f00}100%{color:#f00}}
+@keyframes blinkgreenText{0%{color:#0f0}100%{color:#0f0}}
+.ui.sidebar.right{position:fixed!important;top:0;right:-280px;width:260px;height:100%;z-index:10000;transition:right .3s ease;overflow-y:auto;padding-top:90px!important}
+.ui.sidebar.right.visible{right:0!important}
+.sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9999}
+.sidebar-overlay.active{display:block}
+.menu-toggle{cursor:pointer!important;display:block!important}
+.form-card{max-width:520px;margin:24px auto;padding:24px;background:#1a1a2e;border-radius:12px;color:#fff}
+.form-card label{display:block;margin:12px 0 6px;font-weight:bold}
+.form-card input,.form-card textarea{width:100%;padding:10px;border-radius:6px;border:1px solid #444;background:#111;color:#fff;box-sizing:border-box}
+.form-card textarea{min-height:80px}
+.field-group{display:none}
+.field-group.active{display:block}
+.meta{margin-bottom:16px;padding:12px;background:rgba(0,0,0,.3);border-radius:8px}
+</style>
+</head>
+<body class="pushable dimmable scrolling">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="ui sidebar right inverted vertical menu" id="mainSidebar">
+  <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%">
+    <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
+    <span id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> <b>USD $</b></span><br>
+    <span id="sidebar-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></span>
+  </div>
+  <span class="divider"></span>
+  <div class="item"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+  <div class="item"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="history.html"><i class="fa fa-history"></i> Transactions history</a></div>
+  <div class="item"><a href="trade-history.html"><i class="fa fa-area-chart"></i> Trading history</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+  <div class="item"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+</div>
+
+<div class="pusher">
+<nav class="top-nav inner inner-new">
+  <div class="top-bar">
+    <div class="head-row clearfix">
+      <div class="float-left"><div class="logosm"><a href="dashboard.html"><img src="./assets/img/logo.png" alt=""></a></div></div>
+      <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
+      <div class="float-right nav smcapy-nav">
+        <div class="item" id="top-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></div>
+        <div class="item"><a class="ui button op link a-green-hover" href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="root-content">
+  <section class="img-bg-section">
+    <div class="row">
+      <div class="top-info"><h2 class="title">Withdrawal Details</h2></div>
+    </div>
+    <span class="blue-arrow"></span>
+  </section>
+
+  <div class="form-card">
+    <div class="meta">
+      <div>Amount: <b id="show-amount">0.00</b></div>
+      <div>Method: <b id="show-type">—</b></div>
+    </div>
+
+    <label>Amount</label>
+    <input type="text" id="amount" readonly>
+
+    <label>Fees</label>
+    <input type="text" id="fees" readonly value="0.00">
+
+    <label>Narration</label>
+    <textarea id="narration" placeholder="Optional note"></textarea>
+
+    <div id="group-crypto" class="field-group">
+      <label id="crypto-label">Wallet address</label>
+      <input type="text" id="walletAddress" placeholder="Enter wallet address">
+    </div>
+
+    <div id="group-cashapp" class="field-group">
+      <label>CashApp tag</label>
+      <input type="text" id="cashAppTag" placeholder="$cashtag">
+    </div>
+
+    <div id="group-paypal" class="field-group">
+      <label>PayPal email</label>
+      <input type="email" id="paypalEmail" placeholder="email@example.com">
+    </div>
+
+    <div id="group-bank" class="field-group">
+      <label>Bank name</label>
+      <input type="text" id="bankName">
+      <label>Account number</label>
+      <input type="text" id="accountNumber">
+      <label>Country</label>
+      <input type="text" id="country">
+      <label>Swift code / Routing number</label>
+      <input type="text" id="swiftCode">
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:12px;justify-content:space-between">
+      <a href="withdrawal.html" class="ui button">Back</a>
+      <button type="button" class="ui button primal green" id="detailsNext">Next</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer"><div class="row clearfix"><div class="float-left"><span class="copy">&copy; 2022 247Expertstrade Ltd .</span></div></div></footer>
+</div>
+
+<script src="./assets/js/inner.js"></script>
+<script src="./assets/js/vendor.js"></script>
+<script src="./assets/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/frontend/public/js/config.js"></script>
+<script src="/frontend/public/js/auth.js"></script>
+<script>
+(function(){
+  var sidebar=document.getElementById('mainSidebar');
+  var overlay=document.getElementById('sidebarOverlay');
+  var toggleBtn=document.getElementById('menuToggleBtn');
+  function openS(){if(sidebar)sidebar.classList.add('visible');if(overlay)overlay.classList.add('active')}
+  function closeS(){if(sidebar)sidebar.classList.remove('visible');if(overlay)overlay.classList.remove('active')}
+  if(toggleBtn)toggleBtn.addEventListener('click',function(e){e.preventDefault();sidebar&&sidebar.classList.contains('visible')?closeS():openS()});
+  if(overlay)overlay.addEventListener('click',closeS);
+})();
+
+document.addEventListener('DOMContentLoaded', async function(){
+  if(typeof requireAuthPage==='function') requireAuthPage();
+
+  var amount=localStorage.getItem('withdraw_amount');
+  var type=localStorage.getItem('withdraw_type');
+  var fees=localStorage.getItem('withdraw_fees')||'0.00';
+
+  if(!amount||!type){
+    Swal.fire('Error','Start withdrawal from the previous page','error').then(function(){
+      window.location.href='withdrawal.html';
+    });
+    return;
+  }
+
+  document.getElementById('show-amount').textContent=amount;
+  document.getElementById('show-type').textContent=type;
+  document.getElementById('amount').value=amount;
+  document.getElementById('fees').value=fees;
+
+  document.querySelectorAll('.field-group').forEach(function(g){g.classList.remove('active')});
+  if(type==='Bitcoin'||type==='Ethereum'||type==='USDT'){
+    document.getElementById('group-crypto').classList.add('active');
+    document.getElementById('crypto-label').textContent=type+' wallet address';
+  } else if(type==='CashApp'){
+    document.getElementById('group-cashapp').classList.add('active');
+  } else if(type==='PayPal'){
+    document.getElementById('group-paypal').classList.add('active');
+  } else if(type==='Bank Transfer'){
+    document.getElementById('group-bank').classList.add('active');
+  }
+
+  try{
+    var res=await api.get('/withdraw');
+    if(res.data&&res.data.success){
+      var u=res.data.user;
+      var bal=Number(u.balance||0).toFixed(2);
+      document.getElementById('sidebar-email').innerHTML='<i class="fa fa-envelope-o"></i> '+(u.email||'');
+      document.getElementById('sidebar-balance').innerHTML='<b><i class="fa fa-money"></i> '+bal+'</b>';
+      var kyc=u.kycVerified==='approve'
+        ? 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>'
+        : 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
+      document.getElementById('sidebar-kyc').innerHTML=kyc;
+      document.getElementById('top-kyc').innerHTML=kyc;
+    }
+  }catch(e){}
+
+  document.getElementById('detailsNext').addEventListener('click', function(){
+    var narration=document.getElementById('narration').value.trim();
+    localStorage.setItem('withdraw_narration', narration);
+
+    if(type==='Bitcoin'||type==='Ethereum'||type==='USDT'){
+      var wa=document.getElementById('walletAddress').value.trim();
+      if(!wa){ Swal.fire('Error','Wallet address is required','error'); return; }
+      localStorage.setItem('withdraw_walletAddress', wa);
+    } else if(type==='CashApp'){
+      var tag=document.getElementById('cashAppTag').value.trim();
+      if(!tag){ Swal.fire('Error','CashApp tag is required','error'); return; }
+      localStorage.setItem('withdraw_cashAppTag', tag);
+    } else if(type==='PayPal'){
+      var em=document.getElementById('paypalEmail').value.trim();
+      if(!em){ Swal.fire('Error','PayPal email is required','error'); return; }
+      localStorage.setItem('withdraw_paypalEmail', em);
+    } else if(type==='Bank Transfer'){
+      var bn=document.getElementById('bankName').value.trim();
+      var an=document.getElementById('accountNumber').value.trim();
+      var co=document.getElementById('country').value.trim();
+      var sw=document.getElementById('swiftCode').value.trim();
+      if(!bn||!an||!co||!sw){
+        Swal.fire('Error','All bank fields are required','error');
+        return;
+      }
+      localStorage.setItem('withdraw_bankName', bn);
+      localStorage.setItem('withdraw_accountNumber', an);
+      localStorage.setItem('withdraw_country', co);
+      localStorage.setItem('withdraw_swiftCode', sw);
+    }
+
+    window.location.href='withdraw-verification.html';
+  });
+});
+</script>
+</body>
+</html>

@@ -1,489 +1,446 @@
-
 <!DOCTYPE html>
-<html style=""><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<html>
+<head>
 <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>           Trading Main    </title>
-<meta name="description" content="            
-    ">
-
-<link rel="apple-touch-icon-precomposed" sizes="57x57" href="assets/img/favicons/apple-touch-icon-57x57.png">
-<link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/img/favicons/apple-touch-icon-114x114.png">
-<link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/img/favicons/apple-touch-icon-72x72.png">
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/img/favicons/apple-touch-icon-144x144.png">
-<link rel="apple-touch-icon-precomposed" sizes="120x120" href="assets/img/favicons/apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon-precomposed" sizes="152x152" href="assets/img/favicons/apple-touch-icon-152x152.png">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Personal Data | 247Expertstrade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
 <link rel="icon" type="image/png" href="assets/img/favicons/favicon-32x32.png" sizes="32x32">
-<link rel="icon" type="image/png" href="assets/img/favicons/favicon-16x16.png" sizes="16x16">
-
-            <link rel="canonical" href="dashboard.php">
-        <meta name="viewport" content="widtd=device-widtd, initial-scale=1, maximum-scale=1, minimum-scale=1">
-
-        <link href="assets/css/css.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="assets/css/inner.css">
-<link rel="stylesheet" type="text/css" href="assets/css/app.css">
-<link rel="stylesheet" type="text/css" href="assets/css/cs.css">
-    <script src="https://use.fontawesome.com/4b789087e7.js"></script> 
+<link href="assets/css/css.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/inner.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/cs.css">
+<script src="https://use.fontawesome.com/4b789087e7.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <style>
-.divider{
-border-bottom: 1px dotted;
-}
-.blinking{
-	animation:blinkingText 2s infinite;
-}
-@keyframes blinkingText{
-	0%{		color: #f00;	}
-	49%{	color: #600;	}
-	50%{	color: #c00;	}
-	99%{	color:#e00;	}
-	100%{	color: #f00;	}
-}
-.blinkgreen{
-	animation:blinkgreenText 2s infinite;
-}
-@keyframes blinkgreenText{
-	0%{		color: #0f0;	}
-	49%{	color: #060;	}
-	50%{	color: #0c0;	}
-	99%{	color:#0e0;	}
-	100%{	color: #0f0;	}
-}
+.divider{border-bottom:1px dotted}
+.blinkred{animation:blinkingText 2s infinite}
+.blinkgreen{animation:blinkgreenText 2s infinite}
+@keyframes blinkingText{0%{color:#f00}49%{color:#600}50%{color:#c00}99%{color:#e00}100%{color:#f00}}
+@keyframes blinkgreenText{0%{color:#0f0}49%{color:#060}50%{color:#0c0}99%{color:#0e0}100%{color:#0f0}}
+.ui.sidebar.right{position:fixed!important;top:0;right:-280px;width:260px;height:100%;z-index:10000;transition:right .3s ease;overflow-y:auto;padding-top:90px!important}
+.ui.sidebar.right.visible{right:0!important}
+.sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9999}
+.sidebar-overlay.active{display:block}
+.menu-toggle{cursor:pointer!important;display:block!important}
+.account-data .line{margin-bottom:12px}
+.account-data input,.account-data select{width:100%;max-width:420px;padding:10px;border-radius:6px;border:1px solid #444;background:#1a1a2e;color:#fff;box-sizing:border-box}
+.account-data input:disabled,.account-data select:disabled{opacity:.65;cursor:not-allowed}
+.kyc-box{max-width:520px;margin:20px auto;text-align:center;color:#fff}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:20000;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal-box{background:#1a1a2e;color:#fff;border-radius:12px;padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.modal-box h3{margin-top:0}
+.modal-box .close-x{position:absolute;top:10px;right:14px;font-size:24px;cursor:pointer;color:#aaa}
+.modal-box label{display:block;margin:12px 0 6px;font-weight:bold}
+.modal-box input[type=file],.modal-box select{width:100%;margin-bottom:8px}
+.preview-img{display:none;max-width:100%;max-height:140px;margin-top:8px;border-radius:8px;border:1px solid #444}
+.preview-img.show{display:block}
 </style>
-<SCRIPT type="text/javascript">
-				var tday=new Array("Sunday","Monday","Tuesday","Wednesday","tdursday","Friday","Saturday");
-				var tmontd=new Array("January","February","March","April","May","June","July","August","September","October","November","December");
-
-				function GetClock(){
-				 tzOffset = 0;//set tdis to tde number of hours offset from UTC
-
-				 d=new Date();
-				 dx=d.toGMTString();
-				dx=dx.substr(0,dx.lengtd -3);
-				d.setTime(Date.parse(dx))
-				d.setdours(d.getdours()+tzOffset);
-				var nday=d.getDay(),nmontd=d.getMontd(),ndate=d.getDate();
-				var nhour=d.getdours(),nmin=d.getMinutes(),ap,nsec=d.getSeconds();
-				
-				if(nhour<=9) nhour="0"+nhour;
-				if(nmin<=9) nmin="0"+nmin;
-				if(nsec<=9) nsec="0"+nsec;
-
-				document.getElementById('clockbox').innerHTML="<i class='fa fa-clock-o'></i>&nbsp;"+nhour+":"+nmin+":"+nsec;
-				var nminutes = Number(nmin) + 01;
-				if(nminutes<=9) nminutes="0"+nminutes;
-				time = "<i class='fa fa-clock-o'></i>&nbsp;"+nhour+":"+nminutes;
-				
-				}
-
-				window.onload=function(){
-				GetClock();
-				setInterval(GetClock,1000);
-				document.getElementById('time').innerHTML=time;
-				}
-				</SCRIPT>
 </head>
-<body class="pushable  dimmable scrolling" style=""><div class="ui sidebar right inverted vertical menu" aria-hidden="false">
-<div class="item" style="font-size:small; color:#FFFFFF; position:absolute; top:15px; text-transform:capitalize">
- <span><i class="fa fa-envelope-o"></i> piuspolocha1231@gmail.com </span><br>
-								<span style="margin-top:10px;"><b><i class="fa fa-money"></i> 0.00</b> <b> </b></span>
-								<br>
-								
-                                <span>Kyc Verification:                            <span style="color:#FF0000" class="blinkred"><i class="fa fa-check-circle"></i> Required</span>
-                                                    </span>
-                            </div>
-                                
-								<span class="divider"></span>
-    <div class="item"><a href="dashboard.php"><i class="fa fa-dashboard"></i> Trading</a></div>
-	<span class="divider"></span>
-	<div class="item"><a href="funding.php"><i class="fa fa-money"></i> Account funding</a></div>
-	<div class="item"><a href="witddrawal.php"><i class="fa fa-money"></i> Witddrawals</a></div>
-    <span class="divider"></span>
-    <div class="item"><a href="history.php"><i class="fa fa-history"></i> Transactions history</a></div>
-	<div class="item"><a href="trade-history.php"><i class="fa fa-area-chart"></i> Trading history</a></div>	
-    <span class="divider"></span>
-    <div class="item"><a href="personal.php"><i class="fa fa-user"></i> Personal Data</a></div>
-	<div class="item"><a href="security.php"><i class="fa fa-lock"></i> Security settings</a></div>
-    <span class="divider"></span>
-    <span class="divider"></span>
-    <div class="item"><a href="logout.php"><i class="fa fa-power-off"></i> Exit</a></div>
+<body class="pushable dimmable scrolling">
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="ui sidebar right inverted vertical menu" id="mainSidebar">
+  <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%">
+    <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
+    <span id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> <b>USD $</b></span><br>
+    <span id="sidebar-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></span>
+  </div>
+  <span class="divider"></span>
+  <div class="item"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+  <div class="item"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="history.html"><i class="fa fa-history"></i> Transactions history</a></div>
+  <div class="item"><a href="trade-history.html"><i class="fa fa-area-chart"></i> Trading history</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+  <div class="item"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
 </div>
 
-    <div class="pusher" aria-hidden="false">
+<div class="pusher">
 <nav class="top-nav inner inner-new">
-	
-	<div class="top-bar">
-            <div class="head-row clearfix">
-                <div class="float-left ">
-                    
-                    <div class="logosm">
-            			<a href="dashboard.php"><img src="assets/img/logo.png" alt="247sterlingtrade"></a>
-        			</div>
-                    <!--<a href="" class="top-bar-nav dinb"><i class="help-open"></i> <span>Support</span></a>-->
-                 
-                    <div class="ui item dropdown dropdown-call dinb" tabindex="0">
-                    	<div class="top-bar-nav">
-                        	<div class="phone-open"></div>
-                        	<span>Call back</span>
-                        </div>
-                        <div class="menu transition hidden" tabindex="-1">
-                          <div class="item">
-                              <div class="phone-notice">Please input your phone number witd<br>country code and we will immediately contact you.</div>
-                              <div>+<input class="call-input" placeholder="phone" type="text" maxlengtd="20" force-integer="" id="callback" style="widtd:200px"><button class="button ui green-bm" id="call_btn" onClick="callBack()">Call back</button></div>
-                          </div>
-                        </div>
-                    </div>
-					 <script>
-   function callBack(){
-   	var callback = document.getElementById("callback").value;
-	document.getElementById("call_btn").innerHTML="<img src='247sterlingtrade/assets/img/ajax-load.gif' height='16' widtd='16' />";
-	if(callback == ""){
-			alert("No phone number entered !");
-			document.getElementById("call_btn").innerHTML="Call Back";
-		} 
-		else if(callback.lengtd < 10){
-			alert("Invalid phone number!");
-			document.getElementById("call_btn").innerHTML="Call Back";
-		} 
-		else if(!/^[0-9]+[-\s]?[0-9]+[-\s]?[0-9]+$/.test(callback)){
-			alert("Inavlid phone number!");
-			
-			document.getElementById("call_btn").innerHTML="Call Back";
-		} 
-		else{
-			{
-			alert("tdank You, we will get in touch witd you shortly");
-			document.getElementById("call_btn").innerHTML="Call Back";
-		} 
-		}
-   }
-   </script> 
-                   <a href="tel:+" ng-show="geo != 'US'" class="top-phone dinb" aria-hidden="false"><i class="fa fa-phone"></i></a>
-                    <a href="tel:+" ng-show="geo == 'US'" class="top-phone dinb ng-hide" aria-hidden="true"><i class="fa fa-phone"></i></a>
-					<a target='blank' href='https://api.whatsapp.com/send?phone=+&text=247sterlingtrade' style="color:#fff" class="top-phone dinb"><i class="fa fa-whatsapp"></i></a>
-                </div>
-                
-                <span class="menu-toggle float-right"><i></i></span>
-                
-                <div class="float-right nav smcapy-nav">
-		        	
-                <div class="ui item lang pointing dropdown" tabindex="0">
-                            <input type="hidden" name="lang">
-                            <div class="default text">
-                                <div id="google_translate_element" class="google-trans"></div>
-                                <script type="text/javascript">
-                                function googleTranslateElementInit() {
-                                    new google.translate.TranslateElement({
-                                        pageLanguage: 'en', includedLanguages: 'ar,en,es,jv,ko,pa,pt,ru,zh-CN,fa', 
-                                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                                    }, 'google_translate_element');
-                                }
-                                </script>
-                                <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-                            </div>
-
-                            
-    <i class="dropdown icon"></i>
-    
-</div>
-
-<div class="item">Kyc Verification:                            <span style="color:#FF0000" class="blinkred"><i class="fa fa-check-circle"></i> Required</span>
-                                                    </div>
-		        	
-		            <div class="item"><a class="ui button op link a-green-hover" href="logout.php"><i class="fa fa-power-off"></i> Exit</a></div>
-		            <div class="item"><a class="ui button op round green-bm nobold" href="funding.php"><i class="fa fa-money"></i> Account funding</a></div>
-		        </div>
-		        
-            </div>
+  <div class="top-bar">
+    <div class="head-row clearfix">
+      <div class="float-left">
+        <div class="logosm"><a href="dashboard.html"><img src="assets/img/logo.png" alt="247Expertstrade"></a></div>
+      </div>
+      <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
+      <div class="float-right nav smcapy-nav">
+        <div class="item" id="top-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></div>
+        <div class="item"><a class="ui button op link a-green-hover" href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+        <div class="item"><a class="ui button op round green-bm nobold" href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+      </div>
     </div>
-    
-    <div class="top-line clearfix">
-        <div class="row-30">
-            <ul class="icon-nav">
-                <li class="active"><a target="_blank" title="Charting tools" class="technic" href="chart.php" style="color:#FFFFFF"><i class="fa fa-bar-chart"></i></a></li>
-                <li class="active"><a title="Fundamental analysis" class="fundament" href="fundamental-analysis.php" target="_blank" style="color:#FFFFFF"><i class="fa fa-pie-chart"></i></a></li>
-               
-                <li class="active"><a title="News" class="expert" href="news.php" target="_blank"  style="color:#FFFFFF"><i class="fa fa-tv"></i></a></li>
-                <li class="active"><a title="Technical Analysis" class="ideas" href="technical-analysis.php" target="_blank"  style="color:#FFFFFF"><i class="fa fa-signal"></i></a></li>
-                <li class="active"><a title="Economic calendar" class="calendar" href="calendar.php" target="_blank" style="color:#FFFFFF"><i class="fa fa-calendar"></i></a></li>
-              
-                
-            </ul>
-        </div>
-        
-        <div class="row-30 ">
-        	<div class="navsm text-xs-right">
-	        	<div class="ui item top-drop-in-css">
-	            	<a href="dashboard.php"><i class="fa fa-dashboard"></i> Trading</a>
-	            </div>
-	            <div class="ui item top-drop-in-css">
-	            	<a href="javascript:;"><i class="fa fa-money"></i> Account</a>
-	            	<div class="menu">
-				      <div class="item"><a href="funding.php"><i class="fa fa-money"></i> Account funding</a></div>
-				      <div class="item"><a href="withdrawal.php"><i class="fa fa-money"></i> Withdrawals</a></div>
-				      
-				    </div>
-	            </div>
-	            <div class="ui item top-drop-in-css">
-	            	<a href="javascript:;"><i class="fa fa-list"></i> Statements</a>
-	            	<div class="menu">
-				      <div class="item"><a href="history.php"><i class="fa fa-history"></i> Transactions history</a></div>
-				      <div class="item"><a href="trade-history.php"><i class="fa fa-area-chart"></i> Trading history</a></div>
-				    </div>	
-	            </div>
-	            <div class="ui item top-drop-in-css">
-	            	<a href="javascript:;"><i class="fa fa-cogs"></i> Settings</a>
-	            	<div class="menu">
-				      <div class="item"><a href="personal.php"><i class="fa fa-user"></i> Personal Data</a></div>
-				      <div class="item"><a href="security.php"><i class="fa fa-lock"></i> Security settings</a></div>
-				    </div>
-	            </div>
-	            <div class="ui item top-drop-in-css">
-	            </div>
-	        </div>
-        </div>
-       
-        <div class="time row-30 top-line-last-row-max">
-            <div class="right">
-              <a href="javascript:void(Tawk_API.toggle())" style="color:#FFFFFF">
-                <i class="fa fa-comment"></i>
-              </a>
-            </div>
-        </div>
+  </div>
+  <div class="top-line clearfix">
+    <div class="row-30">
+      <div class="navsm text-xs-right">
+        <div class="ui item top-drop-in-css"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+        <div class="ui item top-drop-in-css"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+        <div class="ui item top-drop-in-css"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+        <div class="ui item top-drop-in-css"><a href="security.html"><i class="fa fa-lock"></i> Security</a></div>
+      </div>
     </div>
-       
-        <!-- <div class="time row-30 top-line-last-row-max">
-            <div class="right">
-              <a href="javascript:void(Tawk_API.toggle())" style="color:#FFFFFF">
-                <i class="fa fa-comment"></i>
-              </a>
-            </div>
-        </div>
-    </div> -->
-</nav><div class="root-content">
-<div class="pusher push-trading">
-	<div><div class="pusher">
- <section class="img-bg-section">
-     <div class="row">
-         <ul class="tabs">
-             <li><a href="#" class="active">Transactions History</a></li>
-            <li> <a href="trade-history.php" class="">Trading History</a></li>
-         </ul>
-         <div class="mob-tab-nav mob-main-tabs">
-             <div class="ui not_select dropdown mob-tabular" tabindex="0">
-                 <div class="text default">Transactions History</div>
-                 <i class="dropdown icon"></i>
-                 <div class="menu" tabindex="-1">
-                    
-                     <a href="trade-history.php" class="item">Trading History</a>
-                 </div>
-             </div>
-         </div>
+  </div>
+</nav>
 
-         
-            <div class="content-body">
-        <div class="container">
-            <div class="row">
-                <div class="card">
-                    <div class="card-header border-0">
-                        <!-- <h4 class="card-title">Transaction History</h4> -->
-                    </div>
-                    <div class="card-body pt-0">
-                        <div class="transaction-table">
-                                                </div>
-                    </div>
-
-                    <!-- TRADING HISTORY -->
- 
-                    <div class="top-info">
-            <h2 class="title">Transactions History</h2>
-        </div>
-     </div>
-     <span class="blue-arrow"></span>
- </section>
-<div style="">
-<section class="content-box history-min">
+<div class="root-content">
+  <section class="img-bg-section">
     <div class="row">
-        <div class="table" style="overflow-y:auto;">
-         
-
-            <table class="" style=" min-width:600px;">
-                   <tbody>
-                   <tr>
-                       <td>ID#</td>
-                       <td>Date</td>
-                       <td>Transaction ID</td>
-                       <td>Amount</td>
-                       <td>Transaction Type</td>
-                       <td>Status</td>
-                   </tr>
-                   </tbody>
-                    
-                    
-                    
-                   <tbody>
-                                      <tr>
-                       <td>1</td>
-                       <td>2026-08-15 15:27:33</td>
-                       <td>tq65yWA</td>
-                       <td>2000</td>
-                       <td>Deposit</td>
-                       <td>pending</td>
-                   </tr>
-                                      </tbody>
-
-
-                   <tbody>
-                                           
-                   </tbody>
-               </table>
-               </div>
-           </div>
-       </div>
-   </div>
-</div>
-</div>  <!--END -->
-
-<script class="ng-scope">
-    $(function(){
-        $('.ui.dropdown').dropdown();
-    });
-</script></div>
-</div>
-                                            </div>
-											
-											<footer class="footer">
-        <div class="row clearfix">
-           
-
-            <div class="float-left">
-            	<noindex>
-            		<!--googleoff: all-->
-                	<span class="copy">&copy; 2022 <span>247sterlingtrade Ltd .</span></span>  
-                	<!--googleon: all-->
-                </noindex>
-            </div>
-            <div class="float-right">
-                <ul class="soc-list">
-                	<li>
-                		
-                	</li>
-                    <li>Follow us</li>
-                    <li>
-                    	<div class="footer-media">
-		                    <div class="media-icons">
-		                        <a href=""><span class="fa fa-facebook"></span></a>
-		                    </div>
-		                </div>
-                    </li>
-                    <li>
-                    	<div class="footer-media">
-		                    <div class="media-icons">
-		                        <a href=""><span class="round fa fa-instagram"></span></a>
-		                    </div>
-		                </div>
-                    </li>
-                    <li>
-                    	<div class="footer-media">
-		                    <div class="media-icons">
-		                        <a href=""><span class="fa fa-twitter"></span></a>
-		                    </div>
-		                </div>
-                    </li>
-                   
-                </ul>
-            </div>
-
-        </div>
-    </footer></div>
-<!--sidebar-->
-
-<!---->
-
-
-
-    
-
-    
-
-    <script type="text/javascript" async="" src="assets/js/conversion_async.js"></script><script type="text/javascript" async="" src="assets/js/watch.js"></script><script async="" src="assets/js/analytics.js"></script><script src="assets/js/inner.js"></script>
-    <script src="assets/js/vendor.js"></script>
-<script src="assets/js/app.js"></script>
-
-
-
-
-<script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-76636433-1', 'auto');
-    ga('send', 'pageview');
-
-</script>
-
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-
-    if(bowser.safari || bowser.mac){
-        // disable for tdis
-    }else{
-        (function (d, w, c) {
-            (w[c] = w[c] || []).push(function() {
-                try {
-                    w.yaCounter38379630 = new Ya.Metrika({
-                        id:38379630,
-                        clickmap:true,
-                        trackLinks:true,
-                        accurateTrackBounce:true,
-                        webvisor:true
-                    });
-                } catch(e) { }
-
-            });
-
-            var n = d.getElementsByTagName("script")[0],
-                s = d.createElement("script"),
-                f = function () { n.parentNode.insertBefore(s, n); };
-            s.type = "text/javascript";
-            s.async = true;
-            s.src = "https://mc.yandex.ru/metrika/watch.js";
-
-            if (w.opera == "[object Opera]") {
-                d.addEventListener("DOMContentLoaded", f, false);
-            } else { f(); }
-        })(document, window, "yandex_metrika_callbacks");
-    }
-</script>
-<noscript aria-hidden="false"><div><img src="https://mc.yandex.ru/watch/38379630" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-
-<script type="text/javascript">
-    /* <![CDATA[ */
-    var google_conversion_id = 1057644682;
-    var google_custom_params = window.google_tag_params;
-    var google_remarketing_only = true;
-    /* ]]> */
-</script>
-<script type="text/javascript" src="assets/js/conversion.js">
-</script>
-<noscript aria-hidden="false">
-    <div style="display:inline;">
-        <img height="1" widtd="1" style="border-style:none;" alt="" src="googleads.g.doubleclick.net/pagead/viewtdroughconversion/1057644682/?guid=ON&amp;script=0"/>
+      <div class="top-info"><h2 class="title">Account Data</h2></div>
     </div>
-</noscript>
+    <span class="blue-arrow"></span>
+  </section>
 
-<!-- Global site tag (gtag.js) - Google AdWords: 824992907 -->
-<script async="" src="assets/js/js.js"></script>
+  <section class="content-box verification-new">
+    <div class="row">
+      <div class="form-row account-data" style="max-width:480px;margin:0 auto;padding:16px;">
+        <form id="personalForm">
+          <label>Full name</label>
+          <div class="line ui input">
+            <input type="text" id="fullname" name="fullname" disabled>
+          </div>
+
+          <label>Email</label>
+          <div class="line ui input">
+            <input type="email" id="email" name="email" disabled>
+          </div>
+
+          <label>Phone number</label>
+          <div class="line ui input">
+            <input type="tel" id="tel" name="tel" disabled>
+          </div>
+
+          <label>Country</label>
+          <div class="line ui input">
+            <input type="text" id="country" name="country" disabled>
+          </div>
+
+          <label>Gender</label>
+          <div class="line ui input">
+            <select id="gender" name="gender" disabled>
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="line" style="margin-top:16px;" id="saveRow">
+            <button type="submit" class="ui button green" id="saveBtn" disabled>Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="kyc-box" id="kycSection">
+      <h2 class="title personal">KYC Verification</h2>
+      <div id="kycStatusArea">
+        <span class="ui button red" id="kycRequiredBtn">Required <i class="fa-solid fa-ban"></i></span>
+        <p style="margin-top:12px;color:#ccc;">Click the button above to upload your ID documents.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- KYC Modal -->
+<div class="modal-overlay" id="kycModal">
+  <div class="modal-box">
+    <span class="close-x" id="closeKycModal">&times;</span>
+    <h3>Upload KYC Documents</h3>
+    <p style="font-size:13px;color:#aaa;">Images only (jpg, jpeg, png). Preview appears under each field.</p>
+    <form id="kycForm">
+      <label>Document type</label>
+      <select id="document_type" required>
+        <option value="">Select document type</option>
+        <option value="Int'l Passport">Int'l Passport</option>
+        <option value="National ID">National ID</option>
+        <option value="Drivers License">Drivers License</option>
+      </select>
+
+      <label>Front image</label>
+      <input type="file" id="frontimg" name="frontimg" accept="image/jpeg,image/png,image/jpg" required>
+      <img class="preview-img" id="preview-front" alt="Front preview">
+
+      <label>Back image</label>
+      <input type="file" id="backimg" name="backimg" accept="image/jpeg,image/png,image/jpg" required>
+      <img class="preview-img" id="preview-back" alt="Back preview">
+
+      <label>Photo (passport photograph)</label>
+      <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/jpg" required>
+      <img class="preview-img" id="preview-photo" alt="Photo preview">
+
+      <div style="margin-top:20px;text-align:center;">
+        <button type="button" class="ui button" id="cancelKyc">Cancel</button>
+        <button type="submit" class="ui button green" id="submitKyc">Submit KYC</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="row clearfix">
+    <div class="float-left"><span class="copy">&copy; 2022 247Expertstrade Ltd .</span></div>
+  </div>
+</footer>
+</div>
+
+<script src="assets/js/inner.js"></script>
+<script src="assets/js/vendor.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/frontend/public/js/config.js"></script>
+<script src="/frontend/public/js/auth.js"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'AW-824992907');
-</script>
+(function () {
+  var sidebar = document.getElementById('mainSidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var toggleBtn = document.getElementById('menuToggleBtn');
+  function openS() { if (sidebar) sidebar.classList.add('visible'); if (overlay) overlay.classList.add('active'); }
+  function closeS() { if (sidebar) sidebar.classList.remove('visible'); if (overlay) overlay.classList.remove('active'); }
+  if (toggleBtn) toggleBtn.addEventListener('click', function (e) { e.preventDefault(); sidebar && sidebar.classList.contains('visible') ? closeS() : openS(); });
+  if (overlay) overlay.addEventListener('click', closeS);
+  if (sidebar) sidebar.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeS); });
+})();
 
-<script src="//code.jivosite.com/widget/sET0SQD8fb" async></script>
-</body></html>
+function bindPreview(inputId, imgId) {
+  var input = document.getElementById(inputId);
+  var img = document.getElementById(imgId);
+  if (!input || !img) return;
+  input.addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    if (!file) { img.classList.remove('show'); img.src = ''; return; }
+    if (!/^image\/(jpeg|png|jpg)$/i.test(file.type)) {
+      Swal.fire('Error', 'Please select a valid image (jpeg/jpg/png).', 'error');
+      this.value = '';
+      img.classList.remove('show');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      img.src = e.target.result;
+      img.classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+  if (typeof requireAuthPage === 'function') requireAuthPage();
+
+  var currentUser = null;
+  var currentVerification = null;
+  var fields = ['fullname', 'tel', 'country', 'gender'];
+
+  function isKycApproved(user, verification) {
+    var u = user && user.kycVerified ? String(user.kycVerified).toLowerCase().trim() : '';
+    var v = verification && verification.status ? String(verification.status).toLowerCase().trim() : '';
+    return u === 'approved' || u === 'approve' || v === 'approved' || v === 'approve';
+  }
+
+  function kycHtml(status) {
+    var s = status ? String(status).toLowerCase().trim() : '';
+    if (s === 'approve' || s === 'approved') {
+      return 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>';
+    }
+    if (s === 'pending') {
+      return 'Kyc Verification: <span style="color:#ff0"><i class="fa fa-clock-o"></i> Pending</span>';
+    }
+    return 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
+  }
+
+  function setEditable(canEdit) {
+    fields.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.disabled = !canEdit;
+    });
+    document.getElementById('email').disabled = true;
+    document.getElementById('saveBtn').disabled = !canEdit;
+  }
+
+  function renderKycUI(user, verification) {
+    var section = document.getElementById('kycSection');
+    var area = document.getElementById('kycStatusArea');
+
+    if (isKycApproved(user, verification)) {
+      section.style.display = 'none';
+      setEditable(true);
+      return;
+    }
+
+    section.style.display = 'block';
+    setEditable(false);
+
+    var vStatus = verification && verification.status ? String(verification.status).toLowerCase() : '';
+
+    if (user.kycVerified === 'pending' || vStatus === 'pending' || vStatus === 'under review') {
+      area.innerHTML =
+        '<span class="ui button yellow">Under review <i class="fa fa-clock-o"></i></span>' +
+        '<p style="margin-top:12px;color:#ccc;">Your verification application is being reviewed. Status: <b>' +
+        (verification && verification.status ? verification.status : 'pending') +
+        '</b>.</p>';
+      return;
+    }
+
+    if (vStatus === 'rejected' || vStatus === 'declined') {
+      area.innerHTML =
+        '<span class="ui button red" id="kycRequiredBtn">Rejected — re-upload <i class="fa-solid fa-ban"></i></span>' +
+        '<p style="margin-top:12px;color:#f99;">' +
+        (verification.rejectionReason || 'Your application was rejected. Please submit again.') +
+        '</p>';
+      bindOpenModal();
+      return;
+    }
+
+    area.innerHTML =
+      '<span class="ui button red" id="kycRequiredBtn">Required <i class="fa-solid fa-ban"></i></span>' +
+      '<p style="margin-top:12px;color:#ccc;">Click the button above to upload your ID documents.</p>';
+    bindOpenModal();
+  }
+
+  function bindOpenModal() {
+    var btn = document.getElementById('kycRequiredBtn');
+    if (btn) {
+      btn.style.cursor = 'pointer';
+      btn.onclick = function () {
+        document.getElementById('kycModal').classList.add('open');
+      };
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('kycModal').classList.remove('open');
+  }
+  document.getElementById('closeKycModal').addEventListener('click', closeModal);
+  document.getElementById('cancelKyc').addEventListener('click', closeModal);
+
+  bindPreview('frontimg', 'preview-front');
+  bindPreview('backimg', 'preview-back');
+  bindPreview('photo', 'preview-photo');
+
+  try {
+    var res = await api.get('/personal');
+    if (!res.data || !res.data.success) throw new Error('Failed to load profile');
+
+    currentUser = res.data.user;
+    currentVerification = res.data.verification || null;
+
+    document.getElementById('fullname').value = currentUser.fullname || '';
+    document.getElementById('email').value = currentUser.email || '';
+    document.getElementById('tel').value = currentUser.tel || '';
+    document.getElementById('country').value = currentUser.country || '';
+    document.getElementById('gender').value = currentUser.gender || '';
+
+    var bal = Number(currentUser.balance || 0).toFixed(2);
+    var cur = currentUser.currency || 'USD $';
+    document.getElementById('sidebar-email').innerHTML = '<i class="fa fa-envelope-o"></i> ' + (currentUser.email || '');
+    document.getElementById('sidebar-balance').innerHTML = '<b><i class="fa fa-money"></i> ' + bal + '</b> <b>' + cur + '</b>';
+
+    var displayKyc = currentUser.kycVerified;
+    if (isKycApproved(currentUser, currentVerification)) {
+      displayKyc = 'approved';
+    }
+    document.getElementById('sidebar-kyc').innerHTML = kycHtml(displayKyc);
+    document.getElementById('top-kyc').innerHTML = kycHtml(displayKyc);
+
+    renderKycUI(currentUser, currentVerification);
+  } catch (err) {
+    console.error(err);
+    if (err.response && err.response.status === 401) {
+      window.location.href = 'login.html';
+      return;
+    }
+    Swal.fire('Error', 'Failed to load personal data', 'error');
+  }
+
+  document.getElementById('personalForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    if (!currentUser || !isKycApproved(currentUser, currentVerification)) {
+      Swal.fire('Error', 'You can only edit after KYC is approved.', 'error');
+      return;
+    }
+
+    var payload = {
+      fullname: document.getElementById('fullname').value.trim(),
+      tel: document.getElementById('tel').value.trim(),
+      country: document.getElementById('country').value.trim(),
+      gender: document.getElementById('gender').value
+    };
+
+    try {
+      var r = await api.post('/personal/' + currentUser._id, payload);
+      if (r.data && r.data.success) {
+        Swal.fire('Success', r.data.message || 'Personal data updated successfully', 'success');
+        if (r.data.user) {
+          currentUser.fullname = r.data.user.fullname;
+          currentUser.tel = r.data.user.tel;
+          currentUser.country = r.data.user.country;
+          currentUser.gender = r.data.user.gender;
+        }
+      } else {
+        Swal.fire('Error', (r.data && r.data.message) || 'Update failed', 'error');
+      }
+    } catch (err) {
+      Swal.fire('Error', (err.response && err.response.data && err.response.data.message) || err.message || 'Update failed', 'error');
+    }
+  });
+
+  document.getElementById('kycForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!currentUser) return;
+
+    var docType = document.getElementById('document_type').value;
+    var front = document.getElementById('frontimg').files[0];
+    var back = document.getElementById('backimg').files[0];
+    var photo = document.getElementById('photo').files[0];
+
+    if (!docType || !front || !back || !photo) {
+      Swal.fire('Error', 'All fields and images are required', 'error');
+      return;
+    }
+
+    var fd = new FormData();
+    fd.append('document_type', docType);
+    fd.append('frontimg', front);
+    fd.append('backimg', back);
+    fd.append('photo', photo);
+
+    var btn = document.getElementById('submitKyc');
+    btn.disabled = true;
+    btn.textContent = 'Uploading...';
+
+    try {
+      var r = await api.post('/verify-account/' + currentUser._id, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (r.data && r.data.success) {
+        closeModal();
+        await Swal.fire('Success', r.data.message || 'KYC submitted successfully', 'success');
+        currentUser.kycVerified = 'pending';
+        currentVerification = { status: 'pending' };
+        renderKycUI(currentUser, currentVerification);
+        document.getElementById('sidebar-kyc').innerHTML = kycHtml('pending');
+        document.getElementById('top-kyc').innerHTML = kycHtml('pending');
+      } else {
+        Swal.fire('Error', (r.data && r.data.message) || 'Submission failed', 'error');
+      }
+    } catch (err) {
+      Swal.fire('Error', (err.response && err.response.data && err.response.data.message) || err.message || 'Submission failed', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit KYC';
+    }
+  });
+});
+</script>
+</body>
+</html>
