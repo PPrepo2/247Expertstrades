@@ -1,1266 +1,159 @@
+here is the wallet schema 
+
+const mongoose = require('mongoose');
+
+const walletSchema = new mongoose.Schema({
+  // Bank details (used for Bank Transfer method)
+  bank_name: {
+    type: String,
+    default: "Mining Bank"
+  },
+  account_name: {
+    type: String,
+    default: "Miller lauren"
+  },
+  account_no: {
+    type: String,
+    default: "99388383"
+  },
+  sortcode: {
+    type: String,
+    default: "388130"
+  },
+  swift_code: {
+    type: String,
+    default: "3222ASD"
+  },
+
+   btc_address: {
+        type: String,
+        lowercase: true,
+        default: "gj762346yshshshkshkshksd"
+    },
+    btc_image: {
+        type: String,
+        default: null
+    },
+    eth_address: {
+        type: String,
+        lowercase: true,
+        default: "gj762346yshshshkshkshksd"
+    },
+    eth_image: {
+        type: String,
+        default: null
+    },
+    usdt_address: {
+        type: String,
+        lowercase: true,
+        default: "gj762346yshshshkshkshksd"
+    },
+    usdt_image: {
+        type: String,
+        default: null
+    },
+    cashapp: {
+        type: String,
+        lowercase: true,
+        default: "$Bitcoin"
+    },
+    cashapp_image: {
+        type: String,
+        default: null
+    },
+    paypal: {
+        type: String,
+        lowercase: true,
+        default: "example@gmail.com"
+    },
+    paypal_image: {
+        type: String,
+        default: null
+    },
+
+  // Last updated by admin (optional audit)
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
+  },
+
+}, { timestamps: true });
+
+const Wallet = mongoose.model('Wallet', walletSchema);
+
+module.exports = Wallet;
+
+here is the routes
 
-now here is the edit-wallet.html  page template that  we be copying from not it's content/layout
-
-<!DOCTYPE html>
-<html>
-<head>
-		<title>Admin Dashboard</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
- 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,400;1,700;1,900&amp;display=swap" rel="stylesheet">
-<meta name="theme-color" content="#171717">
-<link rel="stylesheet" href="assets5i/dashboard.css">  
-<link rel="stylesheet" href="assets5i/d.css">  
-<link rel="stylesheet" href="assets0/notify.css">
-<link rel="stylesheet" href="assets0/custom/custom.css">
- 
-<link rel="stylesheet" href="assets5i/custom/custom.css">  
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
-
-<!-- new styles -->
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link rel="stylesheet" href="wp-user/assets5i/dashboard.css">  
-<link rel="stylesheet" href="wp-user/assets5i/d.css">  
-<link rel="stylesheet" href="wp-user/assets0/notify.css">
-<link rel="stylesheet" href="wp-user/assets0/custom/custom.css">
- 
-<link rel="stylesheet" href="wp-user/assets5i/custom/custom.css">  
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href=" https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
-
-<script src="https://unpkg.com/akar-icons-fonts"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-
-<!-- end of styles -->
-
-<!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- Typography CSS -->
-    <link rel="stylesheet" href="css/typography.css">
-    <!-- Style CSS -->
-    <link rel="stylesheet" href="css/styles.css">
-    <!-- Responsive CSS -->
-    <link rel="stylesheet" href="css/responsive.css">
-    
-    <link rel="stylesheet" type="text/css" href="nt/ss.css"> 
-	<link rel="stylesheet" type="text/css" href="nt/as.css">  
-	<script type="text/javascript" charset="utf-8" async="" src="https://www.smartsuppchat.com/loader.js?"></script><script type="text/javascript" src="nt/ba.js"></script>
-	
-	<link rel="stylesheet" type="text/css" href="otassets/otfi.css">
-	<script type="text/javascript" src="otassets/otfi.js"></script>
-
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/akar-icons-fonts/src/css/akar-icons.css"><style>@-webkit-keyframes swal2-show{0%{-webkit-transform:scale(.7);transform:scale(.7)}45%{-webkit-transform:scale(1.05);transform:scale(1.05)}80%{-webkit-transform:scale(.95);transform:scale(.95)}100%{-webkit-transform:scale(1);transform:scale(1)}}@keyframes swal2-show{0%{-webkit-transform:scale(.7);transform:scale(.7)}45%{-webkit-transform:scale(1.05);transform:scale(1.05)}80%{-webkit-transform:scale(.95);transform:scale(.95)}100%{-webkit-transform:scale(1);transform:scale(1)}}@-webkit-keyframes swal2-hide{0%{-webkit-transform:scale(1);transform:scale(1);opacity:1}100%{-webkit-transform:scale(.5);transform:scale(.5);opacity:0}}@keyframes swal2-hide{0%{-webkit-transform:scale(1);transform:scale(1);opacity:1}100%{-webkit-transform:scale(.5);transform:scale(.5);opacity:0}}@-webkit-keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.875em;width:1.5625em}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.875em;width:1.5625em}}@-webkit-keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@-webkit-keyframes swal2-rotate-success-circular-line{0%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}5%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}12%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}100%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}}@keyframes swal2-rotate-success-circular-line{0%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}5%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}12%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}100%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}}@-webkit-keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;-webkit-transform:scale(.4);transform:scale(.4);opacity:0}50%{margin-top:1.625em;-webkit-transform:scale(.4);transform:scale(.4);opacity:0}80%{margin-top:-.375em;-webkit-transform:scale(1.15);transform:scale(1.15)}100%{margin-top:0;-webkit-transform:scale(1);transform:scale(1);opacity:1}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;-webkit-transform:scale(.4);transform:scale(.4);opacity:0}50%{margin-top:1.625em;-webkit-transform:scale(.4);transform:scale(.4);opacity:0}80%{margin-top:-.375em;-webkit-transform:scale(1.15);transform:scale(1.15)}100%{margin-top:0;-webkit-transform:scale(1);transform:scale(1);opacity:1}}@-webkit-keyframes swal2-animate-error-icon{0%{-webkit-transform:rotateX(100deg);transform:rotateX(100deg);opacity:0}100%{-webkit-transform:rotateX(0);transform:rotateX(0);opacity:1}}@keyframes swal2-animate-error-icon{0%{-webkit-transform:rotateX(100deg);transform:rotateX(100deg);opacity:0}100%{-webkit-transform:rotateX(0);transform:rotateX(0);opacity:1}}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast{flex-direction:column;align-items:stretch}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast .swal2-actions{flex:1;align-self:stretch;justify-content:flex-end;height:2.2em}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast .swal2-loading{justify-content:center}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast .swal2-input{height:2em;margin:.3125em auto;font-size:1em}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast .swal2-validationerror{font-size:1em}body.swal2-toast-shown>.swal2-container{position:fixed;background-color:transparent}body.swal2-toast-shown>.swal2-container.swal2-shown{background-color:transparent}body.swal2-toast-shown>.swal2-container.swal2-top{top:0;right:auto;bottom:auto;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}body.swal2-toast-shown>.swal2-container.swal2-top-end,body.swal2-toast-shown>.swal2-container.swal2-top-right{top:0;right:0;bottom:auto;left:auto}body.swal2-toast-shown>.swal2-container.swal2-top-left,body.swal2-toast-shown>.swal2-container.swal2-top-start{top:0;right:auto;bottom:auto;left:0}body.swal2-toast-shown>.swal2-container.swal2-center-left,body.swal2-toast-shown>.swal2-container.swal2-center-start{top:50%;right:auto;bottom:auto;left:0;-webkit-transform:translateY(-50%);transform:translateY(-50%)}body.swal2-toast-shown>.swal2-container.swal2-center{top:50%;right:auto;bottom:auto;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}body.swal2-toast-shown>.swal2-container.swal2-center-end,body.swal2-toast-shown>.swal2-container.swal2-center-right{top:50%;right:0;bottom:auto;left:auto;-webkit-transform:translateY(-50%);transform:translateY(-50%)}body.swal2-toast-shown>.swal2-container.swal2-bottom-left,body.swal2-toast-shown>.swal2-container.swal2-bottom-start{top:auto;right:auto;bottom:0;left:0}body.swal2-toast-shown>.swal2-container.swal2-bottom{top:auto;right:auto;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}body.swal2-toast-shown>.swal2-container.swal2-bottom-end,body.swal2-toast-shown>.swal2-container.swal2-bottom-right{top:auto;right:0;bottom:0;left:auto}.swal2-popup.swal2-toast{flex-direction:row;align-items:center;width:auto;padding:.625em;box-shadow:0 0 .625em #d9d9d9;overflow-y:hidden}.swal2-popup.swal2-toast .swal2-header{flex-direction:row}.swal2-popup.swal2-toast .swal2-title{justify-content:flex-start;margin:0 .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-close{position:initial}.swal2-popup.swal2-toast .swal2-content{justify-content:flex-start;font-size:1em}.swal2-popup.swal2-toast .swal2-icon{width:2em;min-width:2em;height:2em;margin:0}.swal2-popup.swal2-toast .swal2-icon-text{font-size:2em;font-weight:700;line-height:1em}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{height:auto;margin:0 .3125em}.swal2-popup.swal2-toast .swal2-styled{margin:0 .3125em;padding:.3125em .625em;font-size:1em}.swal2-popup.swal2-toast .swal2-styled:focus{box-shadow:0 0 0 .0625em #fff,0 0 0 .125em rgba(50,100,150,.4)}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:2em;height:2.8125em;-webkit-transform:rotate(45deg);transform:rotate(45deg);border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.25em;left:-.9375em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:2em 2em;transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.25em;left:.9375em;-webkit-transform-origin:0 2em;transform-origin:0 2em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast.swal2-show{-webkit-animation:showSweetToast .5s;animation:showSweetToast .5s}.swal2-popup.swal2-toast.swal2-hide{-webkit-animation:hideSweetToast .2s forwards;animation:hideSweetToast .2s forwards}.swal2-popup.swal2-toast .swal2-animate-success-icon .swal2-success-line-tip{-webkit-animation:animate-toast-success-tip .75s;animation:animate-toast-success-tip .75s}.swal2-popup.swal2-toast .swal2-animate-success-icon .swal2-success-line-long{-webkit-animation:animate-toast-success-long .75s;animation:animate-toast-success-long .75s}@-webkit-keyframes showSweetToast{0%{-webkit-transform:translateY(-.625em) rotateZ(2deg);transform:translateY(-.625em) rotateZ(2deg);opacity:0}33%{-webkit-transform:translateY(0) rotateZ(-2deg);transform:translateY(0) rotateZ(-2deg);opacity:.5}66%{-webkit-transform:translateY(.3125em) rotateZ(2deg);transform:translateY(.3125em) rotateZ(2deg);opacity:.7}100%{-webkit-transform:translateY(0) rotateZ(0);transform:translateY(0) rotateZ(0);opacity:1}}@keyframes showSweetToast{0%{-webkit-transform:translateY(-.625em) rotateZ(2deg);transform:translateY(-.625em) rotateZ(2deg);opacity:0}33%{-webkit-transform:translateY(0) rotateZ(-2deg);transform:translateY(0) rotateZ(-2deg);opacity:.5}66%{-webkit-transform:translateY(.3125em) rotateZ(2deg);transform:translateY(.3125em) rotateZ(2deg);opacity:.7}100%{-webkit-transform:translateY(0) rotateZ(0);transform:translateY(0) rotateZ(0);opacity:1}}@-webkit-keyframes hideSweetToast{0%{opacity:1}33%{opacity:.5}100%{-webkit-transform:rotateZ(1deg);transform:rotateZ(1deg);opacity:0}}@keyframes hideSweetToast{0%{opacity:1}33%{opacity:.5}100%{-webkit-transform:rotateZ(1deg);transform:rotateZ(1deg);opacity:0}}@-webkit-keyframes animate-toast-success-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes animate-toast-success-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@-webkit-keyframes animate-toast-success-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes animate-toast-success-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow-y:hidden}body.swal2-height-auto{height:auto!important}body.swal2-no-backdrop .swal2-shown{top:auto;right:auto;bottom:auto;left:auto;background-color:transparent}body.swal2-no-backdrop .swal2-shown>.swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}body.swal2-no-backdrop .swal2-shown.swal2-top{top:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}body.swal2-no-backdrop .swal2-shown.swal2-top-left,body.swal2-no-backdrop .swal2-shown.swal2-top-start{top:0;left:0}body.swal2-no-backdrop .swal2-shown.swal2-top-end,body.swal2-no-backdrop .swal2-shown.swal2-top-right{top:0;right:0}body.swal2-no-backdrop .swal2-shown.swal2-center{top:50%;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}body.swal2-no-backdrop .swal2-shown.swal2-center-left,body.swal2-no-backdrop .swal2-shown.swal2-center-start{top:50%;left:0;-webkit-transform:translateY(-50%);transform:translateY(-50%)}body.swal2-no-backdrop .swal2-shown.swal2-center-end,body.swal2-no-backdrop .swal2-shown.swal2-center-right{top:50%;right:0;-webkit-transform:translateY(-50%);transform:translateY(-50%)}body.swal2-no-backdrop .swal2-shown.swal2-bottom{bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}body.swal2-no-backdrop .swal2-shown.swal2-bottom-left,body.swal2-no-backdrop .swal2-shown.swal2-bottom-start{bottom:0;left:0}body.swal2-no-backdrop .swal2-shown.swal2-bottom-end,body.swal2-no-backdrop .swal2-shown.swal2-bottom-right{right:0;bottom:0}.swal2-container{display:flex;position:fixed;top:0;right:0;bottom:0;left:0;flex-direction:row;align-items:center;justify-content:center;padding:10px;background-color:transparent;z-index:1060;overflow-x:hidden;-webkit-overflow-scrolling:touch}.swal2-container.swal2-top{align-items:flex-start}.swal2-container.swal2-top-left,.swal2-container.swal2-top-start{align-items:flex-start;justify-content:flex-start}.swal2-container.swal2-top-end,.swal2-container.swal2-top-right{align-items:flex-start;justify-content:flex-end}.swal2-container.swal2-center{align-items:center}.swal2-container.swal2-center-left,.swal2-container.swal2-center-start{align-items:center;justify-content:flex-start}.swal2-container.swal2-center-end,.swal2-container.swal2-center-right{align-items:center;justify-content:flex-end}.swal2-container.swal2-bottom{align-items:flex-end}.swal2-container.swal2-bottom-left,.swal2-container.swal2-bottom-start{align-items:flex-end;justify-content:flex-start}.swal2-container.swal2-bottom-end,.swal2-container.swal2-bottom-right{align-items:flex-end;justify-content:flex-end}.swal2-container.swal2-grow-fullscreen>.swal2-modal{display:flex!important;flex:1;align-self:stretch;justify-content:center}.swal2-container.swal2-grow-row>.swal2-modal{display:flex!important;flex:1;align-content:center;justify-content:center}.swal2-container.swal2-grow-column{flex:1;flex-direction:column}.swal2-container.swal2-grow-column.swal2-bottom,.swal2-container.swal2-grow-column.swal2-center,.swal2-container.swal2-grow-column.swal2-top{align-items:center}.swal2-container.swal2-grow-column.swal2-bottom-left,.swal2-container.swal2-grow-column.swal2-bottom-start,.swal2-container.swal2-grow-column.swal2-center-left,.swal2-container.swal2-grow-column.swal2-center-start,.swal2-container.swal2-grow-column.swal2-top-left,.swal2-container.swal2-grow-column.swal2-top-start{align-items:flex-start}.swal2-container.swal2-grow-column.swal2-bottom-end,.swal2-container.swal2-grow-column.swal2-bottom-right,.swal2-container.swal2-grow-column.swal2-center-end,.swal2-container.swal2-grow-column.swal2-center-right,.swal2-container.swal2-grow-column.swal2-top-end,.swal2-container.swal2-grow-column.swal2-top-right{align-items:flex-end}.swal2-container.swal2-grow-column>.swal2-modal{display:flex!important;flex:1;align-content:center;justify-content:center}.swal2-container:not(.swal2-top):not(.swal2-top-start):not(.swal2-top-end):not(.swal2-top-left):not(.swal2-top-right):not(.swal2-center-start):not(.swal2-center-end):not(.swal2-center-left):not(.swal2-center-right):not(.swal2-bottom):not(.swal2-bottom-start):not(.swal2-bottom-end):not(.swal2-bottom-left):not(.swal2-bottom-right)>.swal2-modal{margin:auto}@media all and (-ms-high-contrast:none),(-ms-high-contrast:active){.swal2-container .swal2-modal{margin:0!important}}.swal2-container.swal2-fade{transition:background-color .1s}.swal2-container.swal2-shown{background-color:rgba(0,0,0,.4)}.swal2-popup{display:none;position:relative;flex-direction:column;justify-content:center;width:32em;max-width:100%;padding:1.25em;border-radius:.3125em;background:#fff;font-family:inherit;font-size:1rem;box-sizing:border-box}.swal2-popup:focus{outline:0}.swal2-popup.swal2-loading{overflow-y:hidden}.swal2-popup .swal2-header{display:flex;flex-direction:column;align-items:center}.swal2-popup .swal2-title{display:block;position:relative;max-width:100%;margin:0 0 .4em;padding:0;color:#595959;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}.swal2-popup .swal2-actions{align-items:center;justify-content:center;margin:1.25em auto 0}.swal2-popup .swal2-actions:not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}.swal2-popup .swal2-actions:not(.swal2-loading) .swal2-styled:hover{-webkit-transform: translateY(-3px);transform: translateY(-3px);}.swal2-popup .swal2-actions:not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2))}.swal2-popup .swal2-actions.swal2-loading .swal2-styled.swal2-confirm{width:2.5em;height:2.5em;margin:.46875em;padding:0;border:.25em solid transparent;border-radius:100%;border-color:transparent;background-color:transparent!important;color:transparent;cursor:default;box-sizing:border-box;-webkit-animation:swal2-rotate-loading 1.5s linear 0s infinite normal;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.swal2-popup .swal2-actions.swal2-loading .swal2-styled.swal2-cancel{margin-right:30px;margin-left:30px}.swal2-popup .swal2-actions.swal2-loading :not(.swal2-styled).swal2-confirm::after{display:inline-block;width:15px;height:15px;margin-left:5px;border:3px solid #888ea8;border-radius:50%;border-right-color:transparent;box-shadow:1px 1px 1px #fff;content:'';-webkit-animation:swal2-rotate-loading 1.5s linear 0s infinite normal;animation:swal2-rotate-loading 1.5s linear 0s infinite normal}.swal2-popup .swal2-styled{margin:0 .3125em;padding:.625em 2em;font-weight:500;box-shadow:none}.swal2-popup .swal2-styled:not([disabled]){cursor:pointer}.swal2-popup .swal2-styled.swal2-confirm{border:0;border-radius:.25em;background:initial;background-color:#1b55e2;color:#fff;font-size:14px}.swal2-popup .swal2-styled.swal2-cancel{background-color: #fff; color: #1b55e2; font-weight: 700;border: 1px solid #e8e8e8;}.swal2-popup .swal2-styled:focus{outline:0;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(50,100,150,.4)}.swal2-popup .swal2-styled::-moz-focus-inner{border:0}.swal2-popup .swal2-footer{justify-content:center;margin:1.25em 0 0;padding-top:1em;border-top:1px solid #eee;color:#545454;font-size:1em}.swal2-popup .swal2-image{max-width:100%;margin:1.25em auto}.swal2-popup .swal2-close{position:absolute;top:0;right:0;justify-content:center;width:1.2em;height:1.2em;padding:0;transition:color .1s ease-out;border:none;border-radius:0;background:0 0;color:#ccc;font-family:serif;font-size:2.5em;line-height:1.2;cursor:pointer;overflow:hidden}.swal2-popup .swal2-close:hover{-webkit-transform:none;transform:none;color:#f27474}.swal2-popup>.swal2-checkbox,.swal2-popup>.swal2-file,.swal2-popup>.swal2-input,.swal2-popup>.swal2-radio,.swal2-popup>.swal2-select,.swal2-popup>.swal2-textarea{display:none}.swal2-popup .swal2-content{justify-content:center;margin:0;padding:0;color:#545454;font-size:1.125em;font-weight:300;line-height:normal;word-wrap:break-word}.swal2-popup #swal2-content{text-align:center}.swal2-popup .swal2-checkbox,.swal2-popup .swal2-file,.swal2-popup .swal2-input,.swal2-popup .swal2-radio,.swal2-popup .swal2-select,.swal2-popup .swal2-textarea{margin:1em auto}.swal2-popup .swal2-file,.swal2-popup .swal2-input,.swal2-popup .swal2-textarea{width:100%;transition:border-color .3s,box-shadow .3s;border:1px solid #d9d9d9;border-radius:.1875em;font-size:1.125em;box-shadow:inset 0 1px 1px rgba(0,0,0,.06);box-sizing:border-box}.swal2-popup .swal2-file.swal2-inputerror,.swal2-popup .swal2-input.swal2-inputerror,.swal2-popup .swal2-textarea.swal2-inputerror{border-color:#f27474!important;box-shadow:0 0 2px #f27474!important}.swal2-popup .swal2-file:focus,.swal2-popup .swal2-input:focus,.swal2-popup .swal2-textarea:focus{border:1px solid #b4dbed;outline:0;box-shadow:0 0 3px #c4e6f5}.swal2-popup .swal2-file::-webkit-input-placeholder,.swal2-popup .swal2-input::-webkit-input-placeholder,.swal2-popup .swal2-textarea::-webkit-input-placeholder{color:#ccc}.swal2-popup .swal2-file:-ms-input-placeholder,.swal2-popup .swal2-input:-ms-input-placeholder,.swal2-popup .swal2-textarea:-ms-input-placeholder{color:#ccc}.swal2-popup .swal2-file::-ms-input-placeholder,.swal2-popup .swal2-input::-ms-input-placeholder,.swal2-popup .swal2-textarea::-ms-input-placeholder{color:#ccc}.swal2-popup .swal2-file::placeholder,.swal2-popup .swal2-input::placeholder,.swal2-popup .swal2-textarea::placeholder{color:#ccc}.swal2-popup .swal2-range input{width:80%}.swal2-popup .swal2-range output{width:20%;font-weight:600;text-align:center}.swal2-popup .swal2-range input,.swal2-popup .swal2-range output{height:2.625em;margin:1em auto;padding:0;font-size:1.125em;line-height:2.625em}.swal2-popup .swal2-input{height:2.625em;padding:.75em}.swal2-popup .swal2-input[type=number]{max-width:10em}.swal2-popup .swal2-file{font-size:1.125em}.swal2-popup .swal2-textarea{height:6.75em;padding:.75em}.swal2-popup .swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;color:#545454;font-size:1.125em}.swal2-popup .swal2-checkbox,.swal2-popup .swal2-radio{align-items:center;justify-content:center}.swal2-popup .swal2-checkbox label,.swal2-popup .swal2-radio label{margin:0 .6em;font-size:1.125em}.swal2-popup .swal2-checkbox input,.swal2-popup .swal2-radio input{margin:0 .4em}.swal2-popup .swal2-validationerror{display:none;align-items:center;justify-content:center;padding:.625em;background:#f0f0f0;color:#666;font-size:1em;font-weight:300;overflow:hidden}.swal2-popup .swal2-validationerror::before{display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center;content:'!';zoom:normal}@supports (-ms-accelerator:true){.swal2-range input{width:100%!important}.swal2-range output{display:none}}@media all and (-ms-high-contrast:none),(-ms-high-contrast:active){.swal2-range input{width:100%!important}.swal2-range output{display:none}}@-moz-document url-prefix(){.swal2-close:focus{outline:2px solid rgba(50,100,150,.4)}}.swal2-icon{position:relative;justify-content:center;width:5em;height:5em;margin:1.25em auto 1.875em;border:.25em solid transparent;border-radius:50%;line-height:5em;cursor:default;box-sizing:content-box;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;zoom:normal}.swal2-icon-text{font-size:3.75em}.swal2-icon.swal2-error{border-color:#f27474}.swal2-icon.swal2-error .swal2-x-mark{position:relative;flex-grow:1}.swal2-icon.swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}.swal2-icon.swal2-warning{border-color:#facea8;color:#f8bb86}.swal2-icon.swal2-info{border-color:#9de0f6;color:#3fc3ee}.swal2-icon.swal2-question{border-color:#c9dae1;color:#87adbd}.swal2-icon.swal2-success{border-color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;-webkit-transform:rotate(45deg);transform:rotate(45deg);border-radius:50%}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.4375em;left:-2.0635em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:3.75em 3.75em;transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.6875em;left:1.875em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:0 3.75em;transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}.swal2-icon.swal2-success .swal2-success-ring{position:absolute;top:-.25em;left:-.25em;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%;z-index:2;box-sizing:content-box}.swal2-icon.swal2-success .swal2-success-fix{position:absolute;top:.5em;left:1.625em;width:.4375em;height:5.625em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);z-index:1}.swal2-icon.swal2-success [class^=swal2-success-line]{display:block;position:absolute;height:.3125em;border-radius:.125em;background-color:#a5dc86;z-index:2}.swal2-icon.swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.875em;width:1.5625em;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.swal2-icon.swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}.swal2-progresssteps{align-items:center;margin:0 0 1.25em;padding:0;font-weight:600}.swal2-progresssteps li{display:inline-block;position:relative}.swal2-progresssteps .swal2-progresscircle{width:2em;height:2em;border-radius:2em;background:#3085d6;color:#fff;line-height:2em;text-align:center;z-index:20}.swal2-progresssteps .swal2-progresscircle:first-child{margin-left:0}.swal2-progresssteps .swal2-progresscircle:last-child{margin-right:0}.swal2-progresssteps .swal2-progresscircle.swal2-activeprogressstep{background:#3085d6}.swal2-progresssteps .swal2-progresscircle.swal2-activeprogressstep~.swal2-progresscircle{background:#add8e6}.swal2-progresssteps .swal2-progresscircle.swal2-activeprogressstep~.swal2-progressline{background:#add8e6}.swal2-progresssteps .swal2-progressline{width:2.5em;height:.4em;margin:0 -1px;background:#3085d6;z-index:10}[class^=swal2]{-webkit-tap-highlight-color:transparent}.swal2-show{-webkit-animation:swal2-show .3s;animation:swal2-show .3s}.swal2-show.swal2-noanimation{-webkit-animation:none;animation:none}.swal2-hide{-webkit-animation:swal2-hide .15s forwards;animation:swal2-hide .15s forwards}.swal2-hide.swal2-noanimation{-webkit-animation:none;animation:none}[dir=rtl] .swal2-close{right:auto;left:0}.swal2-animate-success-icon .swal2-success-line-tip{-webkit-animation:swal2-animate-success-line-tip .75s;animation:swal2-animate-success-line-tip .75s}.swal2-animate-success-icon .swal2-success-line-long{-webkit-animation:swal2-animate-success-line-long .75s;animation:swal2-animate-success-line-long .75s}.swal2-animate-success-icon .swal2-success-circular-line-right{-webkit-animation:swal2-rotate-success-circular-line 4.25s ease-in;animation:swal2-rotate-success-circular-line 4.25s ease-in}.swal2-animate-error-icon{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-animate-error-icon .swal2-x-mark{-webkit-animation:swal2-animate-error-x-mark .5s;animation:swal2-animate-error-x-mark .5s}@-webkit-keyframes swal2-rotate-loading{0%{-webkit-transform:rotate(0);transform:rotate(0)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@keyframes swal2-rotate-loading{0%{-webkit-transform:rotate(0);transform:rotate(0)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}</style><style type="text/css">.apexcharts-canvas {
-  position: relative;
-  user-select: none;
-  /* cannot give overflow: hidden as it will crop tooltips which overflow outside chart area */
-}
-
-/* scrollbar is not visible by default for legend, hence forcing the visibility */
-.apexcharts-canvas ::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 6px;
-}
-.apexcharts-canvas ::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: rgba(0,0,0,.5);
-  box-shadow: 0 0 1px rgba(255,255,255,.5);
-  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
-}
-.apexcharts-canvas.dark {
-  background: #343F57;
-}
-
-.apexcharts-inner {
-  position: relative;
-}
-
-.legend-mouseover-inactive {
-  transition: 0.15s ease all;
-  opacity: 0.20;
-}
-
-.apexcharts-series-collapsed {
-  opacity: 0;
-}
-
-.apexcharts-gridline, .apexcharts-text {
-  pointer-events: none;
-}
-
-.apexcharts-tooltip {
-  border-radius: 5px;
-  box-shadow: 2px 2px 6px -4px #999;
-  cursor: default;
-  font-size: 14px;
-  left: 62px;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 20px;
-  overflow: hidden;
-  white-space: nowrap;
-  z-index: 12;
-  transition: 0.15s ease all;
-}
-.apexcharts-tooltip.light {
-  border: 1px solid #e3e3e3;
-  background: rgba(255, 255, 255, 0.96);
-}
-.apexcharts-tooltip.dark {
-  color: #fff;
-  background: rgba(30,30,30, 0.8);
-}
-.apexcharts-tooltip * {
-  font-family: inherit;
-}
-
-.apexcharts-tooltip .apexcharts-marker,
-.apexcharts-area-series .apexcharts-area,
-.apexcharts-line {
-  pointer-events: none;
-}
-
-.apexcharts-tooltip.active {
-  opacity: 1;
-  transition: 0.15s ease all;
-}
-
-.apexcharts-tooltip-title {
-  padding: 6px;
-  font-size: 15px;
-  margin-bottom: 4px;
-}
-.apexcharts-tooltip.light .apexcharts-tooltip-title {
-  background: #ECEFF1;
-  border-bottom: 1px solid #ddd;
-}
-.apexcharts-tooltip.dark .apexcharts-tooltip-title {
-  background: rgba(0, 0, 0, 0.7);
-  border-bottom: 1px solid #333;
-}
-
-.apexcharts-tooltip-text-value,
-.apexcharts-tooltip-text-z-value {
-  display: inline-block;
-  font-weight: 600;
-  margin-left: 5px;
-}
-
-.apexcharts-tooltip-text-z-label:empty,
-.apexcharts-tooltip-text-z-value:empty {
-  display: none;
-}
-
-.apexcharts-tooltip-text-value,
-.apexcharts-tooltip-text-z-value {
-  font-weight: 600;
-}
-
-.apexcharts-tooltip-marker {
-  width: 12px;
-  height: 12px;
-  position: relative;
-  top: 0px;
-  margin-right: 10px;
-  border-radius: 50%;
-}
-
-.apexcharts-tooltip-series-group {
-  padding: 0 10px;
-  display: none;
-  text-align: left;
-  justify-content: left;
-  align-items: center;
-}
-
-.apexcharts-tooltip-series-group.active .apexcharts-tooltip-marker {
-  opacity: 1;
-}
-.apexcharts-tooltip-series-group.active, .apexcharts-tooltip-series-group:last-child {
-  padding-bottom: 4px;
-}
-.apexcharts-tooltip-series-group-hidden {
-  opacity: 0;
-  height: 0;
-  line-height: 0;
-  padding: 0 !important;
-}
-.apexcharts-tooltip-y-group {
-  padding: 6px 0 5px;
-}
-.apexcharts-tooltip-candlestick {
-  padding: 4px 8px;
-}
-.apexcharts-tooltip-candlestick > div {
-  margin: 4px 0;
-}
-.apexcharts-tooltip-candlestick span.value {
-  font-weight: bold;
-}
-
-.apexcharts-tooltip-rangebar {
-  padding: 5px 8px;
-}
-
-.apexcharts-tooltip-rangebar .category {
-  font-weight: 600;
-  color: #777;
-}
-
-.apexcharts-tooltip-rangebar .series-name {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
-}
-
-.apexcharts-xaxistooltip {
-  opacity: 0;
-  padding: 9px 10px;
-  pointer-events: none;
-  color: #373d3f;
-  font-size: 13px;
-  text-align: center;
-  border-radius: 2px;
-  position: absolute;
-  z-index: 10;
-  background: #ECEFF1;
-  border: 1px solid #90A4AE;
-  transition: 0.15s ease all;
-}
-
-.apexcharts-xaxistooltip.dark {
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  color: #fff;
-}
-
-.apexcharts-xaxistooltip:after, .apexcharts-xaxistooltip:before {
-  left: 50%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-}
-
-.apexcharts-xaxistooltip:after {
-  border-color: rgba(236, 239, 241, 0);
-  border-width: 6px;
-  margin-left: -6px;
-}
-.apexcharts-xaxistooltip:before {
-  border-color: rgba(144, 164, 174, 0);
-  border-width: 7px;
-  margin-left: -7px;
-}
-
-.apexcharts-xaxistooltip-bottom:after, .apexcharts-xaxistooltip-bottom:before {
-  bottom: 100%;
-}
-
-.apexcharts-xaxistooltip-top:after, .apexcharts-xaxistooltip-top:before {
-  top: 100%;
-}
-
-.apexcharts-xaxistooltip-bottom:after {
-  border-bottom-color: #ECEFF1;
-}
-.apexcharts-xaxistooltip-bottom:before {
-  border-bottom-color: #90A4AE;
-}
-
-.apexcharts-xaxistooltip-bottom.dark:after {
-  border-bottom-color: rgba(0, 0, 0, 0.5);
-}
-.apexcharts-xaxistooltip-bottom.dark:before {
-  border-bottom-color: rgba(0, 0, 0, 0.5);
-}
-
-.apexcharts-xaxistooltip-top:after {
-  border-top-color:#ECEFF1
-}
-.apexcharts-xaxistooltip-top:before {
-  border-top-color: #90A4AE;
-}
-.apexcharts-xaxistooltip-top.dark:after {
-  border-top-color:rgba(0, 0, 0, 0.5);
-}
-.apexcharts-xaxistooltip-top.dark:before {
-  border-top-color: rgba(0, 0, 0, 0.5);
-}
-
-
-.apexcharts-xaxistooltip.active {
-  opacity: 1;
-  transition: 0.15s ease all;
-}
-
-.apexcharts-yaxistooltip {
-  opacity: 0;
-  padding: 4px 10px;
-  pointer-events: none;
-  color: #373d3f;
-  font-size: 13px;
-  text-align: center;
-  border-radius: 2px;
-  position: absolute;
-  z-index: 10;
-  background: #ECEFF1;
-  border: 1px solid #90A4AE;
-}
-
-.apexcharts-yaxistooltip.dark {
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  color: #fff;
-}
-
-.apexcharts-yaxistooltip:after, .apexcharts-yaxistooltip:before {
-  top: 50%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-}
-.apexcharts-yaxistooltip:after {
-  border-color: rgba(236, 239, 241, 0);
-  border-width: 6px;
-  margin-top: -6px;
-}
-.apexcharts-yaxistooltip:before {
-  border-color: rgba(144, 164, 174, 0);
-  border-width: 7px;
-  margin-top: -7px;
-}
-
-.apexcharts-yaxistooltip-left:after, .apexcharts-yaxistooltip-left:before {
-  left: 100%;
-}
-
-.apexcharts-yaxistooltip-right:after, .apexcharts-yaxistooltip-right:before {
-  right: 100%;
-}
-
-.apexcharts-yaxistooltip-left:after {
-  border-left-color: #ECEFF1;
-}
-.apexcharts-yaxistooltip-left:before {
-  border-left-color: #90A4AE;
-}
-.apexcharts-yaxistooltip-left.dark:after {
-  border-left-color: rgba(0, 0, 0, 0.5);
-}
-.apexcharts-yaxistooltip-left.dark:before {
-  border-left-color: rgba(0, 0, 0, 0.5);
-}
-
-.apexcharts-yaxistooltip-right:after {
-  border-right-color: #ECEFF1;
-}
-.apexcharts-yaxistooltip-right:before {
-  border-right-color: #90A4AE;
-}
-.apexcharts-yaxistooltip-right.dark:after {
-  border-right-color: rgba(0, 0, 0, 0.5);
-}
-.apexcharts-yaxistooltip-right.dark:before {
-  border-right-color: rgba(0, 0, 0, 0.5);
-}
-
-.apexcharts-yaxistooltip.active {
-  opacity: 1;
-}
-.apexcharts-yaxistooltip-hidden {
-  display: none;
-}
-
-.apexcharts-xcrosshairs, .apexcharts-ycrosshairs {
-  pointer-events: none;
-  opacity: 0;
-  transition: 0.15s ease all;
-}
-
-.apexcharts-xcrosshairs.active, .apexcharts-ycrosshairs.active {
-  opacity: 1;
-  transition: 0.15s ease all;
-}
-
-.apexcharts-ycrosshairs-hidden {
-  opacity: 0;
-}
-
-.apexcharts-zoom-rect {
-  pointer-events: none;
-}
-.apexcharts-selection-rect {
-  cursor: move;
-}
-
-.svg_select_points, .svg_select_points_rot {
-  opacity: 0;
-  visibility: hidden;
-}
-.svg_select_points_l, .svg_select_points_r {
-  cursor: ew-resize;
-  opacity: 1;
-  visibility: visible;
-  fill: #888;
-}
-.apexcharts-canvas.zoomable .hovering-zoom {
-  cursor: crosshair
-}
-.apexcharts-canvas.zoomable .hovering-pan {
-  cursor: move
-}
-
-.apexcharts-xaxis,
-.apexcharts-yaxis {
-  pointer-events: none;
-}
-
-.apexcharts-zoom-icon,
-.apexcharts-zoom-in-icon,
-.apexcharts-zoom-out-icon,
-.apexcharts-reset-zoom-icon,
-.apexcharts-pan-icon,
-.apexcharts-selection-icon,
-.apexcharts-menu-icon,
-.apexcharts-toolbar-custom-icon {
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  line-height: 24px;
-  color: #6E8192;
-  text-align: center;
-}
-
-
-.apexcharts-zoom-icon svg,
-.apexcharts-zoom-in-icon svg,
-.apexcharts-zoom-out-icon svg,
-.apexcharts-reset-zoom-icon svg,
-.apexcharts-menu-icon svg {
-  fill: #6E8192;
-}
-.apexcharts-selection-icon svg {
-  fill: #444;
-  transform: scale(0.76)
-}
-
-.dark .apexcharts-zoom-icon svg,
-.dark .apexcharts-zoom-in-icon svg,
-.dark .apexcharts-zoom-out-icon svg,
-.dark .apexcharts-reset-zoom-icon svg,
-.dark .apexcharts-pan-icon svg,
-.dark .apexcharts-selection-icon svg,
-.dark .apexcharts-menu-icon svg,
-.dark .apexcharts-toolbar-custom-icon svg{
-  fill: #f3f4f5;
-}
-
-.apexcharts-canvas .apexcharts-zoom-icon.selected svg,
-.apexcharts-canvas .apexcharts-selection-icon.selected svg,
-.apexcharts-canvas .apexcharts-reset-zoom-icon.selected svg {
-  fill: #008FFB;
-}
-.light .apexcharts-selection-icon:not(.selected):hover svg,
-.light .apexcharts-zoom-icon:not(.selected):hover svg,
-.light .apexcharts-zoom-in-icon:hover svg,
-.light .apexcharts-zoom-out-icon:hover svg,
-.light .apexcharts-reset-zoom-icon:hover svg,
-.light .apexcharts-menu-icon:hover svg {
-  fill: #333;
-}
-
-.apexcharts-selection-icon, .apexcharts-menu-icon {
-  position: relative;
-}
-.apexcharts-reset-zoom-icon {
-  margin-left: 5px;
-}
-.apexcharts-zoom-icon, .apexcharts-reset-zoom-icon, .apexcharts-menu-icon {
-  transform: scale(0.85);
-}
-
-.apexcharts-zoom-in-icon, .apexcharts-zoom-out-icon {
-  transform: scale(0.7)
-}
-
-.apexcharts-zoom-out-icon {
-  margin-right: 3px;
-}
-
-.apexcharts-pan-icon {
-  transform: scale(0.62);
-  position: relative;
-  left: 1px;
-  top: 0px;
-}
-.apexcharts-pan-icon svg {
-  fill: #fff;
-  stroke: #6E8192;
-  stroke-width: 2;
-}
-.apexcharts-pan-icon.selected svg {
-  stroke: #008FFB;
-}
-.apexcharts-pan-icon:not(.selected):hover svg {
-  stroke: #333;
-}
-
-.apexcharts-toolbar {
-  position: absolute;
-  z-index: 11;
-  top: 0px;
-  right: 3px;
-  max-width: 176px;
-  text-align: right;
-  border-radius: 3px;
-  padding: 0px 6px 2px 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.apexcharts-toolbar svg {
-  pointer-events: none;
-}
-
-.apexcharts-menu {
-  background: #fff;
-  position: absolute;
-  top: 100%;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  padding: 3px;
-  right: 10px;
-  opacity: 0;
-  min-width: 110px;
-  transition: 0.15s ease all;
-  pointer-events: none;
-}
-
-.apexcharts-menu.open {
-  opacity: 1;
-  pointer-events: all;
-  transition: 0.15s ease all;
-}
-
-.apexcharts-menu-item {
-  padding: 6px 7px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.light .apexcharts-menu-item:hover {
-  background: #eee;
-}
-.dark .apexcharts-menu {
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
-}
-
-@media screen and (min-width: 768px) {
-  .apexcharts-toolbar {
-    /*opacity: 0;*/
-  }
-
-  .apexcharts-canvas:hover .apexcharts-toolbar {
-    opacity: 1;
-  }
-}
-
-.apexcharts-datalabel.hidden {
-  opacity: 0;
-}
-
-.apexcharts-pie-label,
-.apexcharts-datalabel, .apexcharts-datalabel-label, .apexcharts-datalabel-value {
-  cursor: default;
-  pointer-events: none;
-}
-
-.apexcharts-pie-label-delay {
-  opacity: 0;
-  animation-name: opaque;
-  animation-duration: 0.3s;
-  animation-fill-mode: forwards;
-  animation-timing-function: ease;
-}
-
-.apexcharts-canvas .hidden {
-  opacity: 0;
-}
-
-.apexcharts-hide .apexcharts-series-points {
-  opacity: 0;
-}
-
-.apexcharts-area-series .apexcharts-series-markers .apexcharts-marker.no-pointer-events,
-.apexcharts-line-series .apexcharts-series-markers .apexcharts-marker.no-pointer-events, .apexcharts-radar-series path, .apexcharts-radar-series polygon {
-  pointer-events: none;
-}
-
-/* markers */
-
-.apexcharts-marker {
-  transition: 0.15s ease all;
-}
-
-@keyframes opaque {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Resize generated styles */
-@keyframes resizeanim {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-.resize-triggers {
-  animation: 1ms resizeanim;
-  visibility: hidden;
-  opacity: 0;
-}
-
-.resize-triggers, .resize-triggers > div, .contract-trigger:before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-.resize-triggers > div {
-  background: #eee;
-  overflow: auto;
-}
-
-.contract-trigger:before {
-  width: 200%;
-  height: 200%;
-}
-</style><style id="smooth-scrollbar-style">
-[data-scrollbar] {
-  display: block;
-  position: relative;
-}
-
-.scroll-content {
-  -webkit-transform: translate3d(0, 0, 0);
-          transform: translate3d(0, 0, 0);
-}
-
-.scrollbar-track {
-  position: absolute;
-  opacity: 0;
-  z-index: 1;
-  background: rgba(222, 222, 222, .75);
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-  -webkit-transition: opacity 0.5s 0.5s ease-out;
-          transition: opacity 0.5s 0.5s ease-out;
-}
-.scrollbar-track.show,
-.scrollbar-track:hover {
-  opacity: 1;
-  -webkit-transition-delay: 0s;
-          transition-delay: 0s;
-}
-
-.scrollbar-track-x {
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 8px;
-}
-.scrollbar-track-y {
-  top: 0;
-  right: 0;
-  width: 8px;
-  height: 100%;
-}
-.scrollbar-thumb {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  background: rgba(0, 0, 0, .5);
-  border-radius: 4px;
-}
-</style></head>
-
-
-<body style="background-color:black;" class="">
-   
-
-<section class="content">
-
-    <div class="iq-sidebar" style="background-color:#171717;">
-    <div class="iq-sidebar-logo d-flex justify-content-between">
-        <a href="#" class="header-logo">
-            <img src="images/logo.svg" class="img-fluid rounded-normal" alt="">
-        </a>
-        <div class="iq-menu-bt-sidebar">
-            <div class="iq-menu-bt align-self-center">
-                <div class="wrapper-menu">
-                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
-                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
-        <nav class="iq-sidebar-menu">
-            
-            <ul id="iq-sidebar-toggle" class="iq-menu">
-                <li>
-                    <a href="/adminRoute" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
-                </li>
-                                <li>
-                    <a href="/allVerify" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>all verification</span></a>
-                </li>
-
-                     <li>
-                    <a href="/all-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all createdExperts</span></a>
-                </li>
-                 <li>
-                    <a href="/user-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all usersCopytrade</span></a>
-                </li>
-
-                 <li>
-                    <a href="/allFunding" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>all Deposit</span></a>
-                </li>
-                <li>
-                    <a href="/allWidthdrawals" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>all Withdrawrals</span></a>
-                </li>
-                <li>
-                    <a href="/all-affiliates" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
-                </li>
-                <li>
-                    <a href="/all-accountUpgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
-                </li>
-
-                 <li>
-                <a href="/all-chats" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-chat-dots"></i><span>All Chats</span></a>
-            </li>
-              
-                
-                <li>
-                    <a href="/all-signal" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>all signals</span></a>
-                </li>
-                <li>
-                    <a href="/all-livetrade" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>all  Trading</span></a>
-                </li>
-                <li>
-                    <a href="/all-tradestock" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>all StocksTrades</span></a>
-                </li>
-                
-                <li>
-                    <a href="mailto:support@digital-figtopmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
-                </li>
-                 <li>
-                    <a href="/all-wallets" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>wallet Addresses</span></a>
-                </li>
-                 <li>
-                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>logout out</span></a>
-                </li>
-                
-                </ul>
-        </nav>
-    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
-</div>
-<!-- TOP Nav Bar -->
-<div class="iq-top-navbar" style="background-color:#171717;">
-    <div class="iq-navbar-custom">
-        <nav class="navbar navbar-expand-lg navbar-light p-0">
-            <div class="iq-menu-bt d-flex align-items-center">
-                <div class="wrapper-menu">
-                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
-                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
-                </div>
-                <div class="iq-navbar-logo d-flex justify-content-between">
-                    <a href="#" class="header-logo">
-                        <img src="images/favicon.svg" class="img-fluid rounded-normal" alt="">
-                    </a>
-                </div>
-            </div>
-           
-            
-            <div class="d-flex flex-column" style="margin-top:-20px;"> 
-   
-    <div class="hn-1"></div>
-   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
-  </div>
-  <div>
-            <ul class="navbar-list">
-                <li class="line-height">
-                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
-                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
-                        <img src="/wp-user/assets5i/img/pers.svg"> 
-                    </a>
-                    <div class="iq-sub-dropdown iq-user-dropdown">
-                        <div class="iq-card shadow-none m-0">
-                            <div class="iq-card-body p-0 " style="background-color:#171717;">
-                                <div class="bg-primary p-3">
-                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
-                                </div>
-                                <a href="/profile" class="iq-sub-card iq-bg-primary-hover">
-                                    <div class="media align-items-center">
-                                        <div class="rounded iq-card-icon iq-bg-primary">
-                                            <i class="ri-file-user-line"></i>
-                                        </div>
-                                        <div class="media-body ml-3">
-                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
-                                            <p class="mb-0 font-size-12">View personal profile details.</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                
-                             
-                                <div class="d-inline-block w-100 text-center p-3">
-                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div></li>
-            </ul>
-        </div></nav>
-    </div>
-</div> 
- <div class="d-flex flex-column" style="margin-top:55px;"> 
-   
-  </div>
-  </div>
-
-  <!-- othe main content -->
-
-  <div class="container-fluid">
-        <h2 class="text-white">Add Wallet</h2>
-        <% if (messages.error) { %>
-            <div class="alert alert-danger"><%= messages.error %></div>
-        <% } %>
-        <form action="/add-wallet" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label class="text-white">BTC Address</label>
-                <input type="text" name="btc_address" class="form-control" value="gj762346yshshshkshkshksd">
-            </div>
-            <div class="form-group">
-                <label class="text-white">BTC Image (Optional)</label>
-                <input type="file" name="btc_image" class="form-control" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label class="text-white">ETH Address</label>
-                <input type="text" name="eth_address" class="form-control" value="gj762346yshshshkshkshksd">
-            </div>
-            <div class="form-group">
-                <label class="text-white">ETH Image (Optional)</label>
-                <input type="file" name="eth_image" class="form-control" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label class="text-white">USDT Address</label>
-                <input type="text" name="usdt_address" class="form-control" value="gj762346yshshshkshkshksd">
-            </div>
-            <div class="form-group">
-                <label class="text-white">USDT Image (Optional)</label>
-                <input type="file" name="usdt_image" class="form-control" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label class="text-white">CashApp</label>
-                <input type="text" name="cashapp" class="form-control" value="$Bitcoin">
-            </div>
-            <div class="form-group">
-                <label class="text-white">CashApp Image (Optional)</label>
-                <input type="file" name="cashapp_image" class="form-control" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label class="text-white">PayPal</label>
-                <input type="text" name="paypal" class="form-control" value="example@gmail.com">
-            </div>
-            <div class="form-group">
-                <label class="text-white">PayPal Image (Optional)</label>
-                <input type="file" name="paypal_image" class="form-control" accept="image/*">
-            </div>
-            <button type="submit" class="btn btn-primary">Add Wallet</button>
-        </form>
-    </div>
-
-</section>
-
-
-
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
-
-<script type="text/javascript" src="assets5i/custom/custom.js"></script>
-
-
-
- <script src="assets0/notify.js"></script>
- <script type="text/javascript" src="assets0/custom/custom.js"></script>
- <!-- Optional JavaScript -->
-    <script src="../plugins/jquery-3.1.1.min.js"></script>
-    <script src="../plugins/sweetalerts/sweetalert2.min.js"></script>
-    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
-
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <!--<script src="js/jquery.min.js"></script>
-    <script src="js/popper.min.js"></script>-->
-    <script src="js/bootstrap.min.js"></script>
-    <!-- Appear JavaScript -->
-    <script src="js/jquery.appear.js"></script>
-    <!-- Countdown JavaScript -->
-    <script src="js/countdown.min.js"></script>
-    <!-- Counterup JavaScript -->
-    <script src="js/waypoints.min.js"></script>
-    <script src="js/jquery.counterup.min.js"></script>
-    <!-- Wow JavaScript -->
-    <script src="js/wow.min.js"></script>
-    <!-- Apexcharts JavaScript -->
-    <script src="js/apexcharts.js"></script>
-    <!-- Slick JavaScript -->
-    <script src="js/slick.min.js"></script>
-    <!-- Select2 JavaScript -->
-    <script src="js/select2.min.js"></script>
-    <!-- Owl Carousel JavaScript -->
-    <script src="js/owl.carousel.min.js"></script>
-    <!-- Magnific Popup JavaScript -->
-    <script src="js/jquery.magnific-popup.min.js"></script>
-    <!-- Smooth Scrollbar JavaScript -->
-    <script src="js/smooth-scrollbar.js"></script>
-    <!-- lottie JavaScript -->
-    <script src="js/lottie.js"></script>
-    <!-- am core JavaScript -->
-    <script src="js/core.js"></script>
-    <!-- am charts JavaScript -->
-    <script src="js/charts.js"></script>
-    <!-- am animated JavaScript -->
-    <script src="js/animated.js"></script>
-    <!-- am kelly JavaScript -->
-    <script src="js/kelly.js"></script>
-    <!-- am maps JavaScript -->
-    <script src="js/maps.js"></script>
-    <!-- am worldLow JavaScript -->
-    <script src="js/worldLow.js"></script>
-    <!-- Style Customizer -->
-    <script src="js/style-customizer.js"></script>
-    <!-- Chart Custom JavaScript -->
-    <script src="js/chart-custom.js"></script>
-    <!-- Custom JavaScript -->
-    <script src="js/custom.js"></script>
-    
-    <script type="text/javascript" src="nt/nt.js"></script>
-	<script type="text/javascript" src="nt/f.js"></script>
-	
-	<script>
-	    
-</script>
-
-
-<svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;"><defs id="SvgjsDefs1002"></defs><polyline id="SvgjsPolyline1003" points="0,0"></polyline><path id="SvgjsPath1004" d="M0 0 "></path></svg>
-<iframe id="chat-application-iframe" title="Smartsupp" aria-hidden="true" style="display: block; position: fixed; top: 0px; left: 0px; width: 1px; height: 1px; opacity: 0; border: none; z-index: -1; pointer-events: none;"></iframe>
-<div id="smartsupp-widget-container"><!----><!----><!----> <!----><!----> <!----><div data-testid="widgetButtonFrame" style="border-radius: 9999px; box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 2px 32px; color-scheme: normal; height: 56px; position: fixed; bottom: 24px; left: initial; right: 12px; z-index: 10000000; width: 56px;"><iframe allowfullscreen="" scrolling="no" id="widgetButtonFrame" title="Smartsupp widget button" style="position: absolute; width: 100%; height: 100%; border: none; display: block; text-align: left; margin: 0px; padding: 0px; top: 0px; left: 0px; opacity: 1;"></iframe><!----></div><!----> <!----><!----> <!----><!----><!---->
-</div>
-</body>
-</html>
-
-
-
-
-
-and here is my edit-wallet.html template 
-
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Admin Dashboard | 247Expertstrade</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
-  <link rel="icon" type="image/png" href="./assets/img/favicons/favicon-32x32.png" sizes="32x32">
-  <link href="./assets/css/css.css" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" type="text/css" href="./assets/css/inner.css">
-  <link rel="stylesheet" type="text/css" href="./assets/css/app.css">
-  <link rel="stylesheet" type="text/css" href="./assets/css/cs.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-  <script src="https://use.fontawesome.com/4b789087e7.js"></script>
-  <style>
-    body { background: #0d0d0d; color: #fff; }
-    .divider { border-bottom: 1px dotted; }
-    .ui.sidebar.right {
-      position: fixed !important; top: 0; right: -280px; width: 260px; height: 100%;
-      z-index: 10000; transition: right 0.3s ease; overflow-y: auto; padding-top: 90px !important;
-    }
-    .ui.sidebar.right.visible { right: 0 !important; }
-    .sidebar-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); z-index: 9999;
-    }
-    .sidebar-overlay.active { display: block; }
-    .menu-toggle { cursor: pointer !important; }
-    .admin-wrap { padding: 24px 16px 80px; max-width: 1200px; margin: 0 auto; }
-    .admin-wrap h2 { color: #fff; margin-bottom: 16px; }
-    .table { color: #fff; background-color: #171717; }
-    .table-dark { --bs-table-bg: #1a1a2e; }
-    .card { background: #171717; border: none; border-radius: 0.5rem; }
-    .form-control, .form-select {
-      background: #1a1a2e; color: #fff; border: 1px solid #444;
-    }
-    .form-control:focus, .form-select:focus {
-      background: #1a1a2e; color: #fff; border-color: #2597c7; box-shadow: none;
-    }
-    .btn-sm { padding: 0.25rem 0.5rem; }
-    .pagination .page-link { background: #1a1a2e; color: #fff; border-color: #333; }
-    .pagination .page-item.active .page-link { background: #286090; border-color: #286090; }
-    .badge { font-size: 0.85rem; }
-  </style>
-</head>
-<body class="pushable dimmable scrolling">
-
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<div class="ui sidebar right inverted vertical menu" id="mainSidebar">
-  <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%;">
-    <span id="admin-sidebar-email"><i class="fa fa-envelope-o"></i> Admin</span><br>
-    <span id="admin-sidebar-name" style="margin-top:8px;"><b>Loading...</b></span>
-  </div>
-  <span class="divider"></span>
-  <div class="item"><a href="adminDashboard.html"><i class="fa fa-dashboard"></i> Users</a></div>
-  <div class="item"><a href="allFunding.html"><i class="fa fa-money"></i> All Deposits</a></div>
-  <div class="item"><a href="allWidthdrawals.html"><i class="fa fa-money"></i> All Withdrawals</a></div>
-  <div class="item"><a href="all-livetrade.html"><i class="fa fa-area-chart"></i> All Trades</a></div>
-  <div class="item"><a href="allVerify.html"><i class="fa fa-check-circle"></i> Verifications</a></div>
-  <div class="item"><a href="wallets.html"><i class="fa fa-credit-card"></i> Wallets</a></div>
-  <span class="divider"></span>
-  <div class="item"><a href="#" id="adminLogoutBtn"><i class="fa fa-power-off"></i> Exit</a></div>
-</div>
-
-<div class="pusher">
-  <nav class="top-nav inner inner-new">
-    <div class="top-bar">
-      <div class="head-row clearfix">
-        <div class="float-left">
-          <div class="logosm">
-            <a href="adminDashboard.html"><img src="./assets/img/logo.png" alt="247Expertstrade"></a>
-          </div>
-        </div>
-        <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
-        <div class="float-right nav smcapy-nav">
-          <div class="item" id="top-admin-name">Admin</div>
-          <div class="item">
-            <a class="ui button op link a-green-hover" href="#" id="topLogoutBtn">
-              <i class="fa fa-power-off"></i> Exit
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <div class="root-content">
-    <div class="admin-wrap">
-    </div>
-  </div>
-
-  <footer class="footer">
-    <div class="row clearfix">
-      <div class="float-left">
-        <span class="copy">&copy; 2022 <span>247Expertstrade Ltd .</span></span>
-      </div>
-    </div>
-  </footer>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="/frontend/public/js/config.js"></script>
-<script src="/frontend/public/js/auth.js"></script>
-<script src="/frontend/public/js/adminDashboard.js"></script>
-</body>
-</html>
-
-my adminRoute.js file like this
-
-const express = require('express');
-
-const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'swiftcapital/profiles',
-    allowed_formats: ['jpg', 'jpeg', 'png'],
-    public_id: (req, file) => `user_${req.params.id}_${Date.now()}`
-  }
-});
-
-const upload = multer({ storage });
-
-const adminController = require('../controllers/adminController');
-
-//************************************* */  Admin Dashboard  routes**********************//
-
-router.get('/adminiRoute',adminController.adminPage );
-
-
-router.get('/viewUser/:id',adminController.viewUser );
-
-router.get('/editUser/:id', adminController.editUserPage);
-router.put('/editUser/:id', adminController.editUser_post);
-router.post('/generateOtp/:id', adminController.generateOtp);
-
-router.put('/suspendUser/:id', adminController.suspendUser);
-
-router.get('/suspendOTP/:id', adminController.suspendOTP);
-router.get('/unsuspendOTP/:id', adminController.unsuspendOTP);
-
-
-// //************************************* */ All Deposits  routes**********************//
-
-router.get('/allFunding',adminController.allDeposit );
-
-
-router.get('/editDeposit/:id',adminController.editDeposit);
-
-router.put('/editDeposit/:id',adminController.editDeposit_post );
-
-// ***************************ALL LIVETRADES **************************
-
-router.get('/all-livetrade', adminController.getAllTrades);
-router.get('/trades-view/:id', adminController.viewTrade);
-router.get('/trades-edit/:id', adminController.editTrade);
-router.post('/trades-edit/:id', adminController.updateTrade);
-router.post('/trades-delete/:id', adminController.deleteTrade);
-
-// ******************************ALL WITHDRAWALS ***********************
-
-router.get('/allWidthdrawals', adminController.allWithdrawals);
-router.get('/withdrawals-edit/:id', adminController.editWithdrawalPage);
-router.post('/withdrawals-edit/:id', adminController.editWithdrawal_post);
-router.post('/withdrawals-delete/:id', adminController.deleteWithdrawal);
-
-// **************************************ALL WALLET ***************************//
 // Wallet Routes (same structure as deposits + new add route)
 router.get('/wallets', adminController.allWalletPage);
 router.get('/viewWallet/:id', adminController.viewWallet);
 router.get('/editWallet/:id', adminController.editWallet);
-router.put('/editWallet/:id', upload.single('btc_qr_image'), adminController.editWallet_post);
+router.post('/edit-wallet/:id', upload.fields([
+  { name: 'btc_image', maxCount: 1 },
+  { name: 'eth_image', maxCount: 1 },
+  { name: 'usdt_image', maxCount: 1 },
+  { name: 'cashapp_image', maxCount: 1 },
+  { name: 'paypal_image', maxCount: 1 },
+]), adminController.updateWallet);
 router.delete('/deleteWallet/:id', adminController.deleteWallet);
 
 // New: Add wallet with image upload
 router.get('/addWallet', adminController.addWalletPage);
-router.post('/addWallet', upload.single('btc_qr_image'), adminController.addWallet_post);
+router.post('/add-wallet', upload.fields([
+  { name: 'btc_image', maxCount: 1 },
+  { name: 'eth_image', maxCount: 1 },
+  { name: 'usdt_image', maxCount: 1 },
+  { name: 'cashapp_image', maxCount: 1 },
+  { name: 'paypal_image', maxCount: 1 },
+]), adminController.addWallet_post);
 
-
-// //************************************* */ All verify routes**********************//
-// KYC Verification Routes (same structure as deposits)
-router.get('/allVerify', adminController.allVerification);
-router.get('/viewVerify/:id', adminController.viewVerify);
-router.get('/editVerify/:id', adminController.editVerify);
-router.put('/editVerify/:id', adminController.editVerify_post);
-router.delete('/deleteVerify/:id', adminController.deleteVerify);
-
-// //************************************* */ All Delete routes**********************//
-router.delete('/deleteUser/:id', adminController.deletePage);
-router.delete('/deleteDeposit/:id', adminController.deleteDeposit);
-
-
-module.exports = router;
-
-
-controllers
-// ────────────────────────────────────────────────
-// NEW: Add Wallet Page & Post
-// ────────────────────────────────────────────────
-
-module.exports.addWalletPage = async (req, res) => {
+here is the adminController
+// GET /wallets
+module.exports.allWalletPage = async (req, res) => {
   try {
+    const wallets = await Wallet.find()
+      .populate({
+        path: 'updatedBy',
+        model: 'User',
+        select: 'fullname email'
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
     return res.status(200).json({
       success: true,
-      admin: req.user
-        ? {
-            _id: req.user._id,
-            firstname: req.user.firstname,
-            midname: req.user.midname,
-            lastname: req.user.lastname,
-            email: req.user.email,
-            image: req.user.image
-          }
-        : null
+      wallets: wallets.map(w => ({
+        _id: w._id,
+        bank_name: w.bank_name || '',
+        account_name: w.account_name || '',
+        account_no: w.account_no || '',
+        sortcode: w.sortcode || '',
+        swift_code: w.swift_code || '',
+        btc_wallet_address: w.btc_wallet_address || '',
+        btc_qr_image: w.btc_qr_image || null,
+        paypal_email: w.paypal_email || '',
+        updatedBy: w.updatedBy
+          ? {
+              _id: w.updatedBy._id,
+              fullname: w.updatedBy.fullname || '',
+              email: w.updatedBy.email || ''
+            }
+          : null,
+        createdAt: w.createdAt,
+        updatedAt: w.updatedAt
+      })),
+      admin: {
+        _id: req.user._id,
+        fullname: req.user.fullname || '',
+        email: req.user.email || ''
+      }
     });
-  } catch (error) {
-    console.error('addWalletPage error:', error);
+  } catch (err) {
+    console.error('allWalletPage error:', err);
     return res.status(500).json({
       success: false,
-      message: 'Server error'
-    });
-  }
-};
-
-
-
-module.exports.addWallet_post = async (req, res) => {
-  try {
-    const walletData = {
-      bank_name: req.body.bank_name,
-      account_name: req.body.account_name,
-      account_no: req.body.account_no,
-      sortcode: req.body.sortcode,
-      swift_code: req.body.swift_code,
-      btc_wallet_address: req.body.btc_wallet_address,
-      paypal_email: req.body.paypal_email,
-      updatedBy: req.user._id,
-      btc_qr_image: req.file ? req.file.path : null // Cloudinary URL
-    };
-
-    const newWallet = await Wallet.create(walletData);
-
-    return res.status(201).json({
-      success: true,
-      message: 'Wallet created successfully',
-      wallet: newWallet
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(400).json({
-      success: false,
-      message: error.message || 'Failed to create wallet'
+      message: 'Failed to load wallets'
     });
   }
 };
@@ -1390,60 +283,495 @@ module.exports.editWallet_post = async (req, res) => {
   }
 };
 
-wallet schema
-const mongoose = require('mongoose');
+// POST /delete-wallet/:id
+module.exports.deleteWallet = async (req, res) => {
+  try {
+    const wallet = await Wallet.findById(req.params.id);
+    if (!wallet) {
+      return res.status(404).json({ success: false, message: 'Wallet not found' });
+    }
 
-const walletSchema = new mongoose.Schema({
-  // Bank details (used for Bank Transfer method)
-  bank_name: {
-    type: String,
-    default: "Mining Bank"
-  },
-  account_name: {
-    type: String,
-    default: "Miller lauren"
-  },
-  account_no: {
-    type: String,
-    default: "99388383"
-  },
-  sortcode: {
-    type: String,
-    default: "388130"
-  },
-  swift_code: {
-    type: String,
-    default: "3222ASD"
-  },
+    await Wallet.deleteOne({ _id: wallet._id });
 
-  // Bitcoin / Crypto wallet
-  btc_wallet_address: {
-    type: String,
-    default: "bc1qkspwvk9ge7rfl7374t96s95es64vc4fysk2nu5"
-  },
-  btc_qr_image: {
-    type: String, // Cloudinary URL of QR code image
-    default: null
-  },
+    return res.status(200).json({
+      success: true,
+      message: 'Wallet deleted successfully'
+    });
+  } catch (err) {
+    console.error('deleteWallet error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to delete wallet' });
+  }
+};
 
-  // PayPal (email or business ID)
-  paypal_email: {
-    type: String,
-    default: "yourbusiness@paypal.com"
-  },
+// ────────────────────────────────────────────────
+// NEW: Add Wallet Page & Post
+// ────────────────────────────────────────────────
 
-  // Last updated by admin (optional audit)
-  updatedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
-  },
-
-}, { timestamps: true });
-
-const Wallet = mongoose.model('Wallet', walletSchema);
-
-module.exports = Wallet;
+module.exports.addWalletPage = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      admin: req.user
+        ? {
+            _id: req.user._id,
+            firstname: req.user.firstname,
+            midname: req.user.midname,
+            lastname: req.user.lastname,
+            email: req.user.email,
+            image: req.user.image
+          }
+        : null
+    });
+  } catch (error) {
+    console.error('addWalletPage error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+};
 
 
 
-just like the adminDashboard display all the necessary wallet detail in the edit-wallet.html template page and bring out the whole page with no line of code skipped, commented out or left to be filled in manually(placeholders)
+module.exports.addWallet_post = async (req, res) => {
+  try {
+    const walletData = {
+      bank_name: req.body.bank_name,
+      account_name: req.body.account_name,
+      account_no: req.body.account_no,
+      sortcode: req.body.sortcode,
+      swift_code: req.body.swift_code,
+      btc_wallet_address: req.body.btc_wallet_address,
+      paypal_email: req.body.paypal_email,
+      updatedBy: req.user._id,
+      btc_qr_image: req.file ? req.file.path : null // Cloudinary URL
+    };
+
+    const newWallet = await Wallet.create(walletData);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Wallet created successfully',
+      wallet: newWallet
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      success: false,
+      message: error.message || 'Failed to create wallet'
+    });
+  }
+};
+
+and here is the all-wallet page
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Withdraw |  247Expertstrade </title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+<link rel="icon" type="image/png" href="./assets/img/favicons/favicon-32x32.png" sizes="32x32">
+<link href="./assets/css/css.css" rel="stylesheet">
+<link rel="stylesheet" href="./assets/css/inner.css">
+<link rel="stylesheet" href="./assets/css/app.css">
+<link rel="stylesheet" href="./assets/css/cs.css">
+<script src="https://use.fontawesome.com/4b789087e7.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<style>
+    
+.divider{border-bottom:1px dotted}
+.blinkred{animation:blinkingText 2s infinite}
+.blinkgreen{animation:blinkgreenText 2s infinite}
+@keyframes blinkingText{0%{color:#f00}49%{color:#600}50%{color:#c00}99%{color:#e00}100%{color:#f00}}
+@keyframes blinkgreenText{0%{color:#0f0}49%{color:#060}50%{color:#0c0}99%{color:#0e0}100%{color:#0f0}}
+.ui.sidebar.right{position:fixed!important;top:0;right:-280px;width:260px;height:100%;z-index:10000;transition:right .3s ease;overflow-y:auto;padding-top:90px!important}
+.ui.sidebar.right.visible{right:0!important}
+.sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9999}
+.sidebar-overlay.active{display:block}
+.menu-toggle{cursor:pointer!important;display:block!important}
+.withdraw-wrap{max-width:900px;margin:24px auto;padding:16px}
+.amount-box{width:100%;margin-bottom:24px}
+.amount-box label{display:block;color:#fff;margin-bottom:8px;font-weight:bold}
+.amount-box input{width:100%;padding:14px;font-size:18px;border-radius:8px;border:1px solid #444;background:#1a1a2e;color:#0f0;box-sizing:border-box}
+.method-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.method-card{position:relative;background:#1a1a2e;border:2px solid #333;border-radius:12px;padding:20px 12px;text-align:center;cursor:pointer;color:#fff;transition:border-color .2s,transform .15s}
+.method-card:hover{border-color:#2597c7;transform:translateY(-2px)}
+.method-card.selected{border-color:#0f0;box-shadow:0 0 0 2px rgba(0,255,0,.25)}
+.method-card .check{display:none;position:absolute;top:8px;right:8px;color:#0f0;font-size:18px}
+.method-card.selected .check{display:block}
+.method-card img,.method-card .method-icon{width:48px;height:48px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.method-card .name{font-weight:bold;font-size:14px}
+.next-row{margin-top:28px;text-align:center}
+.next-row button{min-width:180px;padding:12px 24px}
+</style>
+</head>
+<body class="pushable dimmable scrolling">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="ui sidebar right inverted vertical menu" id="mainSidebar">
+  <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%">
+    <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
+    <span id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> <b>USD $</b></span><br>
+    <span id="sidebar-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></span>
+  </div>
+  <span class="divider"></span>
+  <div class="item"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+  <div class="item"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="history.html"><i class="fa fa-history"></i> Transactions history</a></div>
+  <div class="item"><a href="trade-history.html"><i class="fa fa-area-chart"></i> Trading history</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+  <div class="item"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+</div>
+
+<div class="pusher">
+<nav class="top-nav inner inner-new">
+  <div class="top-bar">
+    <div class="head-row clearfix">
+      <div class="float-left">
+        <div class="logosm"><a href="dashboard.html"><img src="./assets/img/logo.png" alt="247Expertstrade"></a></div>
+      </div>
+      <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
+      <div class="float-right nav smcapy-nav">
+        <div class="item" id="top-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></div>
+        <div class="item"><a class="ui button op link a-green-hover" href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+        <div class="item"><a class="ui button op round green-bm nobold" href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="top-line clearfix">
+    <div class="row-30">
+      <div class="navsm text-xs-right">
+        <div class="ui item top-drop-in-css"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+        <div class="ui item top-drop-in-css"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+        <div class="ui item top-drop-in-css"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="root-content">
+  <div class="pusher push-trading">
+    <section class="img-bg-section">
+      <div class="row">
+        <ul class="tabs">
+          <li><a href="funding.html">Account Funding</a></li>
+          <li><a href="withdrawal.html" class="active">Withdrawals</a></li>
+        </ul>
+        <div class="top-info"><h2 class="title">Withdraw Funds</h2></div>
+      </div>
+      <span class="blue-arrow"></span>
+    </section>
+
+    <div class="withdraw-wrap">
+      <div style="color:#fff;margin-bottom:12px">Available balance: <b id="display-balance">0.00</b> <span id="display-currency">USD $</span></div>
+
+      <div class="amount-box">
+        <label for="withdrawAmount">Amount to withdraw</label>
+        <input type="text" id="withdrawAmount" placeholder="0.00" inputmode="decimal">
+      </div>
+
+      <p style="color:#ccc;margin-bottom:12px">Select withdrawal method</p>
+      <div class="method-grid" id="methodGrid">
+        <div class="method-card" data-type="Bitcoin">
+          <span class="check"><i class="fa fa-check-circle"></i></span>
+          <div class="method-icon"><i class="fa fa-btc"></i></div>
+          <div class="name">Bitcoin</div>
+        </div>
+        <div class="method-card" data-type="Ethereum">
+          <span class="check"><i class="fa fa-check-circle"></i></span>
+          <div class="method-icon"><i class="fa fa-diamond"></i></div>
+          <div class="name">Ethereum</div>
+        </div>
+        <div class="method-card" data-type="CashApp">
+          <span class="check"><i class="fa fa-check-circle"></i></span>
+          <div class="method-icon"><i class="fa fa-money"></i></div>
+          <div class="name">CashApp</div>
+        </div>
+        <div class="method-card" data-type="PayPal">
+          <span class="check"><i class="fa fa-check-circle"></i></span>
+          <div class="method-icon"><i class="fa fa-paypal"></i></div>
+          <div class="name">PayPal</div>
+        </div>
+        <div class="method-card" data-type="Bank Transfer">
+          <span class="check"><i class="fa fa-check-circle"></i></span>
+          <div class="method-icon"><i class="fa fa-university"></i></div>
+          <div class="name">Bank Transfer</div>
+        </div>
+      </div>
+
+      <div class="next-row">
+        <button type="button" class="ui button primal green" id="nextBtn">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="row clearfix">
+    <div class="float-left"><span class="copy">&copy; 2022 247Expertstrade Ltd .</span></div>
+  </div>
+</footer>
+</div>
+
+<script src="./assets/js/inner.js"></script>
+<script src="./assets/js/vendor.js"></script>
+<script src="./assets/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/frontend/public/js/config.js"></script>
+<script src="/frontend/public/js/auth.js"></script>
+<script>
+(function(){
+  var sidebar=document.getElementById('mainSidebar');
+  var overlay=document.getElementById('sidebarOverlay');
+  var toggleBtn=document.getElementById('menuToggleBtn');
+  function openS(){if(sidebar)sidebar.classList.add('visible');if(overlay)overlay.classList.add('active')}
+  function closeS(){if(sidebar)sidebar.classList.remove('visible');if(overlay)overlay.classList.remove('active')}
+  if(toggleBtn)toggleBtn.addEventListener('click',function(e){e.preventDefault();sidebar&&sidebar.classList.contains('visible')?closeS():openS()});
+  if(overlay)overlay.addEventListener('click',closeS);
+  if(sidebar)sidebar.querySelectorAll('a').forEach(function(a){a.addEventListener('click',closeS)});
+})();
+
+document.addEventListener('DOMContentLoaded', async function(){
+  if(typeof requireAuthPage==='function') requireAuthPage();
+
+  var selectedType=null;
+  var userBalance=0;
+  var currentUser=null;
+
+  function kycHtml(s){
+    if(s==='approve') return 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>';
+    if(s==='pending') return 'Kyc Verification: <span style="color:#ff0"><i class="fa fa-clock-o"></i> Pending</span>';
+    return 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
+  }
+
+  try{
+    var res=await api.get('/withdraw');
+    if(res.data&&res.data.success){
+      currentUser=res.data.user;
+      userBalance=Number(currentUser.balance||0);
+      var bal=userBalance.toFixed(2);
+      var cur=currentUser.currency||'USD $';
+      document.getElementById('sidebar-email').innerHTML='<i class="fa fa-envelope-o"></i> '+(currentUser.email||'');
+      document.getElementById('sidebar-balance').innerHTML='<b><i class="fa fa-money"></i> '+bal+'</b> <b>'+cur+'</b>';
+      document.getElementById('sidebar-kyc').innerHTML=kycHtml(currentUser.kycVerified);
+      document.getElementById('top-kyc').innerHTML=kycHtml(currentUser.kycVerified);
+      document.getElementById('display-balance').textContent=bal;
+      document.getElementById('display-currency').textContent=cur;
+    }
+  }catch(e){
+    if(e.response&&e.response.status===401) window.location.href='login.html';
+  }
+
+  document.querySelectorAll('.method-card').forEach(function(card){
+    card.addEventListener('click',function(){
+      document.querySelectorAll('.method-card').forEach(function(c){c.classList.remove('selected')});
+      card.classList.add('selected');
+      selectedType=card.getAttribute('data-type');
+    });
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', async function(){
+    var amount=Number(document.getElementById('withdrawAmount').value);
+    if(!amount||amount<=0){
+      Swal.fire('Error','Enter a valid amount','error');
+      return;
+    }
+    if(!selectedType){
+      Swal.fire('Error','Select a withdrawal method','error');
+      return;
+    }
+    if(amount>userBalance){
+      Swal.fire('Error','Insufficient balance for withdrawal','error');
+      return;
+    }
+
+    try{
+      if(currentUser&&currentUser._id){
+        await api.post('/withdraw/init/'+currentUser._id,{amount:amount,type:selectedType});
+      }
+    }catch(err){
+      var msg=(err.response&&err.response.data&&err.response.data.message)||'Insufficient balance';
+      Swal.fire('Error',msg,'error');
+      return;
+    }
+
+    localStorage.setItem('withdraw_amount', String(amount));
+    localStorage.setItem('withdraw_type', selectedType);
+    localStorage.setItem('withdraw_fees', '0.00');
+
+    await Swal.fire({
+      icon:'success',
+      title:'Withdrawal initiated',
+      text:'Proceed to enter payment details',
+      confirmButtonText:'Continue'
+    });
+    window.location.href='withdraw-details.html';
+  });
+});
+</script>
+</body>
+</html>
+
+here is the wallets.js file
+
+// wallets.js
+document.addEventListener('DOMContentLoaded', async () => {
+  // Auth guard
+  if (typeof requireAuthPage === 'function') {
+    requireAuthPage();
+  } else if (!localStorage.getItem('token')) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const tableBody = document.getElementById('walletsTableBody');
+
+  // Admin name
+  const currentUser = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+  if (currentUser) {
+    const name = currentUser.fullname || currentUser.email || 'Admin';
+    document.getElementById('admin-sidebar-name').innerHTML = `<b>${name}</b>`;
+    document.getElementById('admin-sidebar-email').innerHTML = `<i class="fa fa-envelope-o"></i> ${currentUser.email || ''}`;
+    document.getElementById('top-admin-name').textContent = name;
+  }
+
+  // Load wallets
+  await loadWallets();
+
+  async function loadWallets() {
+    try {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-4">
+            <i class="fa fa-spinner fa-spin"></i> Loading wallets...
+          </td>
+        </tr>`;
+
+      const res = await api.get('/wallets');
+      const data = res.data;
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to load wallets');
+      }
+
+      const wallets = data.wallets || [];
+      renderTable(wallets);
+    } catch (err) {
+      console.error(err);
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-4 text-danger">
+            ${err.response?.data?.message || err.message || 'Failed to load wallets'}
+          </td>
+        </tr>`;
+    }
+  }
+
+  function renderTable(wallets) {
+    if (!wallets.length) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-4">No wallets found</td>
+        </tr>`;
+      return;
+    }
+
+    let html = '';
+    wallets.forEach((w, index) => {
+      const ownerName = w.owner ? w.owner.fullname : 'N/A';
+      const ownerEmail = w.owner ? w.owner.email : '';
+
+      html += `
+        <tr>
+          <td>${index + 1}</td>
+          <td class="address-cell" title="${escapeHtml(w.btc_address)}">${escapeHtml(w.btc_address) || '—'}</td>
+          <td class="address-cell" title="${escapeHtml(w.eth_address)}">${escapeHtml(w.eth_address) || '—'}</td>
+          <td class="address-cell" title="${escapeHtml(w.usdt_address)}">${escapeHtml(w.usdt_address) || '—'}</td>
+          <td>${escapeHtml(w.cashapp) || '—'}</td>
+          <td>${escapeHtml(w.paypal) || '—'}</td>
+          <td>
+            <div>${escapeHtml(ownerName)}</div>
+            <small class="text-muted">${escapeHtml(ownerEmail)}</small>
+          </td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="edit-wallet.html?id=${w._id}" class="btn btn-sm btn-primary" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <button class="btn btn-sm btn-danger delete-btn" data-id="${w._id}" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>`;
+    });
+
+    tableBody.innerHTML = html;
+    attachDeleteListeners();
+  }
+
+  function attachDeleteListeners() {
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+
+        const result = await Swal.fire({
+          title: 'Are you sure?',
+          text: 'This wallet will be permanently deleted.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Yes, delete it!',
+          background: '#212529',
+          color: '#fff'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+          const res = await api.post(`/delete-wallet/${id}`);
+          if (res.data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: res.data.message || 'Wallet deleted',
+              background: '#212529',
+              color: '#fff',
+              timer: 1800,
+              showConfirmButton: false
+            });
+            await loadWallets();
+          } else {
+            throw new Error(res.data.message || 'Delete failed');
+          }
+        } catch (err) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err.response?.data?.message || err.message || 'Failed to delete',
+            background: '#212529',
+            color: '#fff'
+          });
+        }
+      });
+    });
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+});
+
+now make adjustment so the ui can fit/match the wallet schema
