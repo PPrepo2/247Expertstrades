@@ -1,386 +1,20 @@
-here is the wallet schema 
-
-const mongoose = require('mongoose');
-
-const walletSchema = new mongoose.Schema({
-  // Bank details (used for Bank Transfer method)
-  bank_name: {
-    type: String,
-    default: "Mining Bank"
-  },
-  account_name: {
-    type: String,
-    default: "Miller lauren"
-  },
-  account_no: {
-    type: String,
-    default: "99388383"
-  },
-  sortcode: {
-    type: String,
-    default: "388130"
-  },
-  swift_code: {
-    type: String,
-    default: "3222ASD"
-  },
-
-   btc_address: {
-        type: String,
-        lowercase: true,
-        default: "gj762346yshshshkshkshksd"
-    },
-    btc_image: {
-        type: String,
-        default: null
-    },
-    eth_address: {
-        type: String,
-        lowercase: true,
-        default: "gj762346yshshshkshkshksd"
-    },
-    eth_image: {
-        type: String,
-        default: null
-    },
-    usdt_address: {
-        type: String,
-        lowercase: true,
-        default: "gj762346yshshshkshkshksd"
-    },
-    usdt_image: {
-        type: String,
-        default: null
-    },
-    cashapp: {
-        type: String,
-        lowercase: true,
-        default: "$Bitcoin"
-    },
-    cashapp_image: {
-        type: String,
-        default: null
-    },
-    paypal: {
-        type: String,
-        lowercase: true,
-        default: "example@gmail.com"
-    },
-    paypal_image: {
-        type: String,
-        default: null
-    },
-
-  // Last updated by admin (optional audit)
-  updatedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
-  },
-
-}, { timestamps: true });
-
-const Wallet = mongoose.model('Wallet', walletSchema);
-
-module.exports = Wallet;
-
-here is the routes
-
-// Wallet Routes (same structure as deposits + new add route)
-router.get('/wallets', adminController.allWalletPage);
-router.get('/viewWallet/:id', adminController.viewWallet);
-router.get('/editWallet/:id', adminController.editWallet);
-router.post('/edit-wallet/:id', upload.fields([
-  { name: 'btc_image', maxCount: 1 },
-  { name: 'eth_image', maxCount: 1 },
-  { name: 'usdt_image', maxCount: 1 },
-  { name: 'cashapp_image', maxCount: 1 },
-  { name: 'paypal_image', maxCount: 1 },
-]), adminController.updateWallet);
-router.delete('/deleteWallet/:id', adminController.deleteWallet);
-
-// New: Add wallet with image upload
-router.get('/addWallet', adminController.addWalletPage);
-router.post('/add-wallet', upload.fields([
-  { name: 'btc_image', maxCount: 1 },
-  { name: 'eth_image', maxCount: 1 },
-  { name: 'usdt_image', maxCount: 1 },
-  { name: 'cashapp_image', maxCount: 1 },
-  { name: 'paypal_image', maxCount: 1 },
-]), adminController.addWallet_post);
-
-here is the adminController
-// GET /wallets
-module.exports.allWalletPage = async (req, res) => {
-  try {
-    const wallets = await Wallet.find()
-      .populate({
-        path: 'updatedBy',
-        model: 'User',
-        select: 'fullname email'
-      })
-      .sort({ createdAt: -1 })
-      .lean();
-
-    return res.status(200).json({
-      success: true,
-      wallets: wallets.map(w => ({
-        _id: w._id,
-        bank_name: w.bank_name || '',
-        account_name: w.account_name || '',
-        account_no: w.account_no || '',
-        sortcode: w.sortcode || '',
-        swift_code: w.swift_code || '',
-        btc_wallet_address: w.btc_wallet_address || '',
-        btc_qr_image: w.btc_qr_image || null,
-        paypal_email: w.paypal_email || '',
-        updatedBy: w.updatedBy
-          ? {
-              _id: w.updatedBy._id,
-              fullname: w.updatedBy.fullname || '',
-              email: w.updatedBy.email || ''
-            }
-          : null,
-        createdAt: w.createdAt,
-        updatedAt: w.updatedAt
-      })),
-      admin: {
-        _id: req.user._id,
-        fullname: req.user.fullname || '',
-        email: req.user.email || ''
-      }
-    });
-  } catch (err) {
-    console.error('allWalletPage error:', err);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to load wallets'
-    });
-  }
-};
-
-
-module.exports.viewWallet = async (req, res) => {
-  try {
-    const wallet = await Wallet.findById(req.params.id)
-      .populate('updatedBy', 'firstname lastname email')
-      .lean();
-
-    if (!wallet) {
-      return res.status(404).json({
-        success: false,
-        message: 'Wallet not found'
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      wallet,
-      admin: req.user
-        ? {
-            _id: req.user._id,
-            firstname: req.user.firstname,
-            midname: req.user.midname,
-            lastname: req.user.lastname,
-            email: req.user.email,
-            image: req.user.image
-          }
-        : null
-    });
-  } catch (error) {
-    console.error('viewWallet error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
-  }
-};
-
-module.exports.editWallet = async (req, res) => {
-  try {
-    const wallet = await Wallet.findById(req.params.id).lean();
-
-    if (!wallet) {
-      return res.status(404).json({
-        success: false,
-        message: 'Wallet not found'
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      wallet,
-      admin: req.user
-        ? {
-            _id: req.user._id,
-            firstname: req.user.firstname,
-            midname: req.user.midname,
-            lastname: req.user.lastname,
-            email: req.user.email,
-            image: req.user.image
-          }
-        : null
-    });
-  } catch (error) {
-    console.error('editWallet error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
-  }
-};
-
-
-module.exports.editWallet_post = async (req, res) => {
-  try {
-    // 1. First, check if the wallet exists
-    const existingWallet = await Wallet.findById(req.params.id);
-    
-    if (!existingWallet) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Wallet not found' 
-      });
-    }
-
-    // 2. Prepare the update data
-    const updateData = {
-      bank_name: req.body.bank_name,
-      account_name: req.body.account_name,
-      account_no: req.body.account_no,
-      sortcode: req.body.sortcode,
-      swift_code: req.body.swift_code,
-      btc_wallet_address: req.body.btc_wallet_address,
-      paypal_email: req.body.paypal_email,
-      updatedBy: req.user._id, // assuming req.user from auth middleware
-      updatedAt: Date.now()
-    };
-
-    // 3. If a new QR image was uploaded, update it
-    if (req.file) {
-      updateData.btc_qr_image = req.file.path; // Cloudinary URL
-    }
-
-    // 4. Perform the update and get the new document
-    const updatedWallet = await Wallet.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    );
-
-    // 5. Success response
-    return res.status(200).json({
-      success: true,
-      message: 'Wallet updated successfully',
-      wallet: updatedWallet
-    });
-
-  } catch (error) {
-    console.error('Edit wallet error:', error);
-    return res.status(400).json({
-      success: false,
-      message: error.message || 'Failed to update wallet'
-    });
-  }
-};
-
-// POST /delete-wallet/:id
-module.exports.deleteWallet = async (req, res) => {
-  try {
-    const wallet = await Wallet.findById(req.params.id);
-    if (!wallet) {
-      return res.status(404).json({ success: false, message: 'Wallet not found' });
-    }
-
-    await Wallet.deleteOne({ _id: wallet._id });
-
-    return res.status(200).json({
-      success: true,
-      message: 'Wallet deleted successfully'
-    });
-  } catch (err) {
-    console.error('deleteWallet error:', err);
-    return res.status(500).json({ success: false, message: 'Failed to delete wallet' });
-  }
-};
-
-// ────────────────────────────────────────────────
-// NEW: Add Wallet Page & Post
-// ────────────────────────────────────────────────
-
-module.exports.addWalletPage = async (req, res) => {
-  try {
-    return res.status(200).json({
-      success: true,
-      admin: req.user
-        ? {
-            _id: req.user._id,
-            firstname: req.user.firstname,
-            midname: req.user.midname,
-            lastname: req.user.lastname,
-            email: req.user.email,
-            image: req.user.image
-          }
-        : null
-    });
-  } catch (error) {
-    console.error('addWalletPage error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
-  }
-};
-
-
-
-module.exports.addWallet_post = async (req, res) => {
-  try {
-    const walletData = {
-      bank_name: req.body.bank_name,
-      account_name: req.body.account_name,
-      account_no: req.body.account_no,
-      sortcode: req.body.sortcode,
-      swift_code: req.body.swift_code,
-      btc_wallet_address: req.body.btc_wallet_address,
-      paypal_email: req.body.paypal_email,
-      updatedBy: req.user._id,
-      btc_qr_image: req.file ? req.file.path : null // Cloudinary URL
-    };
-
-    const newWallet = await Wallet.create(walletData);
-
-    return res.status(201).json({
-      success: true,
-      message: 'Wallet created successfully',
-      wallet: newWallet
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(400).json({
-      success: false,
-      message: error.message || 'Failed to create wallet'
-    });
-  }
-};
-
-and here is the all-wallet page
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Withdraw |  247Expertstrade </title>
+<title>Personal Data | 247Expertstrade</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
-<link rel="icon" type="image/png" href="./assets/img/favicons/favicon-32x32.png" sizes="32x32">
-<link href="./assets/css/css.css" rel="stylesheet">
-<link rel="stylesheet" href="./assets/css/inner.css">
-<link rel="stylesheet" href="./assets/css/app.css">
-<link rel="stylesheet" href="./assets/css/cs.css">
+<link rel="icon" type="image/png" href="assets/img/favicons/favicon-32x32.png" sizes="32x32">
+<link href="assets/css/css.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/inner.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/cs.css">
 <script src="https://use.fontawesome.com/4b789087e7.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <style>
-    
 .divider{border-bottom:1px dotted}
 .blinkred{animation:blinkingText 2s infinite}
 .blinkgreen{animation:blinkgreenText 2s infinite}
@@ -391,24 +25,25 @@ and here is the all-wallet page
 .sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9999}
 .sidebar-overlay.active{display:block}
 .menu-toggle{cursor:pointer!important;display:block!important}
-.withdraw-wrap{max-width:900px;margin:24px auto;padding:16px}
-.amount-box{width:100%;margin-bottom:24px}
-.amount-box label{display:block;color:#fff;margin-bottom:8px;font-weight:bold}
-.amount-box input{width:100%;padding:14px;font-size:18px;border-radius:8px;border:1px solid #444;background:#1a1a2e;color:#0f0;box-sizing:border-box}
-.method-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
-.method-card{position:relative;background:#1a1a2e;border:2px solid #333;border-radius:12px;padding:20px 12px;text-align:center;cursor:pointer;color:#fff;transition:border-color .2s,transform .15s}
-.method-card:hover{border-color:#2597c7;transform:translateY(-2px)}
-.method-card.selected{border-color:#0f0;box-shadow:0 0 0 2px rgba(0,255,0,.25)}
-.method-card .check{display:none;position:absolute;top:8px;right:8px;color:#0f0;font-size:18px}
-.method-card.selected .check{display:block}
-.method-card img,.method-card .method-icon{width:48px;height:48px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:32px}
-.method-card .name{font-weight:bold;font-size:14px}
-.next-row{margin-top:28px;text-align:center}
-.next-row button{min-width:180px;padding:12px 24px}
+.account-data .line{margin-bottom:12px}
+.account-data input,.account-data select{width:100%;max-width:420px;padding:10px;border-radius:6px;border:1px solid #444;background:#1a1a2e;color:#fff;box-sizing:border-box}
+.account-data input:disabled,.account-data select:disabled{opacity:.65;cursor:not-allowed}
+.kyc-box{max-width:520px;margin:20px auto;text-align:center;color:#fff}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:20000;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal-box{background:#1a1a2e;color:#fff;border-radius:12px;padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.modal-box h3{margin-top:0}
+.modal-box .close-x{position:absolute;top:10px;right:14px;font-size:24px;cursor:pointer;color:#aaa}
+.modal-box label{display:block;margin:12px 0 6px;font-weight:bold}
+.modal-box input[type=file],.modal-box select{width:100%;margin-bottom:8px}
+.preview-img{display:none;max-width:100%;max-height:140px;margin-top:8px;border-radius:8px;border:1px solid #444}
+.preview-img.show{display:block}
 </style>
 </head>
 <body class="pushable dimmable scrolling">
+
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <div class="ui sidebar right inverted vertical menu" id="mainSidebar">
   <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%">
     <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
@@ -435,7 +70,7 @@ and here is the all-wallet page
   <div class="top-bar">
     <div class="head-row clearfix">
       <div class="float-left">
-        <div class="logosm"><a href="dashboard.html"><img src="./assets/img/logo.png" alt="247Expertstrade"></a></div>
+        <div class="logosm"><a href="dashboard.html"><img src="assets/img/logo.png" alt="247Expertstrade"></a></div>
       </div>
       <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
       <div class="float-right nav smcapy-nav">
@@ -450,66 +85,104 @@ and here is the all-wallet page
       <div class="navsm text-xs-right">
         <div class="ui item top-drop-in-css"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
         <div class="ui item top-drop-in-css"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
-        <div class="ui item top-drop-in-css"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+        <div class="ui item top-drop-in-css"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+        <div class="ui item top-drop-in-css"><a href="security.html"><i class="fa fa-lock"></i> Security</a></div>
       </div>
     </div>
   </div>
 </nav>
 
 <div class="root-content">
-  <div class="pusher push-trading">
-    <section class="img-bg-section">
-      <div class="row">
-        <ul class="tabs">
-          <li><a href="funding.html">Account Funding</a></li>
-          <li><a href="withdrawal.html" class="active">Withdrawals</a></li>
-        </ul>
-        <div class="top-info"><h2 class="title">Withdraw Funds</h2></div>
-      </div>
-      <span class="blue-arrow"></span>
-    </section>
+  <section class="img-bg-section">
+    <div class="row">
+      <div class="top-info"><h2 class="title">Account Data</h2></div>
+    </div>
+    <span class="blue-arrow"></span>
+  </section>
 
-    <div class="withdraw-wrap">
-      <div style="color:#fff;margin-bottom:12px">Available balance: <b id="display-balance">0.00</b> <span id="display-currency">USD $</span></div>
+  <section class="content-box verification-new">
+    <div class="row">
+      <div class="form-row account-data" style="max-width:480px;margin:0 auto;padding:16px;">
+        <form id="personalForm">
+          <label>Full name</label>
+          <div class="line ui input">
+            <input type="text" id="fullname" name="fullname" disabled>
+          </div>
 
-      <div class="amount-box">
-        <label for="withdrawAmount">Amount to withdraw</label>
-        <input type="text" id="withdrawAmount" placeholder="0.00" inputmode="decimal">
-      </div>
+          <label>Email</label>
+          <div class="line ui input">
+            <input type="email" id="email" name="email" disabled>
+          </div>
 
-      <p style="color:#ccc;margin-bottom:12px">Select withdrawal method</p>
-      <div class="method-grid" id="methodGrid">
-        <div class="method-card" data-type="Bitcoin">
-          <span class="check"><i class="fa fa-check-circle"></i></span>
-          <div class="method-icon"><i class="fa fa-btc"></i></div>
-          <div class="name">Bitcoin</div>
-        </div>
-        <div class="method-card" data-type="Ethereum">
-          <span class="check"><i class="fa fa-check-circle"></i></span>
-          <div class="method-icon"><i class="fa fa-diamond"></i></div>
-          <div class="name">Ethereum</div>
-        </div>
-        <div class="method-card" data-type="CashApp">
-          <span class="check"><i class="fa fa-check-circle"></i></span>
-          <div class="method-icon"><i class="fa fa-money"></i></div>
-          <div class="name">CashApp</div>
-        </div>
-        <div class="method-card" data-type="PayPal">
-          <span class="check"><i class="fa fa-check-circle"></i></span>
-          <div class="method-icon"><i class="fa fa-paypal"></i></div>
-          <div class="name">PayPal</div>
-        </div>
-        <div class="method-card" data-type="Bank Transfer">
-          <span class="check"><i class="fa fa-check-circle"></i></span>
-          <div class="method-icon"><i class="fa fa-university"></i></div>
-          <div class="name">Bank Transfer</div>
-        </div>
-      </div>
+          <label>Phone number</label>
+          <div class="line ui input">
+            <input type="tel" id="tel" name="tel" disabled>
+          </div>
 
-      <div class="next-row">
-        <button type="button" class="ui button primal green" id="nextBtn">Next</button>
+          <label>Country</label>
+          <div class="line ui input">
+            <input type="text" id="country" name="country" disabled>
+          </div>
+
+          <label>Gender</label>
+          <div class="line ui input">
+            <select id="gender" name="gender" disabled>
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="line" style="margin-top:16px;" id="saveRow">
+            <button type="submit" class="ui button green" id="saveBtn" disabled>Save changes</button>
+          </div>
+        </form>
       </div>
     </div>
+
+    <div class="kyc-box" id="kycSection">
+      <h2 class="title personal">KYC Verification</h2>
+      <div id="kycStatusArea">
+        <span class="ui button red" id="kycRequiredBtn">Required <i class="fa-solid fa-ban"></i></span>
+        <p style="margin-top:12px;color:#ccc;">Click the button above to upload your ID documents.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- KYC Modal -->
+<div class="modal-overlay" id="kycModal">
+  <div class="modal-box">
+    <span class="close-x" id="closeKycModal">&times;</span>
+    <h3>Upload KYC Documents</h3>
+    <p style="font-size:13px;color:#aaa;">Images only (jpg, jpeg, png). Preview appears under each field.</p>
+    <form id="kycForm">
+      <label>Document type</label>
+      <select id="document_type" required>
+        <option value="">Select document type</option>
+        <option value="Int'l Passport">Int'l Passport</option>
+        <option value="National ID">National ID</option>
+        <option value="Drivers License">Drivers License</option>
+      </select>
+
+      <label>Front image</label>
+      <input type="file" id="frontimg" name="frontimg" accept="image/jpeg,image/png,image/jpg" required>
+      <img class="preview-img" id="preview-front" alt="Front preview">
+
+      <label>Back image</label>
+      <input type="file" id="backimg" name="backimg" accept="image/jpeg,image/png,image/jpg" required>
+      <img class="preview-img" id="preview-back" alt="Back preview">
+
+      <label>Photo (passport photograph)</label>
+      <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/jpg" required>
+      <img class="preview-img" id="preview-photo" alt="Photo preview">
+
+      <div style="margin-top:20px;text-align:center;">
+        <button type="button" class="ui button" id="cancelKyc">Cancel</button>
+        <button type="submit" class="ui button green" id="submitKyc">Submit KYC</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -520,855 +193,256 @@ and here is the all-wallet page
 </footer>
 </div>
 
-<script src="./assets/js/inner.js"></script>
-<script src="./assets/js/vendor.js"></script>
-<script src="./assets/js/app.js"></script>
+<script src="assets/js/inner.js"></script>
+<script src="assets/js/vendor.js"></script>
+<script src="assets/js/app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/frontend/public/js/config.js"></script>
-<script src="/frontend/public/js/auth.js"></script>
+<script src="./public/js/config.js"></script>
+<script src="./public/js/auth.js"></script>
 <script>
-(function(){
-  var sidebar=document.getElementById('mainSidebar');
-  var overlay=document.getElementById('sidebarOverlay');
-  var toggleBtn=document.getElementById('menuToggleBtn');
-  function openS(){if(sidebar)sidebar.classList.add('visible');if(overlay)overlay.classList.add('active')}
-  function closeS(){if(sidebar)sidebar.classList.remove('visible');if(overlay)overlay.classList.remove('active')}
-  if(toggleBtn)toggleBtn.addEventListener('click',function(e){e.preventDefault();sidebar&&sidebar.classList.contains('visible')?closeS():openS()});
-  if(overlay)overlay.addEventListener('click',closeS);
-  if(sidebar)sidebar.querySelectorAll('a').forEach(function(a){a.addEventListener('click',closeS)});
+(function () {
+  var sidebar = document.getElementById('mainSidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var toggleBtn = document.getElementById('menuToggleBtn');
+  function openS() { if (sidebar) sidebar.classList.add('visible'); if (overlay) overlay.classList.add('active'); }
+  function closeS() { if (sidebar) sidebar.classList.remove('visible'); if (overlay) overlay.classList.remove('active'); }
+  if (toggleBtn) toggleBtn.addEventListener('click', function (e) { e.preventDefault(); sidebar && sidebar.classList.contains('visible') ? closeS() : openS(); });
+  if (overlay) overlay.addEventListener('click', closeS);
+  if (sidebar) sidebar.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeS); });
 })();
 
-document.addEventListener('DOMContentLoaded', async function(){
-  if(typeof requireAuthPage==='function') requireAuthPage();
+function bindPreview(inputId, imgId) {
+  var input = document.getElementById(inputId);
+  var img = document.getElementById(imgId);
+  if (!input || !img) return;
+  input.addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    if (!file) { img.classList.remove('show'); img.src = ''; return; }
+    if (!/^image\/(jpeg|png|jpg)$/i.test(file.type)) {
+      Swal.fire('Error', 'Please select a valid image (jpeg/jpg/png).', 'error');
+      this.value = '';
+      img.classList.remove('show');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      img.src = e.target.result;
+      img.classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
-  var selectedType=null;
-  var userBalance=0;
-  var currentUser=null;
+document.addEventListener('DOMContentLoaded', async function () {
+  if (typeof requireAuthPage === 'function') requireAuthPage();
 
-  function kycHtml(s){
-    if(s==='approve') return 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>';
-    if(s==='pending') return 'Kyc Verification: <span style="color:#ff0"><i class="fa fa-clock-o"></i> Pending</span>';
+  var currentUser = null;
+  var currentVerification = null;
+  var fields = ['fullname', 'tel', 'country', 'gender'];
+
+  function isKycApproved(user, verification) {
+    var u = user && user.kycVerified ? String(user.kycVerified).toLowerCase().trim() : '';
+    var v = verification && verification.status ? String(verification.status).toLowerCase().trim() : '';
+    return u === 'approved' || u === 'approve' || v === 'approved' || v === 'approve';
+  }
+
+  function kycHtml(status) {
+    var s = status ? String(status).toLowerCase().trim() : '';
+    if (s === 'approve' || s === 'approved') {
+      return 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>';
+    }
+    if (s === 'pending') {
+      return 'Kyc Verification: <span style="color:#ff0"><i class="fa fa-clock-o"></i> Pending</span>';
+    }
     return 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
   }
 
-  try{
-    var res=await api.get('/withdraw');
-    if(res.data&&res.data.success){
-      currentUser=res.data.user;
-      userBalance=Number(currentUser.balance||0);
-      var bal=userBalance.toFixed(2);
-      var cur=currentUser.currency||'USD $';
-      document.getElementById('sidebar-email').innerHTML='<i class="fa fa-envelope-o"></i> '+(currentUser.email||'');
-      document.getElementById('sidebar-balance').innerHTML='<b><i class="fa fa-money"></i> '+bal+'</b> <b>'+cur+'</b>';
-      document.getElementById('sidebar-kyc').innerHTML=kycHtml(currentUser.kycVerified);
-      document.getElementById('top-kyc').innerHTML=kycHtml(currentUser.kycVerified);
-      document.getElementById('display-balance').textContent=bal;
-      document.getElementById('display-currency').textContent=cur;
-    }
-  }catch(e){
-    if(e.response&&e.response.status===401) window.location.href='login.html';
+  function setEditable(canEdit) {
+    fields.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.disabled = !canEdit;
+    });
+    document.getElementById('email').disabled = true;
+    document.getElementById('saveBtn').disabled = !canEdit;
   }
 
-  document.querySelectorAll('.method-card').forEach(function(card){
-    card.addEventListener('click',function(){
-      document.querySelectorAll('.method-card').forEach(function(c){c.classList.remove('selected')});
-      card.classList.add('selected');
-      selectedType=card.getAttribute('data-type');
-    });
-  });
+  function renderKycUI(user, verification) {
+    var section = document.getElementById('kycSection');
+    var area = document.getElementById('kycStatusArea');
 
-  document.getElementById('nextBtn').addEventListener('click', async function(){
-    var amount=Number(document.getElementById('withdrawAmount').value);
-    if(!amount||amount<=0){
-      Swal.fire('Error','Enter a valid amount','error');
-      return;
-    }
-    if(!selectedType){
-      Swal.fire('Error','Select a withdrawal method','error');
-      return;
-    }
-    if(amount>userBalance){
-      Swal.fire('Error','Insufficient balance for withdrawal','error');
+    if (isKycApproved(user, verification)) {
+      section.style.display = 'none';
+      setEditable(true);
       return;
     }
 
-    try{
-      if(currentUser&&currentUser._id){
-        await api.post('/withdraw/init/'+currentUser._id,{amount:amount,type:selectedType});
-      }
-    }catch(err){
-      var msg=(err.response&&err.response.data&&err.response.data.message)||'Insufficient balance';
-      Swal.fire('Error',msg,'error');
+    section.style.display = 'block';
+    setEditable(false);
+
+    var vStatus = verification && verification.status ? String(verification.status).toLowerCase() : '';
+
+    if (user.kycVerified === 'pending' || vStatus === 'pending' || vStatus === 'under review') {
+      area.innerHTML =
+        '<span class="ui button yellow">Under review <i class="fa fa-clock-o"></i></span>' +
+        '<p style="margin-top:12px;color:#ccc;">Your verification application is being reviewed. Status: <b>' +
+        (verification && verification.status ? verification.status : 'pending') +
+        '</b>.</p>';
       return;
     }
 
-    localStorage.setItem('withdraw_amount', String(amount));
-    localStorage.setItem('withdraw_type', selectedType);
-    localStorage.setItem('withdraw_fees', '0.00');
-
-    await Swal.fire({
-      icon:'success',
-      title:'Withdrawal initiated',
-      text:'Proceed to enter payment details',
-      confirmButtonText:'Continue'
-    });
-    window.location.href='withdraw-details.html';
-  });
-});
-</script>
-</body>
-</html>
-
-here is the wallets.js file
-
-// wallets.js
-document.addEventListener('DOMContentLoaded', async () => {
-  // Auth guard
-  if (typeof requireAuthPage === 'function') {
-    requireAuthPage();
-  } else if (!localStorage.getItem('token')) {
-    window.location.href = 'login.html';
-    return;
-  }
-
-  const tableBody = document.getElementById('walletsTableBody');
-
-  // Admin name
-  const currentUser = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
-  if (currentUser) {
-    const name = currentUser.fullname || currentUser.email || 'Admin';
-    document.getElementById('admin-sidebar-name').innerHTML = `<b>${name}</b>`;
-    document.getElementById('admin-sidebar-email').innerHTML = `<i class="fa fa-envelope-o"></i> ${currentUser.email || ''}`;
-    document.getElementById('top-admin-name').textContent = name;
-  }
-
-  // Load wallets
-  await loadWallets();
-
-  async function loadWallets() {
-    try {
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center py-4">
-            <i class="fa fa-spinner fa-spin"></i> Loading wallets...
-          </td>
-        </tr>`;
-
-      const res = await api.get('/wallets');
-      const data = res.data;
-
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to load wallets');
-      }
-
-      const wallets = data.wallets || [];
-      renderTable(wallets);
-    } catch (err) {
-      console.error(err);
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center py-4 text-danger">
-            ${err.response?.data?.message || err.message || 'Failed to load wallets'}
-          </td>
-        </tr>`;
-    }
-  }
-
-  function renderTable(wallets) {
-    if (!wallets.length) {
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center py-4">No wallets found</td>
-        </tr>`;
+    if (vStatus === 'rejected' || vStatus === 'declined') {
+      area.innerHTML =
+        '<span class="ui button red" id="kycRequiredBtn">Rejected — re-upload <i class="fa-solid fa-ban"></i></span>' +
+        '<p style="margin-top:12px;color:#f99;">' +
+        (verification.rejectionReason || 'Your application was rejected. Please submit again.') +
+        '</p>';
+      bindOpenModal();
       return;
     }
 
-    let html = '';
-    wallets.forEach((w, index) => {
-      const ownerName = w.owner ? w.owner.fullname : 'N/A';
-      const ownerEmail = w.owner ? w.owner.email : '';
-
-      html += `
-        <tr>
-          <td>${index + 1}</td>
-          <td class="address-cell" title="${escapeHtml(w.btc_address)}">${escapeHtml(w.btc_address) || '—'}</td>
-          <td class="address-cell" title="${escapeHtml(w.eth_address)}">${escapeHtml(w.eth_address) || '—'}</td>
-          <td class="address-cell" title="${escapeHtml(w.usdt_address)}">${escapeHtml(w.usdt_address) || '—'}</td>
-          <td>${escapeHtml(w.cashapp) || '—'}</td>
-          <td>${escapeHtml(w.paypal) || '—'}</td>
-          <td>
-            <div>${escapeHtml(ownerName)}</div>
-            <small class="text-muted">${escapeHtml(ownerEmail)}</small>
-          </td>
-          <td>
-            <div class="d-flex gap-1">
-              <a href="edit-wallet.html?id=${w._id}" class="btn btn-sm btn-primary" title="Edit">
-                <i class="bi bi-pencil"></i>
-              </a>
-              <button class="btn btn-sm btn-danger delete-btn" data-id="${w._id}" title="Delete">
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>`;
-    });
-
-    tableBody.innerHTML = html;
-    attachDeleteListeners();
+    area.innerHTML =
+      '<span class="ui button red" id="kycRequiredBtn">Required <i class="fa-solid fa-ban"></i></span>' +
+      '<p style="margin-top:12px;color:#ccc;">Click the button above to upload your ID documents.</p>';
+    bindOpenModal();
   }
 
-  function attachDeleteListeners() {
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.dataset.id;
-
-        const result = await Swal.fire({
-          title: 'Are you sure?',
-          text: 'This wallet will be permanently deleted.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#dc3545',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: 'Yes, delete it!',
-          background: '#212529',
-          color: '#fff'
-        });
-
-        if (!result.isConfirmed) return;
-
-        try {
-          const res = await api.post(`/delete-wallet/${id}`);
-          if (res.data.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Deleted!',
-              text: res.data.message || 'Wallet deleted',
-              background: '#212529',
-              color: '#fff',
-              timer: 1800,
-              showConfirmButton: false
-            });
-            await loadWallets();
-          } else {
-            throw new Error(res.data.message || 'Delete failed');
-          }
-        } catch (err) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: err.response?.data?.message || err.message || 'Failed to delete',
-            background: '#212529',
-            color: '#fff'
-          });
-        }
-      });
-    });
-  }
-
-  function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-});
-
-now make adjustment so the ui can fit/match the wallet schema
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--  -->
-
-with my app.js file like This
-const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
-const cookieParser = require('cookie-parser');
-const methodOverride = require('method-override');
-const session = require('express-session');
-const flash = require('connect-flash');
-const cors = require('cors');
-const path = require('path');
-const { requireAuth, checkUser } = require('./server/authMiddleware/authMiddleware');
-const connectDB = require("./server/config/db")
-const app = express();
-const PORT = process.env.PORT || 7000;
-// ====================== DATABASE ======================
-connectDB();
-// mongoose.connect(process.env.MONGODB_URI)
-//   .then(() => console.log('MongoDB Connected'))
-//   .catch(err => {
-//     console.error('MongoDB Error:', err.message);
-//     console.error(err);
-//   });
-// mongoose.connection.on('connected', () => console.log('Mongoose connected event'));
-// mongoose.connection.on('error', (err) => console.error('Mongoose connection error:', err.message));
-// mongoose.connection.on('disconnected', () => console.log('Mongoose disconnected'));
-
-// ====================== MIDDLEWARES ======================
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(methodOverride('_method'));
-
-// ========== CORS (production-ready) ==========
-function normalizeOrigin(url) {
-  if (!url) return null;
-  return String(url).trim().replace(/\/$/, '');
-}
-const allowedOrigins = [
-  normalizeOrigin(process.env.FRONTEND_URL),
-].filter(Boolean);
-
-console.log('CORS allowed origins:', allowedOrigins);
-
-// support@247expertstrade.com
-app.use(cors({
-  origin: function (origin, callback) {
-    // No Origin = Postman / server requests
-    if (!origin) return callback(null, true);
-
-    const normalized = normalizeOrigin(origin);
-
-    if (allowedOrigins.includes(normalized)) {
-      return callback(null, true);
+  function bindOpenModal() {
+    var btn = document.getElementById('kycRequiredBtn');
+    if (btn) {
+      btn.style.cursor = 'pointer';
+      btn.onclick = function () {
+        document.getElementById('kycModal').classList.add('open');
+      };
     }
-
-    console.warn('CORS blocked origin:', origin);
-    return callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
-}));
-
-// Session (important for transfer OTP / pending deposit)
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'change-this-to-a-long-random-string',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // true on Render (HTTPS)
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    maxAge: 24 * 60 * 60 * 1000 // 1 day
-  }
-}));
-app.use(flash());
-
-app.use((req, res, next) => {
-  res.locals.messages = req.flash();
-  next();
-});
-
-// ====================== ROUTES ======================
-app.use(checkUser);
-
-app.use('/', require('./server/Route/indexRoute'));
-app.use('/', requireAuth, require('./server/Route/userRoute'));
-app.use('/', requireAuth, require('./server/Route/adminRoute'));
-
-// ====================== ERROR HANDLER ======================
-app.use((err, req, res, next) => {
-  console.error('Error:', err.message);
-  console.error(err.stack);
-
-  const statusCode = err.status || err.statusCode || 500;
-
-  const wantsJson =
-    req.xhr ||
-    req.headers.accept?.includes('application/json') ||
-    req.headers['content-type']?.includes('application/json');
-
-  if (wantsJson || err.message === 'Not allowed by CORS') {
-    return res.status(statusCode).json({
-      success: false,
-      message: err.message || 'Something went wrong!'
-    });
   }
 
-  if (typeof req.flash === 'function') {
-    req.flash('error', err.message || 'Something went wrong!');
+  function closeModal() {
+    document.getElementById('kycModal').classList.remove('open');
   }
-  return res.redirect(req.get('Referrer') || '/');
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-
-.env file like This
-CLOUDINARY_CLOUD_NAME=dd0x7c5il
-CLOUDINARY_API_SECRET=8UScoonZ0LWXT5Xp9X--JFq5iXg
-CLOUDINARY_API_KEY=341731388484476
-EMAIL_USER=trasdespherefinance@gmail.com
-EMAIL_PASS=hopnedkhvhheaunb
-# BASE_URL=http://127.0.0.1:5500
-# BACKEND_URL=http://localhost:7000
-
-BASE_URL=https://two47expertstrades.onrender.com
-BACKEND_URL=https://two47expertstrade-backend.onrender.com
-RESEND_API_KEY=re_4zAvnmCK_7QjKMhwcpUMMyVx3VSGCcuLN
-MONGO_URI=mongodb+srv://marcelpolocha1:081358pius@cluster0.f9a85hv.mongodb.net/
-# FRONTEND_URL=http://127.0.0.1:5500
-FRONTEND_URL=https://two47expertstrades.onrender.com
-
-config.js file like This
-const API_BASE_URL = 'https://two47expertstrade-backend.onrender.com';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true,   // ← add this
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
-});
-
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
-    }
-    return Promise.reject(error);
-  }
-);
-
-and here is my login.html page like This
-<!DOCTYPE html>
-<html lang="en">
-
-<!-- <script>window.location ="../dashboard/index";</script> -->
-
-<meta http-equiv="content-type" content="text/html;charset=UTF-8">
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta name="referrer" content="no-referrer-when-downgrade">
-
-<link rel="shortcut icon" href="static/users/assets/images/favicon.ico" type="image/x-icon">
-<link rel="icon" href="static/users/assets/assets/images/favicon.html" type="image/x-icon">
-
-<title>247Expertstrade - Login Page </title>
-
-<!-- Bootstrap -->
-<link href="static/users/assets/css/bootstrap.min.css" rel="stylesheet">
-
-<link href="static/users/assets/css/font-awesome.min.css" rel="stylesheet">
-<link href="static/users/assets/css/magnific-popup.css" rel="stylesheet">
-<link href="static/users/assets/css/jquery-ui.css" rel="stylesheet">
-
-
-<link href="static/users/assets/css/animate.css" rel="stylesheet">
-<link href="static/users/assets/css/owl.carousel.min.css" rel="stylesheet">
-<link href="static/users/assets/css/themify-icons.css" rel="stylesheet">
-
-
-<!-- Main css -->
-<link href="static/users/assets/css/main.css" rel="stylesheet">
-
-<!-- SweetAlert2 -->
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
-
-</head>
-<center>
-        <select class="custom-select" style="width:100px;height:30px; margin-left: 30px; font-size: 12px;" id="language" onchange="changeLanguageByButtonClick()">
-                      <option value="af">Afrikanns</option>
-                      <option value="sq">Albanian</option>
-                      <option value="ar">Arabic</option>
-                      <option value="hy">Armenian</option>
-                      <option value="eu">Basque</option>
-                      <option value="bn">Bengali</option>
-                      <option value="bg">Bulgarian</option>
-                      <option value="ca">Catalan</option>
-                      <option value="km">Cambodian</option>
-                      <option value="zh-CN">Chinese (Mandarin)</option>
-                      <option value="hr">Croation</option>
-                      <option value="cs">Czech</option>
-                      <option value="da">Danish</option>
-                      <option value="nl">Dutch</option>
-                      <option value="en" selected="">English</option>
-                      <option value="et">Estonian</option>
-                      <option value="fj">Fiji</option>
-                      <option value="fi">Finnish</option>
-                      <option value="fr">French</option>
-                      <option value="ka">Georgian</option>
-                      <option value="de">German</option>
-                      <option value="el">Greek</option>
-                      <option value="gu">Gujarati</option>
-                      <option value="he">Hebrew</option>
-                      <option value="hi">Hindi</option>
-                      <option value="hu">Hungarian</option>
-                      <option value="is">Icelandic</option>
-                      <option value="id">Indonesian</option>
-                      <option value="ga">Irish</option>
-                      <option value="it">Italian</option>
-                      <option value="ja">Japanese</option>
-                      <option value="jw">Javanese</option>
-                      <option value="ko">Korean</option>
-                      <option value="la">Latin</option>
-                      <option value="lv">Latvian</option>
-                      <option value="lt">Lithuanian</option>
-                      <option value="mk">Macedonian</option>
-                      <option value="ms">Malay</option>
-                      <option value="ml">Malayalam</option>
-                      <option value="mt">Maltese</option>
-                      <option value="mi">Maori</option>
-                      <option value="mr">Marathi</option>
-                      <option value="mn">Mongolian</option>
-                      <option value="ne">Nepali</option>
-                      <option value="no">Norwegian</option>
-                      <option value="fa">Persian</option>
-                      <option value="pl">Polish</option>
-                      <option value="pt">Portuguese</option>
-                      <option value="pa">Punjabi</option>
-                      <option value="qu">Quechua</option>
-                      <option value="ro">Romanian</option>
-                      <option value="ru">Russian</option>
-                      <option value="sm">Samoan</option>
-                      <option value="sr">Serbian</option>
-                      <option value="sk">Slovak</option>
-                      <option value="sl">Slovenian</option>
-                      <option value="es">Spanish</option>
-                      <option value="sw">Swahili</option>
-                      <option value="sv">Swedish </option>
-                      <option value="ta">Tamil</option>
-                      <option value="tt">Tatar</option>
-                      <option value="te">Telugu</option>
-                      <option value="th">Thai</option>
-                      <option value="bo">Tibetan</option>
-                      <option value="to">Tonga</option>
-                      <option value="tr">Turkish</option>
-                      <option value="uk">Ukranian</option>
-                      <option value="ur">Urdu</option>
-                      <option value="uz">Uzbek</option>
-                      <option value="vi">Vietnamese</option>
-                      <option value="cy">Welsh</option>
-                      <option value="xh">Xhosa</option>
-                          </select>
-
-                    <div id="google_translate_element" style="display:none"></div>
-                    <script type="text/javascript">
-
-                    function googleTranslateElementInit() {
-                      new google.translate.TranslateElement({pageLanguage: "en"}, 'google_translate_element');
-                    }
-
-                    function changeLanguageByButtonClick() {
-                      var language = document.getElementById("language").value;
-                      var selectField = document.querySelector("#google_translate_element select");
-                      for(var i=0; i < selectField.children.length; i++){
-                        var option = selectField.children[i];
-                        // find desired langauge and change the former language of the hidden selection-field 
-                        if(option.value==language){
-                           selectField.selectedIndex = i;
-                           // trigger change event afterwards to make google-lib translate this side
-                           selectField.dispatchEvent(new Event('change'));
-                           break;
-                        }
-                      }
-                    }
-                    </script>
-
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-<div id="google_translate_element"></div>
-
- </center>
-<body>
-
-
-<!-- Preloader -->
-<div class="preloader">
-<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-</div><!--/Preloader -->
-
-<!--Header Area-->
-<header class="header-area blue-bg-2 sticky-top">
-<nav class="navbar navbar-expand-lg main-menu">
-<div class="container-fluid">
-
-<a class="navbar-brand" href="index.html"><img src="../logo.png" class="d-inline-block align-top" alt=""></a>
-
-<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-<span class="menu-toggle"></span>
-</button>
-
-<div class="collapse navbar-collapse" id="navbarSupportedContent">
-<ul class="navbar-nav m-auto">
-<li class="nav-item dropdown">
-<!-- <a class="nav-link dropdown-toggle" href="blog.html" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Home</a> -->
-<ul class="dropdown-menu">
-<!-- <li><a class="dropdown-item" href="#">Home</a></li> -->
-<!-- <li><a class="dropdown-item" href="index-2.html">Landing page 2</a></li> -->
-</ul>
-</li>
-
-<li><a class="dropdown-item" href="index.html">Home</a></li>
-<!-- <li><a class="dropdown-item" href="../dashboard/index">Dashboard</a></li> -->
-
-
-
-</ul>
-
-</div>
-</div>
-</nav>
-</header><!--/Header Area-->
-
-
-
-
-
-
-<!--Hero Area-->
-<section class="hero-area gradient-overlay" style="background: url('../static/users/assets/images/banner/3.jpg') no-repeat center center;">
-<div class="container">
-<div class="row">
-<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
-<div class="hero-content">
-<hr>
-<h1>Welcome to 247Expertstrade</h1>
-<hr>
-<h4><span>new</span> Get investment and earn a lot</h4>
-<div class="hero-btn">
-<a href="applicationform.html" class="bttn-mid btn-fill"><i class="ti-crown"></i> Get An account</a>
-</div>
-</div>
-</div>
-<div class="col-xl-4 col-lg-4 col-md-12 col-sm-12" id="login">
-<div class="site-form mb-30">
-
-<form id="loginForm" action="" method="POST" class="hero-form">
-
-<div class="section-title cl-white">
-<h4><span>Ready</span>Login Now</h4>
-</div>
-<div class="row">
-<div class="col-xl-12 col-lg-12 col-sm-12">
-<label class="text-light" for="">Email</label>
-<input type="text" name="email" autofocus="" autocapitalize="none" autocomplete="Enter Your Email" maxlength="50" required="" id="email">
-<!-- <input type="hidden" name="code" value="" -->
-</div>
-<div class="col-xl-12 col-lg-12 col-sm-12">
-<label class="text-light" for="">Password</label>
-<input type="password" name="pass" autocomplete="current-password" required="" id="pass">
-</div>
-<div class="col-xl-12 col-lg-12 col-sm-12 mt-4">
-<button type="submit" name="login" id="loginBtn" class="bttn-mid btn-fill w-100">Login Now</button>
-</div>
-<div class="col-xl-12 col-lg-12 col-sm-12">
-<div class="extra-links">
-<a href="applicationform.html" class="cl-white">Create new account</a>
-<!-- <a href="#" class="cl-white">Forget Password?</a> -->
-</div>
-</div>
-</div>
-</form>
-</div>
-</div>
-</div>
-</div>
-<div class="hero-bg-alimation">
-<ul class="box">
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
-</ul>
-</div>
-</section><!--/Hero Area-->
-
-
-
-
-
-<!--Footer Area-->
-<footer class="footer-area section-padding-2 blue-bg-2">
-<div class="container-fluid">
-<div class="row">
-<div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col-12">
-<div class="footer-logo">
-<a href="#"><img src="../logo.png" alt=""></a>
-</div>
-</div>
-<div class="col-xl-10 col-lg-10 col-md-9 col-sm-9 col-12">
-<div class="footer-nav">
-<ul>
-<li><a href="#">About</a></li>
-<li><a href="#">Contact</a></li>
-<li><a href="#">Privacy Policy</a></li>
-<li><a href="#">Trams and Service</a></li>
-<li><a href="#">Return Policy</a></li>
-</ul>
-</div>
-</div>
-</div>
-<div class="row copyright">
-<div class="col-xl-6 col-sm-6">
-<div class="copyright-text">
-<p>Copyright &copy; 2024 All Rights Reserved.</p>
-</div>
-</div>
-</div>
-</div>
-
-</footer><!--/Footer Area-->
-
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="static/users/assets/js/jquery-3.2.1.min.js"></script>
-<script src="static/users/assets/js/jquery-migrate.js"></script>
-<script src="static/users/assets/js/jquery-ui.js"></script>
-
-<script src="static/users/assets/js/popper.js"></script>
-<script src="static/users/assets/js/bootstrap.min.js"></script>
-<script src="static/users/assets/js/owl.carousel.min.js"></script>
-
-<script src="static/users/assets/js/magnific-popup.min.js"></script>
-<script src="static/users/assets/js/imagesloaded.pkgd.min.js"></script>
-<script src="static/users/assets/js/isotope.pkgd.min.js"></script>
-
-<script src="static/users/assets/js/waypoints.min.js"></script>
-<script src="static/users/assets/js/jquery.counterup.min.js"></script>
-<script src="static/users/assets/js/wow.min.js"></script>
-<script src="static/users/assets/js/scrollUp.min.js"></script>
-
-<script src="static/users/assets/js/script.js"></script>
-
-<!-- Axios -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<!-- config.js (adjust path if your file is in a different location) -->
-<script src="/frontend/public/js/config.js"></script>
-
-<script>
-document.getElementById('loginForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const btn = document.getElementById('loginBtn');
-  const originalText = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = 'Logging in...';
-
-  // Use the ORIGINAL field names from your form
-  const formData = {
-    email: document.getElementById('email').value.trim().toLowerCase(),
-    password: document.getElementById('pass').value   // original id="pass" and name="pass"
-  };
+  document.getElementById('closeKycModal').addEventListener('click', closeModal);
+  document.getElementById('cancelKyc').addEventListener('click', closeModal);
+
+  bindPreview('frontimg', 'preview-front');
+  bindPreview('backimg', 'preview-back');
+  bindPreview('photo', 'preview-photo');
 
   try {
-    const response = await api.post('/login', formData);
+    var res = await api.get('/personal');
+    if (!res.data || !res.data.success) throw new Error('Failed to load profile');
 
-    if (response.data.success) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    currentUser = res.data.user;
+    currentVerification = res.data.verification || null;
 
-      await Swal.fire({
-        icon: 'success',
-        title: 'Welcome back!',
-        text: response.data.message || 'Login successful',
-        timer: 1800,
-        showConfirmButton: false
-      });
+    document.getElementById('fullname').value = currentUser.fullname || '';
+    document.getElementById('email').value = currentUser.email || '';
+    document.getElementById('tel').value = currentUser.tel || '';
+    document.getElementById('country').value = currentUser.country || '';
+    document.getElementById('gender').value = currentUser.gender || '';
 
-      window.location.href = response.data.redirectUrl || 'dashboard.html';
-    } else {
-      throw new Error(response.data.message || 'Login failed');
+    var bal = Number(currentUser.balance || 0).toFixed(2);
+    var cur = currentUser.currency || 'USD $';
+    document.getElementById('sidebar-email').innerHTML = '<i class="fa fa-envelope-o"></i> ' + (currentUser.email || '');
+    document.getElementById('sidebar-balance').innerHTML = '<b><i class="fa fa-money"></i> ' + bal + '</b> <b>' + cur + '</b>';
+
+    var displayKyc = currentUser.kycVerified;
+    if (isKycApproved(currentUser, currentVerification)) {
+      displayKyc = 'approved';
     }
+    document.getElementById('sidebar-kyc').innerHTML = kycHtml(displayKyc);
+    document.getElementById('top-kyc').innerHTML = kycHtml(displayKyc);
+
+    renderKycUI(currentUser, currentVerification);
   } catch (err) {
     console.error(err);
+    if (err.response && err.response.status === 401) {
+      window.location.href = 'login.html';
+      return;
+    }
+    Swal.fire('Error', 'Failed to load personal data', 'error');
+  }
 
-    let errorMsg = 'Login failed. Please check your credentials.';
-    if (err.response && err.response.data) {
-      errorMsg = err.response.data.message || errorMsg;
-    } else if (err.message) {
-      errorMsg = err.message;
+  document.getElementById('personalForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    if (!currentUser || !isKycApproved(currentUser, currentVerification)) {
+      Swal.fire('Error', 'You can only edit after KYC is approved.', 'error');
+      return;
     }
 
-    Swal.fire({
-      icon: 'error',
-      title: 'Login Failed',
-      text: errorMsg,
-      confirmButtonColor: '#d33'
-    });
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = originalText;
-  }
+    var payload = {
+      fullname: document.getElementById('fullname').value.trim(),
+      tel: document.getElementById('tel').value.trim(),
+      country: document.getElementById('country').value.trim(),
+      gender: document.getElementById('gender').value
+    };
+
+    try {
+      var r = await api.post('/personal/' + currentUser._id, payload);
+      if (r.data && r.data.success) {
+        Swal.fire('Success', r.data.message || 'Personal data updated successfully', 'success');
+        if (r.data.user) {
+          currentUser.fullname = r.data.user.fullname;
+          currentUser.tel = r.data.user.tel;
+          currentUser.country = r.data.user.country;
+          currentUser.gender = r.data.user.gender;
+        }
+      } else {
+        Swal.fire('Error', (r.data && r.data.message) || 'Update failed', 'error');
+      }
+    } catch (err) {
+      Swal.fire('Error', (err.response && err.response.data && err.response.data.message) || err.message || 'Update failed', 'error');
+    }
+  });
+
+  document.getElementById('kycForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!currentUser) return;
+
+    var docType = document.getElementById('document_type').value;
+    var front = document.getElementById('frontimg').files[0];
+    var back = document.getElementById('backimg').files[0];
+    var photo = document.getElementById('photo').files[0];
+
+    if (!docType || !front || !back || !photo) {
+      Swal.fire('Error', 'All fields and images are required', 'error');
+      return;
+    }
+
+    var fd = new FormData();
+    fd.append('document_type', docType);
+    fd.append('frontimg', front);
+    fd.append('backimg', back);
+    fd.append('photo', photo);
+
+    var btn = document.getElementById('submitKyc');
+    btn.disabled = true;
+    btn.textContent = 'Uploading...';
+
+    try {
+      var r = await api.post('/verify-account/' + currentUser._id, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (r.data && r.data.success) {
+        closeModal();
+        await Swal.fire('Success', r.data.message || 'KYC submitted successfully', 'success');
+        currentUser.kycVerified = 'pending';
+        currentVerification = { status: 'pending' };
+        renderKycUI(currentUser, currentVerification);
+        document.getElementById('sidebar-kyc').innerHTML = kycHtml('pending');
+        document.getElementById('top-kyc').innerHTML = kycHtml('pending');
+      } else {
+        Swal.fire('Error', (r.data && r.data.message) || 'Submission failed', 'error');
+      }
+    } catch (err) {
+      Swal.fire('Error', (err.response && err.response.data && err.response.data.message) || err.message || 'Submission failed', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit KYC';
+    }
+  });
 });
 </script>
-
-
-<!--End of Tawk.to Script-->
 </body>
-
-
 </html>
-
-i deployed my application to render frontend and backend 
-now i am trying to login after filling the form this error displayed in the seweetalerts
-
-Login Failed
-api is not defined
-OK
-
-while in the console
-login.html:356 ReferenceError: api is not defined
-    at HTMLFormElement.<anonymous> (login.html:337:22)
-(anonymous)	@	login.html:356
-
-same when i try registering
-
-applicationform.html:423 ReferenceError: api is not defined
-    at HTMLFormElement.<anonymous> (applicationform.html:404:22)
-(anonymous)	@	applicationform.html:423
-
-fix this
+do same you just did to the dashboard.html to this personal.html page while keeping all other codes and functionalities intact and bring out the whole page code with no line of code skipped, commented out or left to be filled in manually(placeholders)

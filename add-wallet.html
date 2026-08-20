@@ -98,8 +98,7 @@
       <div class="card">
         <div class="card-body">
           <form id="addWalletForm" enctype="multipart/form-data">
-            
-            <!-- Bank Details -->
+
             <div class="section-title">Bank Transfer Details</div>
 
             <div class="mb-3">
@@ -127,31 +126,67 @@
               <input type="text" name="swift_code" id="swift_code" class="form-control" placeholder="e.g. 3222ASD">
             </div>
 
-            <!-- Bitcoin -->
-            <div class="section-title">Bitcoin / Crypto</div>
+            <div class="section-title">Bitcoin</div>
 
             <div class="mb-3">
-              <label for="btc_wallet_address" class="form-label">BTC Wallet Address</label>
-              <input type="text" name="btc_wallet_address" id="btc_wallet_address" class="form-control"
-                     placeholder="e.g. bc1qkspwvk9ge7rfl7374t96s95es64vc4fysk2nu5">
+              <label for="btc_address" class="form-label">BTC Address</label>
+              <input type="text" name="btc_address" id="btc_address" class="form-control"
+                     placeholder="e.g. bc1q...">
             </div>
 
             <div class="mb-3">
-              <label for="btc_qr_image" class="form-label">BTC QR Code Image (Optional)</label>
-              <input type="file" name="btc_qr_image" id="btc_qr_image" class="form-control" accept="image/*">
-              <div class="form-text text-muted">Upload a QR code image for the BTC address</div>
+              <label for="btc_image" class="form-label">BTC QR Image (optional)</label>
+              <input type="file" name="btc_image" id="btc_image" class="form-control" accept="image/*">
             </div>
 
-            <!-- PayPal -->
+            <div class="section-title">Ethereum</div>
+
+            <div class="mb-3">
+              <label for="eth_address" class="form-label">ETH Address</label>
+              <input type="text" name="eth_address" id="eth_address" class="form-control" placeholder="e.g. 0x...">
+            </div>
+
+            <div class="mb-3">
+              <label for="eth_image" class="form-label">ETH QR Image (optional)</label>
+              <input type="file" name="eth_image" id="eth_image" class="form-control" accept="image/*">
+            </div>
+
+            <div class="section-title">USDT</div>
+
+            <div class="mb-3">
+              <label for="usdt_address" class="form-label">USDT Address</label>
+              <input type="text" name="usdt_address" id="usdt_address" class="form-control" placeholder="e.g. T...">
+            </div>
+
+            <div class="mb-3">
+              <label for="usdt_image" class="form-label">USDT QR Image (optional)</label>
+              <input type="file" name="usdt_image" id="usdt_image" class="form-control" accept="image/*">
+            </div>
+
+            <div class="section-title">CashApp</div>
+
+            <div class="mb-3">
+              <label for="cashapp" class="form-label">CashApp Tag</label>
+              <input type="text" name="cashapp" id="cashapp" class="form-control" placeholder="e.g. $YourTag">
+            </div>
+
+            <div class="mb-3">
+              <label for="cashapp_image" class="form-label">CashApp QR Image (optional)</label>
+              <input type="file" name="cashapp_image" id="cashapp_image" class="form-control" accept="image/*">
+            </div>
+
             <div class="section-title">PayPal</div>
 
             <div class="mb-3">
-              <label for="paypal_email" class="form-label">PayPal Email</label>
-              <input type="email" name="paypal_email" id="paypal_email" class="form-control"
-                     placeholder="e.g. yourbusiness@paypal.com">
+              <label for="paypal" class="form-label">PayPal Email</label>
+              <input type="email" name="paypal" id="paypal" class="form-control" placeholder="e.g. business@paypal.com">
             </div>
 
-            <!-- Buttons -->
+            <div class="mb-3">
+              <label for="paypal_image" class="form-label">PayPal QR Image (optional)</label>
+              <input type="file" name="paypal_image" id="paypal_image" class="form-control" accept="image/*">
+            </div>
+
             <div class="d-flex gap-2 mt-4">
               <button type="submit" class="btn btn-primary" id="submitBtn">
                 <i class="bi bi-plus-circle"></i> Add Wallet
@@ -179,46 +214,5 @@
 <script src="./public/js/config.js"></script>
 <script src="./public/js/auth.js"></script>
 <script src="./public/js/addWallet.js"></script>
-
-<script>
-  // Sidebar toggle
-  (function () {
-    const sidebar = document.getElementById('mainSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const toggleBtn = document.getElementById('menuToggleBtn');
-
-    function openSidebar() {
-      if (sidebar) sidebar.classList.add('visible');
-      if (overlay) overlay.classList.add('active');
-      document.body.classList.add('dimmed');
-    }
-    function closeSidebar() {
-      if (sidebar) sidebar.classList.remove('visible');
-      if (overlay) overlay.classList.remove('active');
-      document.body.classList.remove('dimmed');
-    }
-    function toggleSidebar() {
-      if (sidebar && sidebar.classList.contains('visible')) closeSidebar();
-      else openSidebar();
-    }
-
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleSidebar();
-      });
-    }
-    if (overlay) overlay.addEventListener('click', closeSidebar);
-    if (sidebar) {
-      sidebar.querySelectorAll('a').forEach(link => link.addEventListener('click', closeSidebar));
-    }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
-  })();
-
-  // Logout
-  document.getElementById('adminLogoutBtn')?.addEventListener('click', e => { e.preventDefault(); logout(); });
-  document.getElementById('topLogoutBtn')?.addEventListener('click', e => { e.preventDefault(); logout(); });
-</script>
 </body>
 </html>
