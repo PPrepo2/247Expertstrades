@@ -26,10 +26,138 @@
 .account-data .line{margin-bottom:14px}
 .account-data label{display:block;color:#fff;margin-bottom:6px}
 .account-data input[type=password]{
-  width:100%;max-width:400px;padding:10px;border-radius:6px;
-  border:1px solid #444;background:#1a1a2e;color:#fff;box-sizing:border-box
+ width:100%;max-width:400px;padding:10px;border-radius:6px;
+ border:1px solid #444;background:#1a1a2e;color:#fff;box-sizing:border-box
 }
 #passcheck{display:block;margin-top:6px;font-size:13px}
+
+/* ===== LANGUAGE SELECTOR (visible next to logo) ===== */
+.lang-select-wrap {
+ display: inline-block !important;
+ visibility: visible !important;
+ opacity: 1 !important;
+ position: relative !important;
+ z-index: 10050 !important;
+ vertical-align: middle !important;
+ margin: 12px 0 0 12px !important;
+}
+#language {
+ display: inline-block !important;
+ visibility: visible !important;
+ opacity: 1 !important;
+ width: 140px !important;
+ min-width: 140px !important;
+ height: 32px !important;
+ font-size: 12px !important;
+ line-height: 1.2 !important;
+ background: #ffffff !important;
+ color: #111111 !important;
+ border: 1px solid #2597c7 !important;
+ border-radius: 4px !important;
+ padding: 4px 8px !important;
+ cursor: pointer !important;
+ -webkit-appearance: menulist !important;
+ appearance: menulist !important;
+ position: relative !important;
+ z-index: 10051 !important;
+}
+
+/* ===== RESPONSIVE: center language between logo and menu (SM/MD) ===== */
+@media (max-width: 1200px) {
+ .top-bar .head-row.clearfix {
+ display: flex !important;
+ flex-wrap: nowrap !important;
+ align-items: center !important;
+ justify-content: space-between !important;
+ width: 100% !important;
+ box-sizing: border-box !important;
+ }
+ .top-bar .float-left {
+ display: flex !important;
+ flex-wrap: nowrap !important;
+ align-items: center !important;
+ float: none !important;
+ flex: 1 1 auto !important;
+ min-width: 0 !important;
+ gap: 6px !important;
+ }
+ .top-bar .logosm {
+ flex: 0 0 auto !important;
+ order: 1 !important;
+ }
+ .lang-select-wrap {
+ display: inline-block !important;
+ visibility: visible !important;
+ opacity: 1 !important;
+ flex: 1 1 auto !important;
+ order: 2 !important;
+ text-align: center !important;
+ margin: 0 6px !important;
+ z-index: 10050 !important;
+ }
+ #language {
+ display: inline-block !important;
+ width: 120px !important;
+ min-width: 100px !important;
+ max-width: 140px !important;
+ margin: 0 auto !important;
+ }
+ .top-bar .menu-toggle.float-right,
+ .top-bar #menuToggleBtn {
+ display: block !important;
+ float: none !important;
+ flex: 0 0 auto !important;
+ order: 4 !important;
+ margin: 8px 8px 8px 4px !important;
+ position: relative !important;
+ z-index: 10052 !important;
+ }
+ .top-bar .float-right.nav.smcapy-nav {
+ float: none !important;
+ flex: 0 1 auto !important;
+ order: 5 !important;
+ }
+}
+@media (max-width: 920px) {
+ .top-bar .head-row.clearfix {
+ display: flex !important;
+ flex-wrap: nowrap !important;
+ align-items: center !important;
+ }
+ .top-bar .float-left {
+ display: flex !important;
+ flex: 1 1 auto !important;
+ min-width: 0 !important;
+ }
+ .lang-select-wrap {
+ flex: 1 1 auto !important;
+ text-align: center !important;
+ order: 2 !important;
+ margin: 0 4px !important;
+ }
+ #language {
+ width: 110px !important;
+ min-width: 90px !important;
+ height: 30px !important;
+ font-size: 11px !important;
+ }
+ .top-bar .menu-toggle,
+ .top-bar #menuToggleBtn {
+ display: block !important;
+ order: 4 !important;
+ margin-left: 4px !important;
+ }
+ .top-bar .float-right.nav.smcapy-nav .item {
+ font-size: 11px !important;
+ }
+}
+@media (max-width: 600px) {
+ #language {
+ width: 96px !important;
+ min-width: 84px !important;
+ font-size: 10px !important;
+ }
+}
 </style>
 </head>
 <body class="pushable dimmable scrolling">
@@ -37,115 +165,211 @@
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="ui sidebar right inverted vertical menu" id="mainSidebar">
-  <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%">
-    <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
-    <span id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> USD</span><br>
-    <span id="sidebar-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></span>
-  </div>
-  <span class="divider"></span>
-  <div class="item"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
-  <span class="divider"></span>
-  <div class="item"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
-  <div class="item"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
-  <span class="divider"></span>
-  <div class="item"><a href="history.html"><i class="fa fa-history"></i> Transactions history</a></div>
-  <div class="item"><a href="trade-history.html"><i class="fa fa-area-chart"></i> Trading history</a></div>
-  <span class="divider"></span>
-  <div class="item"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
-  <div class="item"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
-  <span class="divider"></span>
-  <div class="item"><a href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+ <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%">
+ <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
+ <span id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> USD</span><br>
+ <span id="sidebar-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></span>
+ </div>
+ <span class="divider"></span>
+ <div class="item"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+ <span class="divider"></span>
+ <div class="item"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+ <div class="item"><a href="withdrawal.html"><i class="fa fa-money"></i> Withdrawals</a></div>
+ <span class="divider"></span>
+ <div class="item"><a href="history.html"><i class="fa fa-history"></i> Transactions history</a></div>
+ <div class="item"><a href="trade-history.html"><i class="fa fa-area-chart"></i> Trading history</a></div>
+ <span class="divider"></span>
+ <div class="item"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+ <div class="item"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
+ <span class="divider"></span>
+ <div class="item"><a href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
 </div>
 
 <div class="pusher">
 <nav class="top-nav inner inner-new">
-  <div class="top-bar">
-    <div class="head-row clearfix">
-      <div class="float-left">
-        <div class="logosm">
-          <a href="dashboard.html"><img src="assets/img/logo.png" alt="247Expertstrade"></a>
-        </div>
-      </div>
-      <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
-      <div class="float-right nav smcapy-nav">
-        <div class="item" id="top-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></div>
-        <div class="item"><a class="ui button op link a-green-hover" href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
-        <div class="item"><a class="ui button op round green-bm nobold" href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
-      </div>
-    </div>
-  </div>
-  <div class="top-line clearfix">
-    <div class="row-30">
-      <div class="navsm text-xs-right">
-        <div class="ui item top-drop-in-css"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
-        <div class="ui item top-drop-in-css"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
-        <div class="ui item top-drop-in-css"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
-      </div>
-    </div>
-  </div>
+ <div class="top-bar">
+ <div class="head-row clearfix">
+ <div class="float-left">
+ <div class="logosm">
+ <a href="dashboard.html"><img src="assets/img/logo.png" alt="247Expertstrade"></a>
+ </div>
+
+ <div class="lang-select-wrap">
+ <select id="language" onchange="changeLanguageByButtonClick()" title="Select language">
+ <option value="af">Afrikanns</option>
+ <option value="sq">Albanian</option>
+ <option value="ar ">Arabic</option>
+ <option value="hy">Armenian</option>
+ <option value="eu">Basque</option>
+ <option value="bn">Bengali</option>
+ <option value="bg">Bulgarian</option>
+ <option value="ca">Catalan</option>
+ <option value="km">Cambodian</option>
+ <option value="zh-CN">Chinese (Mandarin)</option>
+ <option value="hr">Croation</option>
+ <option value="cs">Czech</option>
+ <option value="da">Danish</option>
+ <option value="nl">Dutch</option>
+ <option value="en" selected>English</option>
+ <option value="et">Estonian</option>
+ <option value="fj">Fiji</option>
+ <option value="fi">Finnish</option>
+ <option value="fr">French</option>
+ <option value="ka">Georgian</option>
+ <option value="de">German</option>
+ <option value="el">Greek</option>
+ <option value="gu">Gujarati</option>
+ <option value="he">Hebrew</option>
+ <option value="hi">Hindi</option>
+ <option value="hu">Hungarian</option>
+ <option value="is">Icelandic</option>
+ <option value="id">Indonesian</option>
+ <option value="ga">Irish</option>
+ <option value="it">Italian</option>
+ <option value="ja">Japanese</option>
+ <option value="jw">Javanese</option>
+ <option value="ko">Korean</option>
+ <option value="la">Latin</option>
+ <option value="lv">Latvian</option>
+ <option value="lt">Lithuanian</option>
+ <option value="mk">Macedonian</option>
+ <option value="ms">Malay</option>
+ <option value="ml">Malayalam</option>
+ <option value="mt">Maltese</option>
+ <option value="mi">Maori</option>
+ <option value="mr">Marathi</option>
+ <option value="mn">Mongolian</option>
+ <option value="ne">Nepali</option>
+ <option value="no">Norwegian</option>
+ <option value="fa">Persian</option>
+ <option value="pl">Polish</option>
+ <option value="pt">Portuguese</option>
+ <option value="pa">Punjabi</option>
+ <option value="qu">Quechua</option>
+ <option value="ro">Romanian</option>
+ <option value="ru">Russian</option>
+ <option value="sm">Samoan</option>
+ <option value="sr">Serbian</option>
+ <option value="sk">Slovak</option>
+ <option value="sl">Slovenian</option>
+ <option value="es">Spanish</option>
+ <option value="sw">Swahili</option>
+ <option value="sv">Swedish</option>
+ <option value="ta">Tamil</option>
+ <option value="tt">Tatar</option>
+ <option value="te">Telugu</option>
+ <option value="th">Thai</option>
+ <option value="bo">Tibetan</option>
+ <option value="to">Tonga</option>
+ <option value="tr">Turkish</option>
+ <option value="uk">Ukranian</option>
+ <option value="ur">Urdu</option>
+ <option value="uz">Uzbek</option>
+ <option value="vi">Vietnamese</option>
+ <option value="cy">Welsh</option>
+ <option value="xh">Xhosa</option>
+ </select>
+ </div>
+ <div id="google_translate_element" style="display:none !important;"></div>
+ <script type="text/javascript">
+ function googleTranslateElementInit() {
+ new google.translate.TranslateElement({ pageLanguage: "en" }, "google_translate_element");
+ }
+ function changeLanguageByButtonClick() {
+ var language = document.getElementById("language").value;
+ var selectField = document.querySelector("#google_translate_element select");
+ if (!selectField) return;
+ for (var i = 0; i < selectField.children.length; i++) {
+ if (selectField.children[i].value == language) {
+ selectField.selectedIndex = i;
+ selectField.dispatchEvent(new Event("change"));
+ break;
+ }
+ }
+ }
+ </script>
+ <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+ </div>
+ <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
+ <div class="float-right nav smcapy-nav">
+ <div class="item" id="top-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></div>
+ <div class="item"><a class="ui button op link a-green-hover" href="#" onclick="logout();return false;"><i class="fa fa-power-off"></i> Exit</a></div>
+ <div class="item"><a class="ui button op round green-bm nobold" href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
+ </div>
+ </div>
+ </div>
+ <div class="top-line clearfix">
+ <div class="row-30">
+ <div class="navsm text-xs-right">
+ <div class="ui item top-drop-in-css"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
+ <div class="ui item top-drop-in-css"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
+ <div class="ui item top-drop-in-css"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
+ </div>
+ </div>
+ </div>
 </nav>
 
 <div class="root-content">
-  <div class="pusher push-trading">
-    <div class="pusher pusher-min-400">
-      <section class="img-bg-section">
-        <div class="row">
-          <ul class="tabs">
-            <li><a href="personal.html">Personal Data</a></li>
-            <li><a href="security.html" class="active">Security Settings</a></li>
-          </ul>
-          <div class="mob-tab-nav mob-main-tabs">
-            <div class="ui not_select dropdown mob-tabular" tabindex="0">
-              <div class="text default">Security Settings</div>
-              <i class="dropdown icon"></i>
-              <div class="menu" tabindex="-1">
-                <a href="personal.html" class="item">Personal Data</a>
-                <a href="security.html" class="item">Security Settings</a>
-              </div>
-            </div>
-          </div>
-          <h2 class="title">Security Settings</h2>
-        </div>
-        <span class="blue-arrow"></span>
-      </section>
+ <div class="pusher push-trading">
+ <div class="pusher pusher-min-400">
+ <section class="img-bg-section">
+ <div class="row">
+ <ul class="tabs">
+ <li><a href="personal.html">Personal Data</a></li>
+ <li><a href="security.html" class="active">Security Settings</a></li>
+ </ul>
+ <div class="mob-tab-nav mob-main-tabs">
+ <div class="ui not_select dropdown mob-tabular" tabindex="0">
+ <div class="text default">Security Settings</div>
+ <i class="dropdown icon"></i>
+ <div class="menu" tabindex="-1">
+ <a href="personal.html" class="item">Personal Data</a>
+ <a href="security.html" class="item">Security Settings</a>
+ </div>
+ </div>
+ </div>
+ <h2 class="title">Security Settings</h2>
+ </div>
+ <span class="blue-arrow"></span>
+ </section>
 
-      <section class="content-box">
-        <div class="row">
-          <div class="form-row account-data form-hailight clearfix" style="max-width:480px;margin:0 auto;padding:16px;">
-            <p style="color:#ccc;margin-bottom:16px;">
-              Logged in as <b id="display-email">—</b> · Balance: <b id="display-balance">0.00</b>
-            </p>
+ <section class="content-box">
+ <div class="row">
+ <div class="form-row account-data form-hailight clearfix" style="max-width:480px;margin:0 auto;padding:16px;">
+ <p style="color:#ccc;margin-bottom:16px;">
+ Logged in as <b id="display-email">—</b> · Balance: <b id="display-balance">0.00</b>
+ </p>
 
-            <form id="passwordForm" method="post" action="">
-              <div class="line"></div>
-              <div class="line">
-                <label>Current password:</label>
-                <input type="password" required name="current" id="current" autocomplete="current-password">
-              </div>
-              <div class="line">
-                <label>New password:</label>
-                <input type="password" required name="pass" id="pass" autocomplete="new-password" minlength="8">
-              </div>
-              <div class="line">
-                <label>Confirm new password:</label>
-                <input type="password" required name="rpass" id="rpass" autocomplete="new-password" minlength="8">
-                <span id="passcheck"></span>
-              </div>
-              <button class="ui button primal float-right" type="submit" name="pass_btn" id="pass_btn">Save</button>
-            </form>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
+ <form id="passwordForm" method="post" action="">
+ <div class="line"></div>
+ <div class="line">
+ <label>Current password:</label>
+ <input type="password" required name="current" id="current" autocomplete="current-password">
+ </div>
+ <div class="line">
+ <label>New password:</label>
+ <input type="password" required name="pass" id="pass" autocomplete="new-password" minlength="8">
+ </div>
+ <div class="line">
+ <label>Confirm new password:</label>
+ <input type="password" required name="rpass" id="rpass" autocomplete="new-password" minlength="8">
+ <span id="passcheck"></span>
+ </div>
+ <button class="ui button primal float-right" type="submit" name="pass_btn" id="pass_btn">Save</button>
+ </form>
+ </div>
+ </div>
+ </section>
+ </div>
+ </div>
 </div>
 
-<footer class="footer">
-  <div class="row clearfix">
-    <div class="float-left">
-      <span class="copy">&copy; 2022 <span>247Expertstrade Ltd .</span></span>
-    </div>
-  </div>
+<footer class=" footer">
+ <div class="row clearfix">
+ <div class="float-left">
+ <span class="copy">&copy; 2022 <span>247Expertstrade Ltd .</span></span>
+ </div>
+ </div>
 </footer>
 </div>
 
@@ -158,158 +382,158 @@
 <script src="./public/js/auth.js"></script>
 <script>
 (function () {
-  var sidebar = document.getElementById('mainSidebar');
-  var overlay = document.getElementById('sidebarOverlay');
-  var toggleBtn = document.getElementById('menuToggleBtn');
-  function openS() {
-    if (sidebar) sidebar.classList.add('visible');
-    if (overlay) overlay.classList.add('active');
-  }
-  function closeS() {
-    if (sidebar) sidebar.classList.remove('visible');
-    if (overlay) overlay.classList.remove('active');
-  }
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (sidebar && sidebar.classList.contains('visible')) closeS();
-      else openS();
-    });
-  }
-  if (overlay) overlay.addEventListener('click', closeS);
-  if (sidebar) {
-    sidebar.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', closeS);
-    });
-  }
+ var sidebar = document.getElementById('mainSidebar');
+ var overlay = document.getElementById('sidebarOverlay');
+ var toggleBtn = document.getElementById('menuToggleBtn');
+ function openS() {
+ if (sidebar) sidebar.classList.add('visible');
+ if (overlay) overlay.classList.add('active');
+ }
+ function closeS() {
+ if (sidebar) sidebar.classList.remove('visible');
+ if (overlay) overlay.classList.remove('active');
+ }
+ if (toggleBtn) {
+ toggleBtn.addEventListener('click', function (e) {
+ e.preventDefault();
+ if (sidebar && sidebar.classList.contains('visible')) closeS();
+ else openS();
+ });
+ }
+ if (overlay) overlay.addEventListener('click', closeS);
+ if (sidebar) {
+ sidebar.querySelectorAll('a').forEach(function (a) {
+ a.addEventListener('click', closeS);
+ });
+ }
 })();
 
 document.addEventListener('DOMContentLoaded', async function () {
-  if (typeof requireAuthPage === 'function') requireAuthPage();
+ if (typeof requireAuthPage === 'function') requireAuthPage();
 
-  var currentUser = null;
+ var currentUser = null;
 
-  function kycHtml(status) {
-    var s = status ? String(status).toLowerCase().trim() : '';
-    if (s === 'approve' || s === 'approved') {
-      return 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>';
-    }
-    if (s === 'pending') {
-      return 'Kyc Verification: <span style="color:#ff0"><i class="fa fa-clock-o"></i> Pending</span>';
-    }
-    return 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
-  }
+ function kycHtml(status) {
+ var s = status ? String(status).toLowerCase().trim() : '';
+ if (s === 'approve' || s === 'approved') {
+ return 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>';
+ }
+ if (s === 'pending') {
+ return 'Kyc Verification: <span style="color:#ff0"><i class="fa fa-clock-o"></i> Pending</span>';
+ }
+ return 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
+ }
 
-  function checkMatch() {
-    var p = document.getElementById('pass').value;
-    var r = document.getElementById('rpass').value;
-    var el = document.getElementById('passcheck');
-    if (!r) {
-      el.textContent = '';
-      return;
-    }
-    if (p === r) {
-      el.style.color = '#0f0';
-      el.textContent = 'Passwords match';
-    } else {
-      el.style.color = '#f66';
-      el.textContent = 'Passwords do not match';
-    }
-  }
+ function checkMatch() {
+ var p = document.getElementById('pass').value;
+ var r = document.getElementById('rpass').value;
+ var el = document.getElementById('passcheck');
+ if (!r) {
+ el.textContent = '';
+ return;
+ }
+ if (p === r) {
+ el.style.color = '#0f0';
+ el.textContent = 'Passwords match';
+ } else {
+ el.style.color = '#f66';
+ el.textContent = 'Passwords do not match';
+ }
+ }
 
-  document.getElementById('pass').addEventListener('input', checkMatch);
-  document.getElementById('rpass').addEventListener('input', checkMatch);
+ document.getElementById('pass').addEventListener('input', checkMatch);
+ document.getElementById('rpass').addEventListener('input', checkMatch);
 
-  try {
-    var res = await api.get('/security');
-    if (!res.data || !res.data.success) {
-      throw new Error((res.data && res.data.message) || 'Failed to load');
-    }
-    currentUser = res.data.user;
+ try {
+ var res = await api.get('/security');
+ if (!res.data || !res.data.success) {
+ throw new Error((res.data && res.data.message) || 'Failed to load');
+ }
+ currentUser = res.data.user;
 
-    var bal = Number(currentUser.balance || 0).toFixed(2);
-    var cur = currentUser.currency || 'USD $';
-    var email = currentUser.email || '';
+ var bal = Number(currentUser.balance || 0).toFixed(2);
+ var cur = currentUser.currency || 'USD $';
+ var email = currentUser.email || '';
 
-    document.getElementById('sidebar-email').innerHTML =
-      '<i class="fa fa-envelope-o"></i> ' + email;
-    document.getElementById('sidebar-balance').innerHTML =
-      '<b><i class="fa fa-money"></i> ' + bal + '</b> ' + cur;
-    document.getElementById('sidebar-kyc').innerHTML = kycHtml(currentUser.kycVerified);
-    document.getElementById('top-kyc').innerHTML = kycHtml(currentUser.kycVerified);
-    document.getElementById('display-email').textContent = email;
-    document.getElementById('display-balance').textContent = bal + ' ' + cur;
-  } catch (err) {
-    console.error(err);
-    if (err.response && err.response.status === 401) {
-      window.location.href = 'login.html';
-      return;
-    }
-    Swal.fire('Error', 'Failed to load security settings', 'error');
-  }
+ document.getElementById('sidebar-email').innerHTML =
+ '<i class="fa fa-envelope-o"></i> ' + email;
+ document.getElementById('sidebar-balance').innerHTML =
+ '<b><i class="fa fa-money"></i> ' + bal + '</b> ' + cur;
+ document.getElementById('sidebar-kyc').innerHTML = kycHtml(currentUser.kycVerified);
+ document.getElementById('top-kyc').innerHTML = kycHtml(currentUser.kycVerified);
+ document.getElementById('display-email').textContent = email;
+ document.getElementById('display-balance').textContent = bal + ' ' + cur;
+ } catch (err) {
+ console.error(err);
+ if (err.response && err.response.status === 401) {
+ window.location.href = 'login.html';
+ return;
+ }
+ Swal.fire('Error', 'Failed to load security settings', 'error');
+ }
 
-  document.getElementById('passwordForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
+ document.getElementById('passwordForm').addEventListener('submit', async function (e) {
+ e.preventDefault();
 
-    if (!currentUser || !currentUser._id) {
-      Swal.fire('Error', 'User not loaded. Please refresh the page.', 'error');
-      return;
-    }
+ if (!currentUser || !currentUser._id) {
+ Swal.fire('Error', 'User not loaded. Please refresh the page.', 'error');
+ return;
+ }
 
-    var current = document.getElementById('current').value;
-    var pass = document.getElementById('pass').value;
-    var rpass = document.getElementById('rpass').value;
+ var current = document.getElementById('current').value;
+ var pass = document.getElementById('pass').value;
+ var rpass = document.getElementById('rpass').value;
 
-    if (!current || !pass || !rpass) {
-      Swal.fire('Error', 'All password fields are required', 'error');
-      return;
-    }
-    if (pass.length < 8) {
-      Swal.fire('Error', 'New password must be at least 8 characters long', 'error');
-      return;
-    }
-    if (pass !== rpass) {
-      Swal.fire('Error', 'New password and confirmation do not match', 'error');
-      return;
-    }
+ if (!current || !pass || !rpass) {
+ Swal.fire('Error', 'All password fields are required', 'error');
+ return;
+ }
+ if (pass.length < 8) {
+ Swal.fire('Error', 'New password must be at least 8 characters long', 'error');
+ return;
+ }
+ if (pass !== rpass) {
+ Swal.fire('Error', 'New password and confirmation do not match', 'error');
+ return;
+ }
 
-    var btn = document.getElementById('pass_btn');
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
+ var btn = document.getElementById('pass_btn');
+ btn.disabled = true;
+ btn.textContent = 'Saving...';
 
-    try {
-      var r = await api.post('/security/' + currentUser._id, {
-        current_password: current,
-        password: pass,
-        password_confirmation: rpass,
-        current: current,
-        pass: pass,
-        rpass: rpass
-      });
+ try {
+ var r = await api.post('/security/' + currentUser._id, {
+ current_password: current,
+ password: pass,
+ password_confirmation: rpass,
+ current: current,
+ pass: pass,
+ rpass: rpass
+ });
 
-      if (r.data && r.data.success) {
-        await Swal.fire('Success', r.data.message || 'Password changed successfully', 'success');
-        if (typeof logout === 'function') {
-          logout();
-        } else {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          window.location.href = 'login.html';
-        }
-      } else {
-        Swal.fire('Error', (r.data && r.data.message) || 'Failed to change password', 'error');
-      }
-    } catch (err) {
-      var msg =
-        (err.response && err.response.data && err.response.data.message) ||
-        err.message ||
-        'Failed to change password';
-      Swal.fire('Error', msg, 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Save';
-    }
-  });
+ if (r.data && r.data.success) {
+ await Swal.fire('Success', r.data.message || 'Password changed successfully', 'success');
+ if (typeof logout === 'function') {
+ logout();
+ } else {
+ localStorage.removeItem('token');
+ localStorage.removeItem('user');
+ window.location.href = 'login.html';
+ }
+ } else {
+ Swal.fire('Error', (r.data && r.data.message) || 'Failed to change password', 'error');
+ }
+ } catch (err) {
+ var msg =
+ (err.response && err.response.data && err.response.data.message) ||
+ err.message ||
+ 'Failed to change password';
+ Swal.fire('Error', msg, 'error');
+ } finally {
+ btn.disabled = false;
+ btn.textContent = 'Save';
+ }
+ });
 });
 </script>
 

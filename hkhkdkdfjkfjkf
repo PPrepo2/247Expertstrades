@@ -1,17 +1,15 @@
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Personal Data | 247Expertstrade</title>
+<title>Security Settings | 247Expertstrade</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
 <link rel="icon" type="image/png" href="assets/img/favicons/favicon-32x32.png" sizes="32x32">
-<link href="assets/css/css.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/inner.css">
-<link rel="stylesheet" href="assets/css/app.css">
-<link rel="stylesheet" href="assets/css/cs.css">
+<link href="assets/css/css.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="assets/css/inner.css">
+<link rel="stylesheet" type="text/css" href="assets/css/app.css">
+<link rel="stylesheet" type="text/css" href="assets/css/cs.css">
 <script src="https://use.fontawesome.com/4b789087e7.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <style>
@@ -25,19 +23,13 @@
 .sidebar-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9999}
 .sidebar-overlay.active{display:block}
 .menu-toggle{cursor:pointer!important;display:block!important}
-.account-data .line{margin-bottom:12px}
-.account-data input,.account-data select{width:100%;max-width:420px;padding:10px;border-radius:6px;border:1px solid #444;background:#1a1a2e;color:#fff;box-sizing:border-box}
-.account-data input:disabled,.account-data select:disabled{opacity:.65;cursor:not-allowed}
-.kyc-box{max-width:520px;margin:20px auto;text-align:center;color:#fff}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:20000;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.open{display:flex}
-.modal-box{background:#1a1a2e;color:#fff;border-radius:12px;padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
-.modal-box h3{margin-top:0}
-.modal-box .close-x{position:absolute;top:10px;right:14px;font-size:24px;cursor:pointer;color:#aaa}
-.modal-box label{display:block;margin:12px 0 6px;font-weight:bold}
-.modal-box input[type=file],.modal-box select{width:100%;margin-bottom:8px}
-.preview-img{display:none;max-width:100%;max-height:140px;margin-top:8px;border-radius:8px;border:1px solid #444}
-.preview-img.show{display:block}
+.account-data .line{margin-bottom:14px}
+.account-data label{display:block;color:#fff;margin-bottom:6px}
+.account-data input[type=password]{
+  width:100%;max-width:400px;padding:10px;border-radius:6px;
+  border:1px solid #444;background:#1a1a2e;color:#fff;box-sizing:border-box
+}
+#passcheck{display:block;margin-top:6px;font-size:13px}
 </style>
 </head>
 <body class="pushable dimmable scrolling">
@@ -47,7 +39,7 @@
 <div class="ui sidebar right inverted vertical menu" id="mainSidebar">
   <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%">
     <span id="sidebar-email"><i class="fa fa-envelope-o"></i> Loading...</span><br>
-    <span id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> <b>USD $</b></span><br>
+    <span id="sidebar-balance"><b><i class="fa fa-money"></i> 0.00</b> USD</span><br>
     <span id="sidebar-kyc">Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span></span>
   </div>
   <span class="divider"></span>
@@ -70,7 +62,9 @@
   <div class="top-bar">
     <div class="head-row clearfix">
       <div class="float-left">
-        <div class="logosm"><a href="dashboard.html"><img src="assets/img/logo.png" alt="247Expertstrade"></a></div>
+        <div class="logosm">
+          <a href="dashboard.html"><img src="assets/img/logo.png" alt="247Expertstrade"></a>
+        </div>
       </div>
       <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
       <div class="float-right nav smcapy-nav">
@@ -84,111 +78,73 @@
     <div class="row-30">
       <div class="navsm text-xs-right">
         <div class="ui item top-drop-in-css"><a href="dashboard.html"><i class="fa fa-dashboard"></i> Trading</a></div>
-        <div class="ui item top-drop-in-css"><a href="funding.html"><i class="fa fa-money"></i> Account funding</a></div>
         <div class="ui item top-drop-in-css"><a href="personal.html"><i class="fa fa-user"></i> Personal Data</a></div>
-        <div class="ui item top-drop-in-css"><a href="security.html"><i class="fa fa-lock"></i> Security</a></div>
+        <div class="ui item top-drop-in-css"><a href="security.html"><i class="fa fa-lock"></i> Security settings</a></div>
       </div>
     </div>
   </div>
 </nav>
 
 <div class="root-content">
-  <section class="img-bg-section">
-    <div class="row">
-      <div class="top-info"><h2 class="title">Account Data</h2></div>
+  <div class="pusher push-trading">
+    <div class="pusher pusher-min-400">
+      <section class="img-bg-section">
+        <div class="row">
+          <ul class="tabs">
+            <li><a href="personal.html">Personal Data</a></li>
+            <li><a href="security.html" class="active">Security Settings</a></li>
+          </ul>
+          <div class="mob-tab-nav mob-main-tabs">
+            <div class="ui not_select dropdown mob-tabular" tabindex="0">
+              <div class="text default">Security Settings</div>
+              <i class="dropdown icon"></i>
+              <div class="menu" tabindex="-1">
+                <a href="personal.html" class="item">Personal Data</a>
+                <a href="security.html" class="item">Security Settings</a>
+              </div>
+            </div>
+          </div>
+          <h2 class="title">Security Settings</h2>
+        </div>
+        <span class="blue-arrow"></span>
+      </section>
+
+      <section class="content-box">
+        <div class="row">
+          <div class="form-row account-data form-hailight clearfix" style="max-width:480px;margin:0 auto;padding:16px;">
+            <p style="color:#ccc;margin-bottom:16px;">
+              Logged in as <b id="display-email">—</b> · Balance: <b id="display-balance">0.00</b>
+            </p>
+
+            <form id="passwordForm" method="post" action="">
+              <div class="line"></div>
+              <div class="line">
+                <label>Current password:</label>
+                <input type="password" required name="current" id="current" autocomplete="current-password">
+              </div>
+              <div class="line">
+                <label>New password:</label>
+                <input type="password" required name="pass" id="pass" autocomplete="new-password" minlength="8">
+              </div>
+              <div class="line">
+                <label>Confirm new password:</label>
+                <input type="password" required name="rpass" id="rpass" autocomplete="new-password" minlength="8">
+                <span id="passcheck"></span>
+              </div>
+              <button class="ui button primal float-right" type="submit" name="pass_btn" id="pass_btn">Save</button>
+            </form>
+          </div>
+        </div>
+      </section>
     </div>
-    <span class="blue-arrow"></span>
-  </section>
-
-  <section class="content-box verification-new">
-    <div class="row">
-      <div class="form-row account-data" style="max-width:480px;margin:0 auto;padding:16px;">
-        <form id="personalForm">
-          <label>Full name</label>
-          <div class="line ui input">
-            <input type="text" id="fullname" name="fullname" disabled>
-          </div>
-
-          <label>Email</label>
-          <div class="line ui input">
-            <input type="email" id="email" name="email" disabled>
-          </div>
-
-          <label>Phone number</label>
-          <div class="line ui input">
-            <input type="tel" id="tel" name="tel" disabled>
-          </div>
-
-          <label>Country</label>
-          <div class="line ui input">
-            <input type="text" id="country" name="country" disabled>
-          </div>
-
-          <label>Gender</label>
-          <div class="line ui input">
-            <select id="gender" name="gender" disabled>
-              <option value="">Select</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <div class="line" style="margin-top:16px;" id="saveRow">
-            <button type="submit" class="ui button green" id="saveBtn" disabled>Save changes</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="kyc-box" id="kycSection">
-      <h2 class="title personal">KYC Verification</h2>
-      <div id="kycStatusArea">
-        <span class="ui button red" id="kycRequiredBtn">Required <i class="fa-solid fa-ban"></i></span>
-        <p style="margin-top:12px;color:#ccc;">Click the button above to upload your ID documents.</p>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- KYC Modal -->
-<div class="modal-overlay" id="kycModal">
-  <div class="modal-box">
-    <span class="close-x" id="closeKycModal">&times;</span>
-    <h3>Upload KYC Documents</h3>
-    <p style="font-size:13px;color:#aaa;">Images only (jpg, jpeg, png). Preview appears under each field.</p>
-    <form id="kycForm">
-      <label>Document type</label>
-      <select id="document_type" required>
-        <option value="">Select document type</option>
-        <option value="Int'l Passport">Int'l Passport</option>
-        <option value="National ID">National ID</option>
-        <option value="Drivers License">Drivers License</option>
-      </select>
-
-      <label>Front image</label>
-      <input type="file" id="frontimg" name="frontimg" accept="image/jpeg,image/png,image/jpg" required>
-      <img class="preview-img" id="preview-front" alt="Front preview">
-
-      <label>Back image</label>
-      <input type="file" id="backimg" name="backimg" accept="image/jpeg,image/png,image/jpg" required>
-      <img class="preview-img" id="preview-back" alt="Back preview">
-
-      <label>Photo (passport photograph)</label>
-      <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/jpg" required>
-      <img class="preview-img" id="preview-photo" alt="Photo preview">
-
-      <div style="margin-top:20px;text-align:center;">
-        <button type="button" class="ui button" id="cancelKyc">Cancel</button>
-        <button type="submit" class="ui button green" id="submitKyc">Submit KYC</button>
-      </div>
-    </form>
   </div>
 </div>
 
 <footer class="footer">
   <div class="row clearfix">
-    <div class="float-left"><span class="copy">&copy; 2022 247Expertstrade Ltd .</span></div>
+    <div class="float-left">
+      <span class="copy">&copy; 2022 <span>247Expertstrade Ltd .</span></span>
+    </div>
   </div>
 </footer>
 </div>
@@ -205,47 +161,33 @@
   var sidebar = document.getElementById('mainSidebar');
   var overlay = document.getElementById('sidebarOverlay');
   var toggleBtn = document.getElementById('menuToggleBtn');
-  function openS() { if (sidebar) sidebar.classList.add('visible'); if (overlay) overlay.classList.add('active'); }
-  function closeS() { if (sidebar) sidebar.classList.remove('visible'); if (overlay) overlay.classList.remove('active'); }
-  if (toggleBtn) toggleBtn.addEventListener('click', function (e) { e.preventDefault(); sidebar && sidebar.classList.contains('visible') ? closeS() : openS(); });
+  function openS() {
+    if (sidebar) sidebar.classList.add('visible');
+    if (overlay) overlay.classList.add('active');
+  }
+  function closeS() {
+    if (sidebar) sidebar.classList.remove('visible');
+    if (overlay) overlay.classList.remove('active');
+  }
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (sidebar && sidebar.classList.contains('visible')) closeS();
+      else openS();
+    });
+  }
   if (overlay) overlay.addEventListener('click', closeS);
-  if (sidebar) sidebar.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeS); });
+  if (sidebar) {
+    sidebar.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeS);
+    });
+  }
 })();
-
-function bindPreview(inputId, imgId) {
-  var input = document.getElementById(inputId);
-  var img = document.getElementById(imgId);
-  if (!input || !img) return;
-  input.addEventListener('change', function () {
-    var file = this.files && this.files[0];
-    if (!file) { img.classList.remove('show'); img.src = ''; return; }
-    if (!/^image\/(jpeg|png|jpg)$/i.test(file.type)) {
-      Swal.fire('Error', 'Please select a valid image (jpeg/jpg/png).', 'error');
-      this.value = '';
-      img.classList.remove('show');
-      return;
-    }
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      img.src = e.target.result;
-      img.classList.add('show');
-    };
-    reader.readAsDataURL(file);
-  });
-}
 
 document.addEventListener('DOMContentLoaded', async function () {
   if (typeof requireAuthPage === 'function') requireAuthPage();
 
   var currentUser = null;
-  var currentVerification = null;
-  var fields = ['fullname', 'tel', 'country', 'gender'];
-
-  function isKycApproved(user, verification) {
-    var u = user && user.kycVerified ? String(user.kycVerified).toLowerCase().trim() : '';
-    var v = verification && verification.status ? String(verification.status).toLowerCase().trim() : '';
-    return u === 'approved' || u === 'approve' || v === 'approved' || v === 'approve';
-  }
 
   function kycHtml(status) {
     var s = status ? String(status).toLowerCase().trim() : '';
@@ -258,191 +200,134 @@ document.addEventListener('DOMContentLoaded', async function () {
     return 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
   }
 
-  function setEditable(canEdit) {
-    fields.forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.disabled = !canEdit;
-    });
-    document.getElementById('email').disabled = true;
-    document.getElementById('saveBtn').disabled = !canEdit;
-  }
-
-  function renderKycUI(user, verification) {
-    var section = document.getElementById('kycSection');
-    var area = document.getElementById('kycStatusArea');
-
-    if (isKycApproved(user, verification)) {
-      section.style.display = 'none';
-      setEditable(true);
+  function checkMatch() {
+    var p = document.getElementById('pass').value;
+    var r = document.getElementById('rpass').value;
+    var el = document.getElementById('passcheck');
+    if (!r) {
+      el.textContent = '';
       return;
     }
-
-    section.style.display = 'block';
-    setEditable(false);
-
-    var vStatus = verification && verification.status ? String(verification.status).toLowerCase() : '';
-
-    if (user.kycVerified === 'pending' || vStatus === 'pending' || vStatus === 'under review') {
-      area.innerHTML =
-        '<span class="ui button yellow">Under review <i class="fa fa-clock-o"></i></span>' +
-        '<p style="margin-top:12px;color:#ccc;">Your verification application is being reviewed. Status: <b>' +
-        (verification && verification.status ? verification.status : 'pending') +
-        '</b>.</p>';
-      return;
-    }
-
-    if (vStatus === 'rejected' || vStatus === 'declined') {
-      area.innerHTML =
-        '<span class="ui button red" id="kycRequiredBtn">Rejected — re-upload <i class="fa-solid fa-ban"></i></span>' +
-        '<p style="margin-top:12px;color:#f99;">' +
-        (verification.rejectionReason || 'Your application was rejected. Please submit again.') +
-        '</p>';
-      bindOpenModal();
-      return;
-    }
-
-    area.innerHTML =
-      '<span class="ui button red" id="kycRequiredBtn">Required <i class="fa-solid fa-ban"></i></span>' +
-      '<p style="margin-top:12px;color:#ccc;">Click the button above to upload your ID documents.</p>';
-    bindOpenModal();
-  }
-
-  function bindOpenModal() {
-    var btn = document.getElementById('kycRequiredBtn');
-    if (btn) {
-      btn.style.cursor = 'pointer';
-      btn.onclick = function () {
-        document.getElementById('kycModal').classList.add('open');
-      };
+    if (p === r) {
+      el.style.color = '#0f0';
+      el.textContent = 'Passwords match';
+    } else {
+      el.style.color = '#f66';
+      el.textContent = 'Passwords do not match';
     }
   }
 
-  function closeModal() {
-    document.getElementById('kycModal').classList.remove('open');
-  }
-  document.getElementById('closeKycModal').addEventListener('click', closeModal);
-  document.getElementById('cancelKyc').addEventListener('click', closeModal);
-
-  bindPreview('frontimg', 'preview-front');
-  bindPreview('backimg', 'preview-back');
-  bindPreview('photo', 'preview-photo');
+  document.getElementById('pass').addEventListener('input', checkMatch);
+  document.getElementById('rpass').addEventListener('input', checkMatch);
 
   try {
-    var res = await api.get('/personal');
-    if (!res.data || !res.data.success) throw new Error('Failed to load profile');
-
+    var res = await api.get('/security');
+    if (!res.data || !res.data.success) {
+      throw new Error((res.data && res.data.message) || 'Failed to load');
+    }
     currentUser = res.data.user;
-    currentVerification = res.data.verification || null;
-
-    document.getElementById('fullname').value = currentUser.fullname || '';
-    document.getElementById('email').value = currentUser.email || '';
-    document.getElementById('tel').value = currentUser.tel || '';
-    document.getElementById('country').value = currentUser.country || '';
-    document.getElementById('gender').value = currentUser.gender || '';
 
     var bal = Number(currentUser.balance || 0).toFixed(2);
     var cur = currentUser.currency || 'USD $';
-    document.getElementById('sidebar-email').innerHTML = '<i class="fa fa-envelope-o"></i> ' + (currentUser.email || '');
-    document.getElementById('sidebar-balance').innerHTML = '<b><i class="fa fa-money"></i> ' + bal + '</b> <b>' + cur + '</b>';
+    var email = currentUser.email || '';
 
-    var displayKyc = currentUser.kycVerified;
-    if (isKycApproved(currentUser, currentVerification)) {
-      displayKyc = 'approved';
-    }
-    document.getElementById('sidebar-kyc').innerHTML = kycHtml(displayKyc);
-    document.getElementById('top-kyc').innerHTML = kycHtml(displayKyc);
-
-    renderKycUI(currentUser, currentVerification);
+    document.getElementById('sidebar-email').innerHTML =
+      '<i class="fa fa-envelope-o"></i> ' + email;
+    document.getElementById('sidebar-balance').innerHTML =
+      '<b><i class="fa fa-money"></i> ' + bal + '</b> ' + cur;
+    document.getElementById('sidebar-kyc').innerHTML = kycHtml(currentUser.kycVerified);
+    document.getElementById('top-kyc').innerHTML = kycHtml(currentUser.kycVerified);
+    document.getElementById('display-email').textContent = email;
+    document.getElementById('display-balance').textContent = bal + ' ' + cur;
   } catch (err) {
     console.error(err);
     if (err.response && err.response.status === 401) {
       window.location.href = 'login.html';
       return;
     }
-    Swal.fire('Error', 'Failed to load personal data', 'error');
+    Swal.fire('Error', 'Failed to load security settings', 'error');
   }
 
-  document.getElementById('personalForm').addEventListener('submit', async function (e) {
+  document.getElementById('passwordForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    if (!currentUser || !isKycApproved(currentUser, currentVerification)) {
-      Swal.fire('Error', 'You can only edit after KYC is approved.', 'error');
+    if (!currentUser || !currentUser._id) {
+      Swal.fire('Error', 'User not loaded. Please refresh the page.', 'error');
       return;
     }
 
-    var payload = {
-      fullname: document.getElementById('fullname').value.trim(),
-      tel: document.getElementById('tel').value.trim(),
-      country: document.getElementById('country').value.trim(),
-      gender: document.getElementById('gender').value
-    };
+    var current = document.getElementById('current').value;
+    var pass = document.getElementById('pass').value;
+    var rpass = document.getElementById('rpass').value;
+
+    if (!current || !pass || !rpass) {
+      Swal.fire('Error', 'All password fields are required', 'error');
+      return;
+    }
+    if (pass.length < 8) {
+      Swal.fire('Error', 'New password must be at least 8 characters long', 'error');
+      return;
+    }
+    if (pass !== rpass) {
+      Swal.fire('Error', 'New password and confirmation do not match', 'error');
+      return;
+    }
+
+    var btn = document.getElementById('pass_btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
 
     try {
-      var r = await api.post('/personal/' + currentUser._id, payload);
+      var r = await api.post('/security/' + currentUser._id, {
+        current_password: current,
+        password: pass,
+        password_confirmation: rpass,
+        current: current,
+        pass: pass,
+        rpass: rpass
+      });
+
       if (r.data && r.data.success) {
-        Swal.fire('Success', r.data.message || 'Personal data updated successfully', 'success');
-        if (r.data.user) {
-          currentUser.fullname = r.data.user.fullname;
-          currentUser.tel = r.data.user.tel;
-          currentUser.country = r.data.user.country;
-          currentUser.gender = r.data.user.gender;
+        await Swal.fire('Success', r.data.message || 'Password changed successfully', 'success');
+        if (typeof logout === 'function') {
+          logout();
+        } else {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = 'login.html';
         }
       } else {
-        Swal.fire('Error', (r.data && r.data.message) || 'Update failed', 'error');
+        Swal.fire('Error', (r.data && r.data.message) || 'Failed to change password', 'error');
       }
     } catch (err) {
-      Swal.fire('Error', (err.response && err.response.data && err.response.data.message) || err.message || 'Update failed', 'error');
-    }
-  });
-
-  document.getElementById('kycForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    if (!currentUser) return;
-
-    var docType = document.getElementById('document_type').value;
-    var front = document.getElementById('frontimg').files[0];
-    var back = document.getElementById('backimg').files[0];
-    var photo = document.getElementById('photo').files[0];
-
-    if (!docType || !front || !back || !photo) {
-      Swal.fire('Error', 'All fields and images are required', 'error');
-      return;
-    }
-
-    var fd = new FormData();
-    fd.append('document_type', docType);
-    fd.append('frontimg', front);
-    fd.append('backimg', back);
-    fd.append('photo', photo);
-
-    var btn = document.getElementById('submitKyc');
-    btn.disabled = true;
-    btn.textContent = 'Uploading...';
-
-    try {
-      var r = await api.post('/verify-account/' + currentUser._id, fd, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      if (r.data && r.data.success) {
-        closeModal();
-        await Swal.fire('Success', r.data.message || 'KYC submitted successfully', 'success');
-        currentUser.kycVerified = 'pending';
-        currentVerification = { status: 'pending' };
-        renderKycUI(currentUser, currentVerification);
-        document.getElementById('sidebar-kyc').innerHTML = kycHtml('pending');
-        document.getElementById('top-kyc').innerHTML = kycHtml('pending');
-      } else {
-        Swal.fire('Error', (r.data && r.data.message) || 'Submission failed', 'error');
-      }
-    } catch (err) {
-      Swal.fire('Error', (err.response && err.response.data && err.response.data.message) || err.message || 'Submission failed', 'error');
+      var msg =
+        (err.response && err.response.data && err.response.data.message) ||
+        err.message ||
+        'Failed to change password';
+      Swal.fire('Error', msg, 'error');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Submit KYC';
+      btn.textContent = 'Save';
     }
   });
 });
 </script>
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6a876c4e6fd53a34448c6a29/1k0gfu515';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
 </body>
 </html>
-do same you just did to the dashboard.html to this personal.html page while keeping all other codes and functionalities intact and bring out the whole page code with no line of code skipped, commented out or left to be filled in manually(placeholders)
+
+
+do same you just did to the dashboard.html to this security.html page while keeping all other codes and functionalities intact and bring out the whole page code with no line of code skipped, commented out or left to be filled in manually(placeholders)
