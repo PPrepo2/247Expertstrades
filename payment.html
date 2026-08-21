@@ -28,7 +28,6 @@
 .line{margin:12px 0}
 .line input[type=text]{width:100%;max-width:420px;padding:8px}
 
-/* ===== LANGUAGE SELECTOR (visible next to logo) ===== */
 .lang-select-wrap {
     display: inline-block !important;
     visibility: visible !important;
@@ -58,102 +57,21 @@
     position: relative !important;
     z-index: 10051 !important;
 }
-
-/* ===== RESPONSIVE: center language between logo and menu (SM/MD) ===== */
 @media (max-width: 1200px) {
-    .top-bar .head-row.clearfix {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-    .top-bar .float-left {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        align-items: center !important;
-        float: none !important;
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-        gap: 6px !important;
-    }
-    .top-bar .logosm {
-        flex: 0 0 auto !important;
-        order: 1 !important;
-    }
-    .lang-select-wrap {
-        display: inline-block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        flex: 1 1 auto !important;
-        order: 2 !important;
-        text-align: center !important;
-        margin: 0 6px !important;
-        z-index: 10050 !important;
-    }
-    #language {
-        display: inline-block !important;
-        width: 120px !important;
-        min-width: 100px !important;
-        max-width: 140px !important;
-        margin: 0 auto !important;
-    }
-    .top-bar .menu-toggle.float-right,
-    .top-bar #menuToggleBtn {
-        display: block !important;
-        float: none !important;
-        flex: 0 0 auto !important;
-        order: 4 !important;
-        margin: 8px 8px 8px 4px !important;
-        position: relative !important;
-        z-index: 10052 !important;
-    }
-    .top-bar .float-right.nav.smcapy-nav {
-        float: none !important;
-        flex: 0 1 auto !important;
-        order: 5 !important;
-    }
+    .top-bar .head-row.clearfix { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; }
+    .top-bar .float-left { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; float: none !important; flex: 1 1 auto !important; min-width: 0 !important; gap: 6px !important; }
+    .top-bar .logosm { flex: 0 0 auto !important; order: 1 !important; }
+    .lang-select-wrap { flex: 1 1 auto !important; order: 2 !important; text-align: center !important; margin: 0 6px !important; }
+    #language { width: 120px !important; min-width: 100px !important; max-width: 140px !important; margin: 0 auto !important; }
+    .top-bar .menu-toggle.float-right, .top-bar #menuToggleBtn { display: block !important; float: none !important; flex: 0 0 auto !important; order: 4 !important; margin: 8px 8px 8px 4px !important; }
+    .top-bar .float-right.nav.smcapy-nav { float: none !important; flex: 0 1 auto !important; order: 5 !important; }
 }
 @media (max-width: 920px) {
-    .top-bar .head-row.clearfix {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        align-items: center !important;
-    }
-    .top-bar .float-left {
-        display: flex !important;
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-    }
-    .lang-select-wrap {
-        flex: 1 1 auto !important;
-        text-align: center !important;
-        order: 2 !important;
-        margin: 0 4px !important;
-    }
-    #language {
-        width: 110px !important;
-        min-width: 90px !important;
-        height: 30px !important;
-        font-size: 11px !important;
-    }
-    .top-bar .menu-toggle,
-    .top-bar #menuToggleBtn {
-        display: block !important;
-        order: 4 !important;
-        margin-left: 4px !important;
-    }
-    .top-bar .float-right.nav.smcapy-nav .item {
-        font-size: 11px !important;
-    }
+    .lang-select-wrap { order: 2 !important; text-align: center !important; }
+    #language { width: 110px !important; min-width: 90px !important; height: 30px !important; font-size: 11px !important; }
 }
 @media (max-width: 600px) {
-    #language {
-        width: 96px !important;
-        min-width: 84px !important;
-        font-size: 10px !important;
-    }
+    #language { width: 96px !important; min-width: 84px !important; font-size: 10px !important; }
 }
 </style>
 </head>
@@ -328,9 +246,9 @@
                 <div class="withdraw-form clearfix">
                   <p>Kindly send your deposit to the company details below.</p>
                   <p>You are to send <strong><font color="red" id="pay-amount">0</font> <span id="pay-currency">USD $</span></strong>.</p>
-                  <p>Note: Once payment is complete, upload proof below. Support: <a href="mailto:support@.com">support@247Expertstrade.com</a></p>
+                  <p>Note: Once payment is complete, upload proof below. Support: <a href="mailto:support@247Expertstrade.com">support@247Expertstrade.com</a></p>
 
-                  <!-- CRYPTO (BITCOIN / ETHEREUM / USDT / LUNO) -->
+                  <!-- CRYPTO / CASHAPP / PAYPAL address + optional QR -->
                   <div id="block-crypto" class="pay-block">
                     <div class="line">
                       <label id="crypto-label">Official Wallet Address</label>
@@ -401,6 +319,41 @@ function copyWallet() {
   setTimeout(function () { document.getElementById('copy_btn').textContent = 'Copy wallet'; }, 2000);
 }
 
+function kycHtml(status) {
+  var s = status ? String(status).toLowerCase().trim() : '';
+  if (s === 'approve' || s === 'approved') {
+    return 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>';
+  }
+  if (s === 'pending') {
+    return 'Kyc Verification: <span style="color:#ff0"><i class="fa fa-clock-o"></i> Pending</span>';
+  }
+  return 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
+}
+
+function resolveMethodDetails(method, wallet) {
+  var m = String(method || '').toUpperCase().trim();
+  wallet = wallet || {};
+  if (m === 'BANK DEPOSIT' || m === 'BANK' || m === 'BANK TRANSFER') {
+    return { kind: 'bank' };
+  }
+  if (m === 'BITCOIN' || m === 'BTC') {
+    return { kind: 'crypto', label: 'Official Bitcoin Wallet', address: wallet.btc_address || '', image: wallet.btc_image || '' };
+  }
+  if (m === 'ETHEREUM' || m === 'ETH') {
+    return { kind: 'crypto', label: 'Official Ethereum Wallet', address: wallet.eth_address || '', image: wallet.eth_image || '' };
+  }
+  if (m === 'USDT') {
+    return { kind: 'crypto', label: 'Official USDT Wallet', address: wallet.usdt_address || '', image: wallet.usdt_image || '' };
+  }
+  if (m === 'CASHAPP' || m === 'CASH APP') {
+    return { kind: 'crypto', label: 'Official CashApp Tag', address: wallet.cashapp || '', image: wallet.cashapp_image || '' };
+  }
+  if (m === 'PAYPAL') {
+    return { kind: 'crypto', label: 'Official PayPal Email', address: wallet.paypal || '', image: wallet.paypal_image || '' };
+  }
+  return { kind: 'crypto', label: 'Official Wallet', address: wallet.btc_address || '', image: wallet.btc_image || '' };
+}
+
 (function () {
   var sidebar = document.getElementById('mainSidebar');
   var overlay = document.getElementById('sidebarOverlay');
@@ -441,15 +394,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('display-balance-2').textContent = bal;
     document.getElementById('display-currency').textContent = cur;
 
-    var kycHtml = u.kycVerified
-      ? 'Kyc Verification: <span class="blinkgreen"><i class="fa fa-check-circle"></i> Verified</span>'
-      : 'Kyc Verification: <span class="blinkred"><i class="fa fa-check-circle"></i> Required</span>';
-    document.getElementById('sidebar-kyc').innerHTML = kycHtml;
-    document.getElementById('top-kyc').innerHTML = kycHtml;
+    var html = kycHtml(u.kycVerified);
+    document.getElementById('sidebar-kyc').innerHTML = html;
+    document.getElementById('top-kyc').innerHTML = html;
 
     var method = String(paymentData.payment_method || '').toUpperCase();
     var amount = paymentData.amount;
     var wallet = paymentData.wallet || {};
+    var details = resolveMethodDetails(method, wallet);
 
     document.getElementById('pay-title').textContent = 'Deposit using ' + method;
     document.getElementById('pay-amount').textContent = amount;
@@ -459,8 +411,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     document.getElementById('block-crypto').classList.remove('active');
     document.getElementById('block-bank').classList.remove('active');
+    document.getElementById('qr-wrap').style.display = 'none';
 
-    if (method === 'BANK DEPOSIT') {
+    if (details.kind === 'bank') {
       document.getElementById('block-bank').classList.add('active');
       document.getElementById('bank_name').value = wallet.bank_name || '';
       document.getElementById('account_name').value = wallet.account_name || '';
@@ -468,17 +421,16 @@ document.addEventListener('DOMContentLoaded', async function () {
       document.getElementById('sortcode').value = wallet.sortcode || '';
       document.getElementById('swift_code').value = wallet.swift_code || '';
     } else {
-      // BITCOIN, ETHEREUM, USDT, LUNO → use btc_wallet_address from Wallet schema
       document.getElementById('block-crypto').classList.add('active');
-      document.getElementById('crypto-label').textContent = 'Official ' + method + ' Wallet';
-      document.getElementById('mywallet').value = wallet.btc_wallet_address || '';
-      if (wallet.btc_qr_image) {
+      document.getElementById('crypto-label').textContent = details.label;
+      document.getElementById('mywallet').value = details.address || '';
+      if (details.image) {
         document.getElementById('qr-wrap').style.display = 'block';
-        document.getElementById('coin_payment_image').src = wallet.btc_qr_image;
-      } else if (wallet.btc_wallet_address) {
+        document.getElementById('coin_payment_image').src = details.image;
+      } else if (details.address) {
         document.getElementById('qr-wrap').style.display = 'block';
         document.getElementById('coin_payment_image').src =
-          'https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=' + encodeURIComponent(wallet.btc_wallet_address);
+          'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(details.address);
       }
     }
   } catch (err) {
@@ -529,7 +481,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 </script>
 
-<!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
@@ -541,6 +492,5 @@ s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
-<!--End of Tawk.to Script-->
 </body>
 </html>
