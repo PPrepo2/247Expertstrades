@@ -147,7 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (!conf.isConfirmed) return;
         try {
-          await api.delete('/delete-deposit/' + id);
+          // Must match: router.delete('/deleteDeposit/:id', ...)
+          await api.delete('/deleteDeposit/' + id);
           await Swal.fire({
             icon: 'success',
             title: 'Deleted',

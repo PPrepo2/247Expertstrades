@@ -173,7 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (!conf.isConfirmed) return;
         try {
-          await api.delete('/withdrawals-delete/' + id);
+          // Must match: router.post('/withdrawals-delete/:id', ...)
+          await api.post('/withdrawals-delete/' + id);
           await Swal.fire({
             icon: 'success',
             title: 'Deleted',
