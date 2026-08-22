@@ -441,6 +441,35 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 here is the delete deposit route and controller
+router.delete('/deleteDeposit/:id', adminController.deleteDeposit);
+module.exports.deleteDeposit = async (req, res) => {
+  try {
+    const deposit = await Deposit.findById(req.params.id);
+    if (!deposit) {
+      return res.status(404).json({ success: false, message: 'Deposit not found' });
+    }
+
+    // Delete image from Cloudinary if it exists
+    if (deposit.image && deposit.image.includes('cloudinary')) {
+      const publicId = deposit.image.split('/').pop().split('.')[0]; // extract public_id
+      await cloudinary.uploader.destroy(`deposits/${publicId}`); // adjust folder if needed
+    }
+
+    await Deposit.deleteOne({ _id: req.params.id });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Deposit deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete deposit error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to delete deposit'
+    });
+  }
+};
+
 
 And here is my allWidthdrawals.html page 
 
