@@ -345,6 +345,15 @@ function resolveMethodDetails(method, wallet) {
   if (m === 'USDT') {
     return { kind: 'crypto', label: 'Official USDT Wallet', address: wallet.usdt_address || '', image: wallet.usdt_image || '' };
   }
+  if (m === 'SOLANA' || m === 'SOL') {
+    return { kind: 'crypto', label: 'Official Solana Wallet', address: wallet.solana_address || '', image: wallet.solana_image || '' };
+  }
+  if (m === 'TRON' || m === 'TRX') {
+    return { kind: 'crypto', label: 'Official Tron Wallet', address: wallet.tron_address || '', image: wallet.tron_image || '' };
+  }
+  if (m === 'XRP' || m === 'RIPPLE') {
+    return { kind: 'crypto', label: 'Official XRP Wallet', address: wallet.xrp_address || '', image: wallet.xrp_image || '' };
+  }
   if (m === 'CASHAPP' || m === 'CASH APP') {
     return { kind: 'crypto', label: 'Official CashApp Tag', address: wallet.cashapp || '', image: wallet.cashapp_image || '' };
   }
@@ -353,7 +362,7 @@ function resolveMethodDetails(method, wallet) {
   }
   return { kind: 'crypto', label: 'Official Wallet', address: wallet.btc_address || '', image: wallet.btc_image || '' };
 }
-
+// end of wallet function
 (function () {
   var sidebar = document.getElementById('mainSidebar');
   var overlay = document.getElementById('sidebarOverlay');

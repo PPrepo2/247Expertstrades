@@ -104,15 +104,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     fd.append('btc_address', document.getElementById('btc_address').value.trim());
     fd.append('eth_address', document.getElementById('eth_address').value.trim());
     fd.append('usdt_address', document.getElementById('usdt_address').value.trim());
+    fd.append('solana_address', document.getElementById('solana_address').value.trim());
+    fd.append('tron_address', document.getElementById('tron_address').value.trim());
+    fd.append('xrp_address', document.getElementById('xrp_address').value.trim());
     fd.append('cashapp', document.getElementById('cashapp').value.trim());
     fd.append('paypal', document.getElementById('paypal').value.trim());
 
-    ['btc_image', 'eth_image', 'usdt_image', 'cashapp_image', 'paypal_image'].forEach((name) => {
-      const input = document.getElementById(name);
-      if (input && input.files && input.files[0]) {
-        fd.append(name, input.files[0]);
-      }
-    });
+    ['btc_image', 'eth_image', 'usdt_image', 'cashapp_image', 'paypal_image', 'solana_image', 'tron_image', 'xrp_image'].forEach((name) => {
+    const input = document.getElementById(name);
+    if (input && input.files && input.files[0]) {
+      fd.append(name, input.files[0]);
+    }
+       });
 
     try {
       const r = await api.post('/add-wallet', fd, {

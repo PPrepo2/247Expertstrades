@@ -104,50 +104,102 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function renderTable(wallets) {
-    if (!wallets.length) {
-      tableBody.innerHTML =
-        '<tr><td colspan="9" class="text-center py-4">No wallets found</td></tr>';
-      return;
-    }
-
-    let html = '';
-    wallets.forEach((w, index) => {
-      const updaterName = w.updatedBy ? w.updatedBy.fullname : '—';
-      const updaterEmail = w.updatedBy ? w.updatedBy.email : '';
-      const bankLine =
-        (w.bank_name || '—') +
-        (w.account_no ? '<br><small>' + escapeHtml(w.account_no) + '</small>' : '');
-
-      html +=
-        '<tr>' +
-        '<td>' + (index + 1) + '</td>' +
-        '<td>' + escapeHtml(w.bank_name || '') +
-        (w.account_name ? '<br><small>' + escapeHtml(w.account_name) + '</small>' : '') +
-        (w.account_no ? '<br><small class="text-secondary">' + escapeHtml(w.account_no) + '</small>' : '') +
-        '</td>' +
-        '<td class="address-cell" title="' + escapeHtml(w.btc_address) + '">' +
-        shortAddr(w.btc_address) + imgCell(w.btc_image) +
-        '</td>' +
-        '<td class="address-cell" title="' + escapeHtml(w.eth_address) + '">' +
-        shortAddr(w.eth_address) + imgCell(w.eth_image) +
-        '</td>' +
-        '<td class="address-cell" title="' + escapeHtml(w.usdt_address) + '">' +
-        shortAddr(w.usdt_address) + imgCell(w.usdt_image) +
-        '</td>' +
-        '<td>' + escapeHtml(w.cashapp || '—') + imgCell(w.cashapp_image) + '</td>' +
-        '<td>' + escapeHtml(w.paypal || '—') + imgCell(w.paypal_image) + '</td>' +
-        '<td><div>' + escapeHtml(updaterName) + '</div>' +
-        '<small class="text-secondary">' + escapeHtml(updaterEmail) + '</small></td>' +
-        '<td><div class="d-flex gap-1 flex-wrap">' +
-        '<a href="edit-wallet.html?id=' + encodeURIComponent(w._id) + '" class="btn btn-sm btn-primary" title="Edit"><i class="bi bi-pencil"></i></a>' +
-        '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' + escapeHtml(w._id) + '" title="Delete"><i class="bi bi-trash"></i></button>' +
-        '</div></td>' +
-        '</tr>';
-    });
-
-    tableBody.innerHTML = html;
-    attachDeleteListeners();
+  if (!wallets.length) {
+    tableBody.innerHTML =
+      '<tr><td colspan="12" class="text-center py-4">No wallets found</td></tr>';
+    return;
   }
+
+  let html = '';
+  wallets.forEach((w, index) => {
+    const updaterName = w.updatedBy ? w.updatedBy.fullname : '—';
+    const updaterEmail = w.updatedBy ? w.updatedBy.email : '';
+
+    html +=
+      '<tr>' +
+      '<td>' + (index + 1) + '</td>' +
+      '<td>' + escapeHtml(w.bank_name || '') +
+      (w.account_name ? '<br><small>' + escapeHtml(w.account_name) + '</small>' : '') +
+      (w.account_no ? '<br><small class="text-secondary">' + escapeHtml(w.account_no) + '</small>' : '') +
+      '</td>' +
+      '<td class="address-cell" title="' + escapeHtml(w.btc_address) + '">' +
+      shortAddr(w.btc_address) + imgCell(w.btc_image) +
+      '</td>' +
+      '<td class="address-cell" title="' + escapeHtml(w.eth_address) + '">' +
+      shortAddr(w.eth_address) + imgCell(w.eth_image) +
+      '</td>' +
+      '<td class="address-cell" title="' + escapeHtml(w.usdt_address) + '">' +
+      shortAddr(w.usdt_address) + imgCell(w.usdt_image) +
+      '</td>' +
+      '<td class="address-cell" title="' + escapeHtml(w.solana_address) + '">' +
+      shortAddr(w.solana_address) + imgCell(w.solana_image) +
+      '</td>' +
+      '<td class="address-cell" title="' + escapeHtml(w.tron_address) + '">' +
+      shortAddr(w.tron_address) + imgCell(w.tron_image) +
+      '</td>' +
+      '<td class="address-cell" title="' + escapeHtml(w.xrp_address) + '">' +
+      shortAddr(w.xrp_address) + imgCell(w.xrp_image) +
+      '</td>' +
+      '<td>' + escapeHtml(w.cashapp || '—') + imgCell(w.cashapp_image) + '</td>' +
+      '<td>' + escapeHtml(w.paypal || '—') + imgCell(w.paypal_image) + '</td>' +
+      '<td><div>' + escapeHtml(updaterName) + '</div>' +
+      '<small class="text-secondary">' + escapeHtml(updaterEmail) + '</small></td>' +
+      '<td><div class="d-flex gap-1 flex-wrap">' +
+      '<a href="edit-wallet.html?id=' + encodeURIComponent(w._id) + '" class="btn btn-sm btn-primary" title="Edit"><i class="bi bi-pencil"></i></a>' +
+      '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' + escapeHtml(w._id) + '" title="Delete"><i class="bi bi-trash"></i></button>' +
+      '</div></td>' +
+      '</tr>';
+  });
+
+  tableBody.innerHTML = html;
+  attachDeleteListeners();
+}
+
+  // function renderTable(wallets) {
+  //   if (!wallets.length) {
+  //     tableBody.innerHTML =
+  //       '<tr><td colspan="9" class="text-center py-4">No wallets found</td></tr>';
+  //     return;
+  //   }
+
+  //   let html = '';
+  //   wallets.forEach((w, index) => {
+  //     const updaterName = w.updatedBy ? w.updatedBy.fullname : '—';
+  //     const updaterEmail = w.updatedBy ? w.updatedBy.email : '';
+  //     const bankLine =
+  //       (w.bank_name || '—') +
+  //       (w.account_no ? '<br><small>' + escapeHtml(w.account_no) + '</small>' : '');
+
+  //     html +=
+  //       '<tr>' +
+  //       '<td>' + (index + 1) + '</td>' +
+  //       '<td>' + escapeHtml(w.bank_name || '') +
+  //       (w.account_name ? '<br><small>' + escapeHtml(w.account_name) + '</small>' : '') +
+  //       (w.account_no ? '<br><small class="text-secondary">' + escapeHtml(w.account_no) + '</small>' : '') +
+  //       '</td>' +
+  //       '<td class="address-cell" title="' + escapeHtml(w.btc_address) + '">' +
+  //       shortAddr(w.btc_address) + imgCell(w.btc_image) +
+  //       '</td>' +
+  //       '<td class="address-cell" title="' + escapeHtml(w.eth_address) + '">' +
+  //       shortAddr(w.eth_address) + imgCell(w.eth_image) +
+  //       '</td>' +
+  //       '<td class="address-cell" title="' + escapeHtml(w.usdt_address) + '">' +
+  //       shortAddr(w.usdt_address) + imgCell(w.usdt_image) +
+  //       '</td>' +
+  //       '<td>' + escapeHtml(w.cashapp || '—') + imgCell(w.cashapp_image) + '</td>' +
+  //       '<td>' + escapeHtml(w.paypal || '—') + imgCell(w.paypal_image) + '</td>' +
+  //       '<td><div>' + escapeHtml(updaterName) + '</div>' +
+  //       '<small class="text-secondary">' + escapeHtml(updaterEmail) + '</small></td>' +
+  //       '<td><div class="d-flex gap-1 flex-wrap">' +
+  //       '<a href="edit-wallet.html?id=' + encodeURIComponent(w._id) + '" class="btn btn-sm btn-primary" title="Edit"><i class="bi bi-pencil"></i></a>' +
+  //       '<button type="button" class="btn btn-sm btn-danger delete-btn" data-id="' + escapeHtml(w._id) + '" title="Delete"><i class="bi bi-trash"></i></button>' +
+  //       '</div></td>' +
+  //       '</tr>';
+  //   });
+
+  //   tableBody.innerHTML = html;
+  //   attachDeleteListeners();
+  // }
 
   function attachDeleteListeners() {
     document.querySelectorAll('.delete-btn').forEach((btn) => {

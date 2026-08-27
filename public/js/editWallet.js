@@ -108,12 +108,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     setVal('btc_address', w.btc_address);
     setVal('eth_address', w.eth_address);
     setVal('usdt_address', w.usdt_address);
+    setVal('solana_address', w.solana_address);
+    setVal('tron_address', w.tron_address);
+    setVal('xrp_address', w.xrp_address);
     setVal('cashapp', w.cashapp);
     setVal('paypal', w.paypal);
 
     showPreview('btc_image_preview', 'btc_image_img', w.btc_image);
     showPreview('eth_image_preview', 'eth_image_img', w.eth_image);
     showPreview('usdt_image_preview', 'usdt_image_img', w.usdt_image);
+    showPreview('solana_image_preview', 'solana_image_img', w.solana_image);
+    showPreview('tron_image_preview', 'tron_image_img', w.tron_image);
+    showPreview('xrp_image_preview', 'xrp_image_img', w.xrp_image);
     showPreview('cashapp_image_preview', 'cashapp_image_img', w.cashapp_image);
     showPreview('paypal_image_preview', 'paypal_image_img', w.paypal_image);
 
@@ -162,10 +168,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     fd.append('btc_address', document.getElementById('btc_address').value.trim());
     fd.append('eth_address', document.getElementById('eth_address').value.trim());
     fd.append('usdt_address', document.getElementById('usdt_address').value.trim());
+    fd.append('solana_address', document.getElementById('solana_address').value.trim());
+    fd.append('tron_address', document.getElementById('tron_address').value.trim());
+    fd.append('xrp_address', document.getElementById('xrp_address').value.trim());
     fd.append('cashapp', document.getElementById('cashapp').value.trim());
     fd.append('paypal', document.getElementById('paypal').value.trim());
 
-    const fileFields = ['btc_image', 'eth_image', 'usdt_image', 'cashapp_image', 'paypal_image'];
+       const fileFields = [
+     'btc_image', 'eth_image', 'usdt_image', 'cashapp_image', 'paypal_image',
+     'solana_image', 'tron_image', 'xrp_image'
+    ];
     fileFields.forEach((name) => {
       const input = document.getElementById(name);
       if (input && input.files && input.files[0]) {
