@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Send Email | 247Expertstrade Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+  <link rel="icon" type="image/png" href="./assets/img/favicons/favicon-32x32.png" sizes="32x32">
+  <link href="./assets/css/css.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" type="text/css" href="./assets/css/inner.css">
+  <link rel="stylesheet" type="text/css" href="./assets/css/app.css">
+  <link rel="stylesheet" type="text/css" href="./assets/css/cs.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <script src="https://use.fontawesome.com/4b789087e7.js"></script>
+  <style>
+    body { background: #0d0d0d; color: #fff; }
+    .divider { border-bottom: 1px dotted; }
+    .ui.sidebar.right {
+      position: fixed !important; top: 0; right: -280px; width: 260px; height: 100%;
+      z-index: 10000; transition: right 0.3s ease; overflow-y: auto; padding-top: 90px !important;
+    }
+    .ui.sidebar.right.visible { right: 0 !important; }
+    .sidebar-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 9999;
+    }
+    .sidebar-overlay.active { display: block; }
+    .menu-toggle { cursor: pointer !important; }
+    .admin-wrap { padding: 24px 16px 80px; max-width: 900px; margin: 0 auto; }
+    .admin-wrap h2 { color: #fff; margin-bottom: 16px; }
+    .card { background: #171717; border: none; border-radius: 0.5rem; }
+    .form-control, .form-select {
+      background: #1a1a2e; color: #fff; border: 1px solid #444;
+    }
+    .form-control:focus, .form-select:focus {
+      background: #1a1a2e; color: #fff; border-color: #2597c7; box-shadow: none;
+    }
+    .form-label { color: #ccc; }
+    .layout-option {
+      border: 2px solid #333; border-radius: 8px; padding: 12px; cursor: pointer;
+      background: #1a1a2e; transition: border-color .2s;
+    }
+    .layout-option.active { border-color: #2597c7; }
+    .layout-option:hover { border-color: #555; }
+    .editor-toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .editor-toolbar button {
+      background: #1a1a2e; border: 1px solid #444; color: #fff; padding: 4px 10px;
+      border-radius: 4px; cursor: pointer; font-size: 13px;
+    }
+    .editor-toolbar button:hover { background: #2597c7; }
+    #messageEditor {
+      min-height: 180px; background: #1a1a2e; border: 1px solid #444; border-radius: 6px;
+      padding: 12px; color: #fff; outline: none;
+    }
+    #messageEditor img { max-width: 100%; height: auto; border-radius: 4px; margin: 8px 0; }
+    .img-chip {
+      display: inline-flex; align-items: center; gap: 6px; background: #222; border-radius: 4px;
+      padding: 4px 8px; margin: 4px 4px 4px 0; font-size: 12px;
+    }
+    .img-chip button { background: transparent; border: none; color: #f66; cursor: pointer; }
+  </style>
+</head>
+<body class="pushable dimmable scrolling">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="ui sidebar right inverted vertical menu" id="mainSidebar">
+  <div class="item" style="font-size:small;color:#fff;position:absolute;top:15px;width:90%;">
+    <span id="admin-sidebar-email"><i class="fa fa-envelope-o"></i> Admin</span><br>
+    <span id="admin-sidebar-name" style="margin-top:8px;"><b>Loading...</b></span>
+  </div>
+  <span class="divider"></span>
+  <div class="item"><a href="adminDashboard.html"><i class="fa fa-dashboard"></i> Users</a></div>
+  <div class="item"><a href="allFunding.html"><i class="fa fa-money"></i> All Deposits</a></div>
+  <div class="item"><a href="allWidthdrawals.html"><i class="fa fa-money"></i> All Withdrawals</a></div>
+  <div class="item"><a href="all-livetrade.html"><i class="fa fa-area-chart"></i> All Trades</a></div>
+  <div class="item"><a href="allVerify.html"><i class="fa fa-check-circle"></i> Verifications</a></div>
+  <div class="item"><a href="wallets.html"><i class="fa fa-credit-card"></i> Wallets</a></div>
+  <div class="item"><a href="sendEmail.html"><i class="fa fa-envelope"></i> Send Email</a></div>
+  <span class="divider"></span>
+  <div class="item"><a href="#" id="adminLogoutBtn"><i class="fa fa-power-off"></i> Exit</a></div>
+</div>
+<div class="pusher">
+  <nav class="top-nav inner inner-new">
+    <div class="top-bar">
+      <div class="head-row clearfix">
+        <div class="float-left">
+          <div class="logosm">
+            <a href="adminDashboard.html"><img src="./assets/img/logo.png" alt="247Expertstrade"></a>
+          </div>
+        </div>
+        <span class="menu-toggle float-right" id="menuToggleBtn"><i></i></span>
+        <div class="float-right nav smcapy-nav">
+          <div class="item" id="top-admin-name">Admin</div>
+          <div class="item">
+            <a class="ui button op link a-green-hover" href="#" id="topLogoutBtn">
+              <i class="fa fa-power-off"></i> Exit
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="root-content">
+    <div class="admin-wrap">
+      <h2><i class="fa fa-envelope"></i> Send Email</h2>
+      <div class="card p-4">
+        <form id="sendEmailForm">
+          <div class="mb-3">
+            <label class="form-label">Select user(s)</label>
+            <select id="userSelect" class="form-select" multiple size="6"></select>
+            <div class="form-text text-secondary">Hold Ctrl/Cmd to select multiple users</div>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="emailAllUsers">
+            <label class="form-check-label" for="emailAllUsers">Email all users at once</label>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Subject / Title</label>
+            <input type="text" id="emailSubject" class="form-control" required placeholder="Email subject">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Message</label>
+            <div class="editor-toolbar">
+              <button type="button" id="btnBold" title="Bold"><b>B</b></button>
+              <button type="button" id="btnItalic" title="Italic"><i>I</i></button>
+              <button type="button" id="btnUploadImg" title="Insert image">Insert Image</button>
+              <input type="file" id="imageFile" accept="image/*" style="display:none">
+            </div>
+            <div id="messageEditor" contenteditable="true" role="textbox" aria-multiline="true"></div>
+            <div id="uploadedImages" class="mt-2"></div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email layout</label>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <div class="layout-option active" data-layout="1">
+                  <strong>Classic</strong>
+                  <div class="small text-secondary">Soft blue header + logo</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="layout-option" data-layout="2">
+                  <strong>Modern Dark</strong>
+                  <div class="small text-secondary">Dark header accent</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="layout-option" data-layout="3">
+                  <strong>Minimal</strong>
+                  <div class="small text-secondary">Clean with gradient bar</div>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="selectedLayout" value="1">
+          </div>
+          <button type="submit" class="btn btn-primary" id="sendBtn">
+            <i class="fa fa-paper-plane"></i> Send Email
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="row clearfix">
+      <div class="float-left">
+        <span class="copy">&copy; 2022 <span>247Expertstrade Ltd .</span></span>
+      </div>
+    </div>
+  </footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="./public/js/config.js"></script>
+<script src="./public/js/auth.js"></script>
+<script>
+(function () {
+  const sidebar = document.getElementById('mainSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const toggleBtn = document.getElementById('menuToggleBtn');
+  function openSidebar() {
+    if (sidebar) sidebar.classList.add('visible');
+    if (overlay) overlay.classList.add('active');
+    document.body.classList.add('dimmed');
+  }
+  function closeSidebar() {
+    if (sidebar) sidebar.classList.remove('visible');
+    if (overlay) overlay.classList.remove('active');
+    document.body.classList.remove('dimmed');
+  }
+  function toggleSidebar() {
+    if (sidebar && sidebar.classList.contains('visible')) closeSidebar();
+    else openSidebar();
+  }
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation(); toggleSidebar();
+    });
+  }
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+  if (sidebar) {
+    sidebar.querySelectorAll('a').forEach(link => link.addEventListener('click', closeSidebar));
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+})();
+
+document.getElementById('adminLogoutBtn')?.addEventListener('click', e => { e.preventDefault(); logout(); });
+document.getElementById('topLogoutBtn')?.addEventListener('click', e => { e.preventDefault(); logout(); });
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof requireAuthPage === 'function') requireAuthPage();
+
+  const userSelect = document.getElementById('userSelect');
+  const emailAll = document.getElementById('emailAllUsers');
+  const editor = document.getElementById('messageEditor');
+  const layoutInput = document.getElementById('selectedLayout');
+
+  // Load users
+  try {
+    const res = await api.get('/users-emails');
+    if (res.data && res.data.success) {
+      (res.data.users || []).forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u._id;
+        opt.textContent = (u.fullname || 'User') + ' <' + (u.email || '') + '>';
+        opt.dataset.email = u.email || '';
+        userSelect.appendChild(opt);
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load users', background: '#1a1a2e', color: '#fff' });
+  }
+
+  emailAll.addEventListener('change', () => {
+    userSelect.disabled = emailAll.checked;
+    if (emailAll.checked) Array.from(userSelect.options).forEach(o => o.selected = false);
+  });
+
+  document.querySelectorAll('.layout-option').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.layout-option').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      layoutInput.value = el.dataset.layout;
+    });
+  });
+
+  document.getElementById('btnBold').addEventListener('click', () => document.execCommand('bold'));
+  document.getElementById('btnItalic').addEventListener('click', () => document.execCommand('italic'));
+
+  document.getElementById('btnUploadImg').addEventListener('click', () => document.getElementById('imageFile').click());
+  document.getElementById('imageFile').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('image', file);
+    try {
+      const r = await api.post('/upload-email-image', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (r.data && r.data.success && r.data.url) {
+        const img = document.createElement('img');
+        img.src = r.data.url;
+        img.alt = 'uploaded';
+        img.style.maxWidth = '100%';
+        editor.focus();
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount) {
+          const range = sel.getRangeAt(0);
+          range.insertNode(img);
+          range.collapse(false);
+        } else {
+          editor.appendChild(img);
+        }
+        const chip = document.createElement('span');
+        chip.className = 'img-chip';
+        chip.innerHTML = 'Image inserted <button type="button" title="Remove last">&times;</button>';
+        chip.querySelector('button').onclick = () => {
+          img.remove();
+          chip.remove();
+        };
+        document.getElementById('uploadedImages').appendChild(chip);
+      } else {
+        throw new Error((r.data && r.data.message) || 'Upload failed');
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: 'error', title: 'Upload failed',
+        text: (err.response && err.response.data && err.response.data.message) || err.message,
+        background: '#1a1a2e', color: '#fff'
+      });
+    }
+    e.target.value = '';
+  });
+
+  document.getElementById('sendEmailForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const subject = document.getElementById('emailSubject').value.trim();
+    const message = editor.innerHTML.trim();
+    if (!subject || !message || message === '<br>') {
+      Swal.fire({ icon: 'warning', title: 'Missing fields', text: 'Subject and message are required', background: '#1a1a2e', color: '#fff' });
+      return;
+    }
+    const payload = {
+      subject,
+      message,
+      layout: layoutInput.value || '1',
+      sendToAll: emailAll.checked
+    };
+    if (!emailAll.checked) {
+      const selected = Array.from(userSelect.selectedOptions).map(o => o.value);
+      if (!selected.length) {
+        Swal.fire({ icon: 'warning', title: 'No recipients', text: 'Select at least one user or check Email all users', background: '#1a1a2e', color: '#fff' });
+        return;
+      }
+      payload.userIds = selected;
+    }
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    btn.innerHTML = 'Sending...';
+    try {
+      const r = await api.post('/send-email', payload);
+      if (r.data && r.data.success) {
+        await Swal.fire({ icon: 'success', title: 'Sent', text: r.data.message || 'Email sent', background: '#1a1a2e', color: '#fff' });
+        document.getElementById('emailSubject').value = '';
+        editor.innerHTML = '';
+        document.getElementById('uploadedImages').innerHTML = '';
+        emailAll.checked = false;
+        userSelect.disabled = false;
+        Array.from(userSelect.options).forEach(o => o.selected = false);
+      } else {
+        throw new Error((r.data && r.data.message) || 'Send failed');
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: 'error', title: 'Error',
+        text: (err.response && err.response.data && err.response.data.message) || err.message,
+        background: '#1a1a2e', color: '#fff'
+      });
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa fa-paper-plane"></i> Send Email';
+    }
+  });
+});
+</script>
+</body>
+</html>

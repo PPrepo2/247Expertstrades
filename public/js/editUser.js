@@ -99,8 +99,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         </ol>
       </nav>
 
-      <form id="editUserForm" class="edit-card">
-        <h4 class="mb-3">Personal Information</h4>
+      <form id="editUserForm">
+        <div class="edit-card mb-4">
+        <h4 class="mb-3"><i class="bi bi-person"></i> Personal Information</h4>
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="fullname" class="form-label">Full Name</label>
@@ -136,7 +137,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </div>
 
-        <h4 class="mb-3 mt-4">Account Information</h4>
+        </div>
+
+        <div class="edit-card mb-4">
+        <h4 class="mb-3"><i class="bi bi-wallet2"></i> Account Balances</h4>
+        <p class="small text-secondary mb-3">When balance is updated from 0.00 for the first time, an approved Express Deposit is created automatically.</p>
         <div class="row mb-3">
           <div class="col-md-4">
             <label for="balance" class="form-label">Balance</label>
@@ -151,8 +156,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             <input type="text" class="form-control" id="bonus" name="bonus" value="${escapeHtml(user.bonus)}">
           </div>
         </div>
+        </div>
 
-        <h4 class="mb-3 mt-4">Verification &amp; Status</h4>
+        <div class="edit-card mb-4">
+        <h4 class="mb-3"><i class="bi bi-shield-check"></i> Verification &amp; Status</h4>
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="kycVerified" class="form-label">KYC Status</label>
@@ -184,7 +191,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </div>
 
-        <h4 class="mb-3 mt-4">Activity (read-only)</h4>
+        </div>
+
+        <div class="edit-card mb-4">
+        <h4 class="mb-3"><i class="bi bi-bar-chart"></i> Activity (read-only)</h4>
         <div class="row mb-3">
           <div class="col-md-3">
             <label class="form-label">Deposits</label>
@@ -204,11 +214,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2 mt-4">
+        </div>
+
+        <div class="edit-card mb-4">
+        <div class="d-flex flex-wrap gap-2">
           <button type="submit" class="btn btn-primary" id="updateBtn">Update User</button>
           <a href="viewUser.html?id=${encodeURIComponent(user._id)}" class="btn btn-secondary">View</a>
           <a href="adminDashboard.html" class="btn btn-outline-light">Back</a>
           <button type="button" class="btn btn-danger ms-auto" id="deleteUserBtn">Delete User</button>
+        </div>
         </div>
       </form>
 

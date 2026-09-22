@@ -393,9 +393,11 @@
       <input type="file" id="frontimg" name="frontimg" accept="image/jpeg,image/png,image/jpg" required>
       <img class="preview-img" id="preview-front" alt="Front preview">
 
+      <div id="backImageGroup">
       <label>Back image</label>
       <input type="file" id="backimg" name="backimg" accept="image/jpeg,image/png,image/jpg" required>
       <img class="preview-img" id="preview-back" alt="Back preview">
+      </div>
 
       <label>Photo (passport photograph)</label>
       <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/jpg" required>
@@ -545,6 +547,33 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
   document.getElementById('closeKycModal').addEventListener('click', closeModal);
   document.getElementById('cancelKyc').addEventListener('click', closeModal);
+
+
+  // Hide Back image when Int'l Passport is selected
+  (function () {
+    var docType = document.getElementById('document_type');
+    var backGroup = document.getElementById('backImageGroup');
+    var backInput = document.getElementById('backimg');
+    function toggleBack() {
+      if (!docType || !backGroup) return;
+      var isPassport = docType.value === "Int'l Passport";
+      backGroup.style.display = isPassport ? 'none' : '';
+      if (backInput) {
+        if (isPassport) {
+          backInput.removeAttribute('required');
+          backInput.value = '';
+          var prev = document.getElementById('preview-back');
+          if (prev) { prev.src = ''; prev.style.display = 'none'; }
+        } else {
+          backInput.setAttribute('required', 'required');
+        }
+      }
+    }
+    if (docType) {
+      docType.addEventListener('change', toggleBack);
+      toggleBack();
+    }
+  })();
 
   bindPreview('frontimg', 'preview-front');
   bindPreview('backimg', 'preview-back');
